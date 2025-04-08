@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delta Seven - Tutoring & Consulting</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @font-face {
+        font-family: "Pixelmania";
+        src: url("Pixelmania.e76516a5b526eef3.ttf") format("truetype");
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        max-width: 420px;
+        margin: 0 auto;
+        overflow-x: hidden;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+          "Lucida Sans", Arial, sans-serif;
+        background: #000;
+        color: #fff;
+        line-height: 1.6;
+        transition: background 0.3s, color 0.3s;
+      }
+
+      body.inverted {
+        background: #fff;
+        color: #000;
+      }
+
+      body.inverted .section,
+      body.inverted .contact,
+      body.inverted header,
+      body.inverted footer {
+        background: #ffffff;
+        color: #000;
+        border-color: #000;
+      }
+
+      header {
+        padding: 0rem 1rem;
+        text-align: center;
+        background: #000000;
+        border-bottom: 1.5px solid #fff;
+      }
+
+      .logo {
+        width: 80px;
+        height: auto;
+        display: block;
+        margin: 0 auto 1rem;
+        filter: grayscale(100%) brightness(200%);
+      }
+
+      header h1 {
+        font-size: 2rem;
+        font-family: "Press Start 2P", sans-serif;
+        color: inherit;
+        margin: 0;
+        letter-spacing: 1px;
+      }
+
+      header p {
+        font-size: 1rem;
+        color: #ccc;
+        margin-top: 0.5rem;
+        font-style: italic;
+      }
+
+      body.inverted header p {
+        color: #000000;
+      }
+
+      .section {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 1.5rem;
+        background: #000000;
+        border: 1px solid #ffffff;
+        border-radius: 12px;
+      }
+
+      .section h2 {
+        color: inherit;
+        border-bottom: 2px solid currentColor;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+        font-family: "Pixelmania", sans-serif;
+        font-size: 0.9rem;
+      }
+
+      .section ul {
+        list-style: square;
+        padding: 0.5;
+      }
+
+      .section ul li::before {
+        color: inherit;
+        font-weight: bold;
+        display: inline-block;
+        width: 1rem;
+        margin-left: -1em;
+      }
+
+      .section ul li {
+        list-style: square;
+      }
+
+      .contact {
+        background: #000000;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-top: 2rem;
+        border: 1px solid #fff;
+      }
+
+      .contact a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .contact a:hover {
+        text-decoration: underline;
+      }
+
+      footer {
+        text-align: center;
+        padding: rem;
+        background: #000;
+        font-size: 0.85rem;
+        color: #888;
+        margin-top: 3rem;
+        border-top: 1px solid #fff;
+      }
+
+      .invert-button {
+        display: block;
+        margin: 2rem auto;
+        padding: 0.75rem 1.5rem;
+        font-family: "Pixelmania", sans-serif;
+        font-size: 1rem;
+        cursor: pointer;
+        border: 2px solid currentColor;
+        background: none;
+        color: inherit;
+        transition: background 0.3s, color 0.3s;
+      }
+
+      .invert-button:hover {
+        background: currentColor;
+        color: #fff;
+      }
+
+      body.inverted .invert-button:hover {
+        color: #000;
+      }
+
+      @media (max-width: 600px) {
+        header h1 {
+          font-size: 2rem;
+        }
+        .section {
+          margin: 2rem;
+          padding: 0.5rem;
+        }
+        .section h2 {
+          font-size: 0.9rem;
+        }
+        header p {
+          font-size: 2.2rem;
+        }
+      }
+    </style>
+  </head>
+  <body class="inverted">
+    <header>
+      <h1>&#916;&#951;-MATH/CS TUTORING</h1>
+    </header>
+
+    <section class="section">
+      <h2>SUBJECTS</h2>
+      <ul>
+        <li>Algebra</li>
+        <li>Geometry</li>
+        <li>Trigonometry</li>
+        <li>Calculus</li>
+        <li>Computer Science</li>
+        <li>ACT / SAT Prep</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>EXPERIENCE</h2>
+      <ul>
+        <li>14 years Instructor @ D211 (HEHS)</li>
+        <li>8 years AP Computer Science Instructor</li>
+        <li>M.Ed Mathematics @ DePaul Univ.</li>
+        <li>B.A Mathematics @ Roosevelt Univ.</li>
+        <li>Lead Instructor @ Mathnasium</li>
+      </ul>
+    </section>
+
+    <section class="section contact">
+      <h2>RATES</h2>
+      <ul>
+        <li>$75 for 60 minute tutoring session.</li>
+        <li>$100 for 90 minute tutoring session.</li>
+        <li><mark>I drive to you or meet at a library.</mark></li>
+      </ul>
+    </section>
+
+    <section class="section contact">
+      <h2>CONTACT</h2>
+      <ul>
+        <li>
+          <strong>e-mail:</strong>
+          <a href="mailto:phil@deltaseven.io">phil@deltaseven.io</a>
+        </li>
+        <li><strong>cell: </strong>224-343-8086</li>
+        <li><strong>google me: </strong>Phillip Krzankowski</li>
+      </ul>
+    </section>
+
+    <button
+      class="invert-button"
+      onclick="document.body.classList.toggle('inverted')"
+    >
+      FLIP
+    </button>
+
+    <footer>
+      <p>
+        &copy; 2025 DeltaSeven.io,LLC — Phillip Krzankowski. All rights
+        reserved.
+      </p>
+    </footer>
+  </body>
+</html>
