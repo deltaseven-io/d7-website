@@ -58,11 +58,11 @@
       }
 
       .logo {
-        width: 80px;
+        width: 100%;
+        max-width: 420px;
         height: auto;
         display: block;
-        margin: 0 auto 1rem;
-        filter: grayscale(100%) brightness(200%);
+        margin: 0 auto 0rem;
       }
 
       header h1 {
@@ -198,7 +198,13 @@
   </head>
   <body class="inverted">
     <header>
-      <h1>&#916;&#951;-MATH/CS TUTORING</h1>
+      <img
+        src="D7-white-bg.png"
+        alt="DeltaSeven Logo"
+        class="logo"
+        id="banner-logo"
+      />
+      <!-- <h1>&#916;7-MATH/CS TUTORING</h1> -->
     </header>
 
     <section class="section">
@@ -207,8 +213,8 @@
         <li>Algebra</li>
         <li>Geometry</li>
         <li>Trigonometry</li>
-        <li>Calculus</li>
-        <li>Computer Science</li>
+        <li>Calculus (AP)</li>
+        <li>Computer Science (AP)</li>
         <li>ACT / SAT Prep</li>
       </ul>
     </section>
@@ -218,18 +224,34 @@
       <ul>
         <li>14 years Instructor @ D211 (HEHS)</li>
         <li>8 years Instructor AP Computer Science</li>
-        <li>M.Ed Mathematics @ DePaul Univ.</li>
-        <li>B.A Mathematics @ Roosevelt Univ.</li>
+        <li>M.Ed Mathematics @ DePaul University</li>
+        <li>B.A Mathematics @ Roosevelt University</li>
         <li>Lead Instructor @ Mathnasium</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>GUIDANCE</h2>
+      <ul>
+        <li>1-on-1 Mentorship</li>
+        <li>Test-Taking Strategies</li>
+        <li>Study Habits & Time Management</li>
+        <li>Confidence Building</li>
+        <li>Parent-School Partner</li>
+        <li>Advocate For Your Family</li>
       </ul>
     </section>
 
     <section class="section">
       <h2>RATES</h2>
       <ul>
+        <li><mark>I come to you or meet at a library.</mark></li>
         <li>$75 for 60 minute tutoring session.</li>
         <li>$100 for 90 minute tutoring session.</li>
-        <li><mark>I drive to you or meet at a library.</mark></li>
+        <li>
+          $10 per homework question via SMS/text<br />(quick 'anytime' help
+          between sessions)
+        </li>
       </ul>
     </section>
 
@@ -245,12 +267,7 @@
       </ul>
     </section>
 
-    <button
-      class="invert-button"
-      onclick="document.body.classList.toggle('inverted')"
-    >
-      FLIP
-    </button>
+    <button class="invert-button">FLIP</button>
 
     <footer>
       <p>
@@ -258,5 +275,16 @@
         reserved.
       </p>
     </footer>
+
+    <script>
+      const flipButton = document.querySelector(".invert-button");
+      const logo = document.getElementById("banner-logo");
+
+      flipButton.addEventListener("click", () => {
+        document.body.classList.toggle("inverted");
+        const isInverted = document.body.classList.contains("inverted");
+        logo.src = isInverted ? "D7-white-bg.png" : "D7-black-bg.png";
+      });
+    </script>
   </body>
 </html>
