@@ -211,13 +211,16 @@
         text-align: center;
         background: #ff0;
         color: #000;
-        padding: 0.1rem 0.2rem;
+        padding: 0.3rem 0.6rem;
         font-family: "Share Tech Mono", monospace;
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         font-weight: bold;
-        max-width: 400px;
-        margin: 0.5rem auto; /* Centers it horizontally */
-        border-radius: 6px; /* Optional: softens the edges */
+        max-width: 100%;
+        margin: 0.5rem auto;
+        white-space: nowrap; /* 💡 prevents line wrapping */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        border-radius: 6px;
       }
 
       .collapsible {
