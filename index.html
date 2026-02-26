@@ -1,24 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Open Graph / Social Preview -->
     <meta property="og:title" content="Tutoring with Phillip Krzankowski" />
-    <meta
-      property="og:image"
-      content="https://deltaseven.io/D7-bg-white.png"
-    />
+    <meta property="og:image" content="https://deltaseven.io/D7-bg-white.png" />
     <meta property="og:url" content="https://deltaseven.io" />
     <meta property="og:type" content="website" />
     <title>D7 Tutoring</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
-
     <link
       href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap"
       rel="stylesheet"
     />
-
     <link
       href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
       rel="stylesheet"
@@ -46,12 +40,15 @@
 
       body {
         margin: 0;
-        font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-          "Lucida Sans", Arial, sans-serif;
+        font-family:
+          "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans",
+          Arial, sans-serif;
         background: #000;
         color: #fff;
         line-height: 1.4;
-        transition: background 0.3s, color 0.3s;
+        transition:
+          background 0.3s,
+          color 0.3s;
       }
 
       body.inverted {
@@ -83,6 +80,7 @@
         margin: 0 auto 0rem;
       }
 
+      /* ── IMAGE SLIDESHOW ── */
       .swiper-container {
         width: 100%;
         max-width: 420px;
@@ -106,6 +104,43 @@
         margin: 0 auto;
       }
 
+      .swiper-slide.video-slide {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .video-slide iframe {
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
+        display: block;
+        margin: 0 auto;
+      }
+
+      .video-placeholder {
+        width: calc(100% - 1rem);
+        height: 100%;
+        border-radius: 12px;
+        background: #111;
+        border: 2px dashed #555;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        color: #aaa;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.75rem;
+        text-align: center;
+        cursor: default;
+        margin: 0 auto;
+      }
+
+      .video-placeholder .play-icon {
+        font-size: 2.5rem;
+        opacity: 0.4;
+      }
+
       .swiper-pagination {
         position: relative;
         text-align: center;
@@ -113,6 +148,106 @@
         margin-bottom: -0.8rem;
       }
 
+      /* ── TESTIMONIALS ── */
+      .testimonials-wrapper {
+        width: 100%;
+        max-width: 420px;
+        margin: 1.2rem auto 0.5rem;
+        padding: 0 0.6rem;
+      }
+
+      .testimonials-label {
+        font-family: "Pixelmania", sans-serif;
+        font-size: clamp(0.3rem, 3.5vw, 0.75rem);
+        letter-spacing: 0.1em;
+        text-align: center;
+        margin-bottom: 0.6rem;
+        color: #000;
+        opacity: 1;
+        white-space: nowrap;
+      }
+
+      .testimonials-swiper {
+        width: 100%;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .testimonials-swiper .swiper-wrapper {
+        height: 160px;
+      }
+
+      .testimonial-slide {
+        background: #111;
+        border: 1.5px solid #333;
+        border-radius: 12px;
+        padding: 1.2rem 1.2rem 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        transition: border-color 0.3s;
+      }
+
+      body.inverted .testimonial-slide {
+        background: #f5f5f5;
+        border-color: #ccc;
+        color: #000;
+      }
+
+      .testimonial-quote-mark {
+        font-size: 3rem;
+        line-height: 1;
+        color: #ff0;
+        font-family: Georgia, serif;
+        margin-bottom: 0.3rem;
+        opacity: 0.8;
+      }
+
+      body.inverted .testimonial-quote-mark {
+        color: #000;
+      }
+
+      .testimonial-text {
+        font-size: 0.88rem;
+        line-height: 1.55;
+        flex-grow: 1;
+        font-style: italic;
+      }
+
+      .testimonial-author {
+        margin-top: 0.9rem;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.72rem;
+        opacity: 0.7;
+        text-align: right;
+      }
+
+      .testimonials-swiper .swiper-pagination {
+        position: relative;
+        margin-top: 0.6rem;
+        margin-bottom: 0;
+      }
+
+      .testimonials-swiper .swiper-pagination-bullet {
+        background: #fff;
+        opacity: 0.3;
+      }
+
+      .testimonials-swiper .swiper-pagination-bullet-active {
+        background: #ff0;
+        opacity: 1;
+      }
+
+      body.inverted .testimonials-swiper .swiper-pagination-bullet {
+        background: #000;
+      }
+      body.inverted .testimonials-swiper .swiper-pagination-bullet-active {
+        background: #000;
+        opacity: 1;
+      }
+
+      /* ── SECTIONS ── */
       .section {
         max-width: 600px;
         margin: 1rem auto;
@@ -122,7 +257,9 @@
         border-radius: 12px;
         opacity: 0;
         transform: translateY(20px);
-        transition: opacity 0.6s ease, transform 0.6s ease;
+        transition:
+          opacity 0.6s ease,
+          transform 0.6s ease;
       }
 
       .section p {
@@ -164,7 +301,6 @@
 
       footer {
         text-align: center;
-        padding: rem;
         background: #000;
         font-size: 0.65rem;
         color: #888;
@@ -184,7 +320,9 @@
         border: 2px solid currentColor;
         background: none;
         color: inherit;
-        transition: background 0.3s, color 0.3s;
+        transition:
+          background 0.3s,
+          color 0.3s;
         text-align: center;
         word-break: break-word;
       }
@@ -193,7 +331,6 @@
         background: #000;
         color: #fff;
       }
-
       body.inverted .invert-button:hover {
         background: #fff;
         color: #000;
@@ -231,7 +368,7 @@
         font-weight: bold;
         max-width: 100%;
         margin: 0.5rem auto;
-        white-space: nowrap; /* 💡 prevents line wrapping */
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         border-radius: 6px;
@@ -264,7 +401,6 @@
       .collapsible-content ul {
         margin-top: 0;
       }
-
       .collapsible-content.open {
         max-height: 500px;
       }
@@ -277,7 +413,6 @@
           margin: 1.1rem;
           padding: 0.1rem;
         }
-
         .section h2 {
           font-size: 0.9rem;
           margin-left: 1rem;
@@ -306,14 +441,94 @@
       />
     </header>
 
+    <!-- IMAGE / VIDEO SLIDESHOW -->
     <div class="swiper-container">
       <div class="swiper-wrapper">
-        <div class="swiper-slide"><img src="slide1.png" alt="Slide 1" /></div>
-        <div class="swiper-slide"><img src="slide2.png" alt="HEHS Girls Bowling State Tournament" /></div>
+        <div class="swiper-slide video-slide">
+          <iframe
+            src="https://www.youtube.com/embed/kA7eXV7N0BM?rel=0&modestbranding=1"
+            title="Intro Video"
+            frameborder="0"
+            allow="
+              accelerometer;
+              autoplay;
+              clipboard-write;
+              encrypted-media;
+              gyroscope;
+              picture-in-picture;
+            "
+            allowfullscreen
+          ></iframe>
+        </div>
       </div>
       <div class="swiper-pagination"></div>
     </div>
 
+    <!-- TESTIMONIALS -->
+    <div class="testimonials-wrapper">
+      <div class="testimonials-label">WHAT PEOPLE ARE SAYING</div>
+      <div class="testimonials-swiper swiper-container">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide">
+            <div class="testimonial-slide">
+              <div class="testimonial-text">
+                My daughter needed a good grade on the final to place into
+                honors next year. Phil helped her study the night before, and
+                she placed into Honors Geometry!
+              </div>
+              <div class="testimonial-author">— Joe S, Schaumburg</div>
+            </div>
+          </div>
+
+          <div class="swiper-slide">
+            <div class="testimonial-slide">
+              <div class="testimonial-text">
+                Phil is awesome!! Sarah's Geometry grade went from a C- to a B+
+                after a month of tutoring! My daughter really likes the study
+                sheets Phil makes at the end of every session. Thank you!
+              </div>
+              <div class="testimonial-author">— Anne B, Elgin</div>
+            </div>
+          </div>
+
+          <div class="swiper-slide">
+            <div class="testimonial-slide">
+              <div class="testimonial-text">
+                Phil is a pro! My son's scores are up and doesn't complain about
+                math anymore. Phil's session notes are very helpful insight into
+                what my son is learning. Highly recommend.
+              </div>
+              <div class="testimonial-author">— Bill C, Barrington</div>
+            </div>
+          </div>
+
+          <div class="swiper-slide">
+            <div class="testimonial-slide">
+              <div class="testimonial-text">
+                Vacation went long and my kid fell behind. Phil showed up and
+                tutored Brandon 3 nights in a row so he could pass the class.
+                Dude is solid. Thanks again!
+              </div>
+              <div class="testimonial-author">— Kevin H, Lombard</div>
+            </div>
+          </div>
+
+          <div class="swiper-slide">
+            <div class="testimonial-slide">
+              <div class="testimonial-text">
+                Was getting ripped off at Mathnasium. Phil tutors my kid longer
+                and for less money. Plus he has a Master's degree! Simply the
+                best!
+              </div>
+              <div class="testimonial-author">— Yazan A, Barringon</div>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+
+    <!-- COLLAPSIBLE SECTIONS -->
     <section class="section">
       <h2 class="collapsible">MISSION</h2>
       <div class="collapsible-content">
@@ -322,23 +537,19 @@
           Computer Science tutoring for Junior High, High School, and College
           students.
         </p>
-
         <p>
-          I have 14 years of teaching experience in one of Illinois’
+          I have 14 years of teaching experience in one of Illinois'
           top-performing high school districts, District 211, and I offer more
           than just a standard tutoring experience.
         </p>
-
         <p>
           For students, I help build confidence, reduce test anxiety, and
           improve scores.
         </p>
-
         <p>
           For parents, I work directly with you to navigate the complexities of
           school systems and help you better advocate for your child.
         </p>
-
         <p>
           Unlike commercial tutoring centers, I prioritize students,
           achievement, and high standards — not upselling packages or pushing
@@ -400,7 +611,6 @@
           <li>Algonquin</li>
           <li>Dundee</li>
           <li>Elgin</li>
-
           <br />
           <i>* I come to you or meet at a library.</i>
         </ul>
@@ -413,8 +623,7 @@
         <ul>
           <li>cell/text: 224-343-8086</li>
           <li>
-            e-mail:
-            <a href="mailto:phil@deltaseven.io">phil@deltaseven.io</a>
+            e-mail: <a href="mailto:phil@deltaseven.io">phil@deltaseven.io</a>
           </li>
           <li>
             Leave a review on
@@ -463,11 +672,33 @@
         logo.src = isInverted ? "D7-bg-white.png" : "D7-bg-black.png";
       });
 
+      // Image/video slideshow
       const swiper = new Swiper(".swiper-container", {
         loop: true,
-        pagination: {
-          el: ".swiper-pagination",
+        pagination: { el: ".swiper-container .swiper-pagination" },
+        on: {
+          slideChange: function () {
+            document
+              .querySelectorAll(".video-slide video")
+              .forEach((v) => v.pause());
+          },
         },
+      });
+
+      // Testimonials slideshow
+      const testimonialSwiper = new Swiper(".testimonials-swiper", {
+        loop: true,
+        autoplay: {
+          delay: 5000,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: true,
+        },
+        pagination: {
+          el: ".testimonials-swiper .swiper-pagination",
+          clickable: true,
+        },
+        grabCursor: true,
+        effect: "slide",
       });
 
       document.querySelectorAll(".swiper-slide img").forEach((img) => {
@@ -485,7 +716,6 @@
         header.addEventListener("click", () => {
           const content = header.nextElementSibling;
           header.classList.toggle("active");
-          // content.classList.toggle("open");
           if (content.classList.contains("open")) {
             content.style.maxHeight = null;
             content.classList.remove("open");
