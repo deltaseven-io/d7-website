@@ -225,7 +225,7 @@
         position: absolute;
         bottom: 0.75rem;
         left: 1.2rem;
-        font-family: "Spectral", serif;
+        font-family: "Karla", sans-serif;
         font-size: 0.65rem;
         letter-spacing: 0.05em;
         opacity: 0.45;
@@ -237,37 +237,38 @@
         display: block;
       }
 
-      /* ── TESTIMONIAL NAV ARROWS ── */
+      /* ── TESTIMONIAL NAV ── */
       .testimonials-nav {
         display: flex;
         justify-content: center;
-        gap: 1.5rem;
+        align-items: center;
+        gap: 1rem;
         margin-top: 0.6rem;
       }
 
       .testimonials-prev,
       .testimonials-next {
         background: none;
-        border: 1.5px solid currentColor;
+        border: none;
         color: inherit;
-        font-size: 1.1rem;
-        width: 2rem;
-        height: 2rem;
-        border-radius: 50%;
+        font-size: 1.4rem;
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition:
-          background 0.2s,
-          color 0.2s;
+        opacity: 0.5;
+        padding: 0 0.3rem;
+        line-height: 1;
+        transition: opacity 0.2s;
       }
 
       .testimonials-prev:hover,
       .testimonials-next:hover {
-        background: #ff0;
-        border-color: #ff0;
-        color: #000;
+        opacity: 1;
+      }
+
+      .testimonials-count {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.7rem;
+        opacity: 0.5;
+        letter-spacing: 0.1em;
       }
 
       /* ── TESTIMONIAL POPUP ── */
@@ -566,7 +567,7 @@
             <div
               class="testimonial-slide"
               data-text="We love Phil. He is the BEST. He is patient, supportive, and explains concepts in a way that truly helps my daughter understand and feel more confident. He is also very communicative with me and always willing to take the extra step to help, whether that means checking in, offering feedback, contacting the teacher or providing additional support when needed. I would highly recommend him to any parent looking for a dedicated and effective math tutor."
-              data-author="— LL, Barlett"
+              data-author="— LL, Bartlett"
             >
               <div class="testimonial-text">
                 We love Phil. He is the BEST. He is patient, supportive, and
@@ -578,16 +579,15 @@
                 needed. I would highly recommend him to any parent looking for a
                 dedicated and effective math tutor.
               </div>
-              <div class="testimonial-author">— LL, Barlett</div>
+              <div class="testimonial-author">— LL, Bartlett</div>
               <div class="tap-hint">tap to read more</div>
             </div>
           </div>
+
           <div class="swiper-slide">
             <div
               class="testimonial-slide"
-              data-text="Daughter needed a good grade on the final to pass the class.
-Phil came and helped her study for an hour and a half the night before, and she did great on the test and passed the class!
-Very personable and funny as well, which definitely helps with a 14 yr old."
+              data-text="Daughter needed a good grade on the final to pass the class. Phil came and helped her study for an hour and a half the night before, and she did great on the test and passed the class! Very personable and funny as well, which definitely helps with a 14 yr old."
               data-author="— Joe S, Schaumburg"
             >
               <div class="testimonial-text">
@@ -669,6 +669,7 @@ Very personable and funny as well, which definitely helps with a 14 yr old."
       </div>
       <div class="testimonials-nav">
         <button class="testimonials-prev">&#8592;</button>
+        <span class="testimonials-count" id="testimonialCount">1 / 6</span>
         <button class="testimonials-next">&#8594;</button>
       </div>
     </div>
@@ -828,7 +829,6 @@ Very personable and funny as well, which definitely helps with a 14 yr old."
 
       const swiper = new Swiper(".swiper-container", {
         loop: true,
-        pagination: { el: ".swiper-container" },
         on: {
           slideChange: function () {
             document
@@ -838,6 +838,9 @@ Very personable and funny as well, which definitely helps with a 14 yr old."
         },
       });
 
+      const totalSlides = 6;
+      const countEl = document.getElementById("testimonialCount");
+
       const testimonialSwiper = new Swiper(".testimonials-swiper", {
         loop: true,
         navigation: {
@@ -845,6 +848,12 @@ Very personable and funny as well, which definitely helps with a 14 yr old."
           prevEl: ".testimonials-prev",
         },
         grabCursor: true,
+        on: {
+          slideChange: function () {
+            const index = (this.realIndex % totalSlides) + 1;
+            countEl.textContent = index + " / " + totalSlides;
+          },
+        },
       });
 
       // Detect overflowing slides and mark them
@@ -872,10 +881,9 @@ Very personable and funny as well, which definitely helps with a 14 yr old."
         });
       });
 
-      popupClose.addEventListener("click", () => {
-        popup.classList.remove("open");
-      });
-
+      popupClose.addEventListener("click", () =>
+        popup.classList.remove("open"),
+      );
       popup.addEventListener("click", (e) => {
         if (e.target === popup) popup.classList.remove("open");
       });
