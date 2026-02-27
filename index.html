@@ -3,11 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta property="og:title" content="Tutoring with Phillip Krzankowski" />
+
+    <!-- SEO -->
+    <meta
+      name="description"
+      content="1-on-1 math tutoring in Schaumburg, Hoffman Estates, Barrington, and surrounding areas. 14 years experience. Flexible scheduling. 50% off your first lesson."
+    />
+
+    <!-- Open Graph / Social -->
+    <meta
+      property="og:title"
+      content="Math Tutoring | Phillip Krzankowski | Schaumburg, IL"
+    />
+    <meta
+      property="og:description"
+      content="Experienced 1-on-1 math tutor serving the northwest suburbs of Chicago. 50% off your first lesson."
+    />
     <meta property="og:image" content="https://deltaseven.io/D7-bg-white.png" />
     <meta property="og:url" content="https://deltaseven.io" />
     <meta property="og:type" content="website" />
-    <title>D7 Tutoring</title>
+
+    <title>Math Tutor | Phillip Krzankowski | Schaumburg, IL</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <link
       href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap"
@@ -25,6 +41,67 @@
       href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,600;1,400&family=Karla:wght@400;500&display=swap"
       rel="stylesheet"
     />
+
+    <!-- LocalBusiness Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "DeltaSeven Math Tutoring",
+        "description": "1-on-1 math tutoring for Junior High, High School, and College students in the northwest suburbs of Chicago.",
+        "url": "https://deltaseven.io",
+        "telephone": "224-343-8086",
+        "email": "phil@deltaseven.io",
+        "image": "https://deltaseven.io/D7-bg-white.png",
+        "priceRange": "$$",
+        "areaServed": [
+          "Schaumburg",
+          "Hoffman Estates",
+          "Barrington",
+          "Bartlett",
+          "Algonquin",
+          "Dundee",
+          "Elgin"
+        ],
+        "founder": {
+          "@type": "Person",
+          "name": "Phillip Krzankowski"
+        },
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Math Tutoring Services",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "Algebra Tutoring" }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "Geometry Tutoring" }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Trigonometry Tutoring"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "Calculus Tutoring" }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "ACT / SAT Math Prep"
+              }
+            }
+          ]
+        }
+      }
+    </script>
+
     <style>
       @font-face {
         font-family: "Pixelmania";
@@ -524,13 +601,18 @@
   </head>
 
   <body class="inverted">
+    <!-- Hidden H1 for SEO -->
+    <h1 style="position: absolute; left: -9999px">
+      Math Tutor in Schaumburg, IL — Phillip Krzankowski
+    </h1>
+
     <div class="promo-banner">
       50% OFF Your First Lesson — Flexible Scheduling
     </div>
     <header>
       <img
         src="D7-bg-white.png"
-        alt="DeltaSeven Logo"
+        alt="DeltaSeven Math Tutoring — Phillip Krzankowski"
         class="logo"
         id="banner-logo"
       />
@@ -542,7 +624,7 @@
         <div class="swiper-slide video-slide">
           <iframe
             src="https://www.youtube.com/embed/ApjEGjw48bI?rel=0&modestbranding=1"
-            title="Intro Video"
+            title="Intro Video — Phillip Krzankowski Math Tutoring"
             frameborder="0"
             allow="
               accelerometer;
@@ -856,7 +938,6 @@
         },
       });
 
-      // Detect overflowing slides and mark them
       setTimeout(() => {
         document.querySelectorAll(".testimonial-slide").forEach((slide) => {
           const text = slide.querySelector(".testimonial-text");
@@ -866,7 +947,6 @@
         });
       }, 400);
 
-      // Popup logic
       const popup = document.getElementById("testimonialPopup");
       const popupText = document.getElementById("popupText");
       const popupAuthor = document.getElementById("popupAuthor");
