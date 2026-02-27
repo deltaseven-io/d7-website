@@ -22,7 +22,7 @@
       href="https://unpkg.com/swiper/swiper-bundle.min.css"
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Karla:ital,wght@0,400;0,600;1,400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,600;1,400&family=Karla:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -84,7 +84,6 @@
         margin: 0 auto 0rem;
       }
 
-      /* ── IMAGE SLIDESHOW ── */
       .swiper-container {
         width: 100%;
         max-width: 420px;
@@ -113,43 +112,13 @@
         align-items: center;
         justify-content: center;
       }
+
       .video-slide iframe {
         width: 100%;
         height: 100%;
         border-radius: 12px;
         display: block;
         margin: 0 auto;
-      }
-
-      .video-placeholder {
-        width: calc(100% - 1rem);
-        height: 100%;
-        border-radius: 12px;
-        background: #111;
-        border: 2px dashed #555;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        color: #aaa;
-        font-family: "Share Tech Mono", monospace;
-        font-size: 0.75rem;
-        text-align: center;
-        cursor: default;
-        margin: 0 auto;
-      }
-
-      .video-placeholder .play-icon {
-        font-size: 2.5rem;
-        opacity: 0.4;
-      }
-
-      .swiper-pagination {
-        position: relative;
-        text-align: center;
-        margin-top: 0.5rem;
-        margin-bottom: -0.8rem;
       }
 
       /* ── TESTIMONIALS ── */
@@ -166,9 +135,13 @@
         letter-spacing: 0.1em;
         text-align: center;
         margin-bottom: 0.6rem;
-        color: #FFF;
+        color: #fff;
         opacity: 1;
         white-space: nowrap;
+      }
+
+      body.inverted .testimonials-label {
+        color: #000;
       }
 
       .testimonials-swiper {
@@ -192,10 +165,7 @@
         height: 100%;
         position: relative;
         transition: border-color 0.3s;
-      }
-
-      body.inverted .testimonials-label {
-        color: #000;
+        overflow: hidden;
       }
 
       body.inverted .testimonial-slide {
@@ -204,8 +174,23 @@
         color: #000;
       }
 
-      body.inverted .testimonial-quote-mark {
-        color: #000;
+      .testimonial-slide.overflowing {
+        cursor: pointer;
+      }
+
+      .testimonial-slide.overflowing::after {
+        content: "";
+        position: absolute;
+        bottom: 2rem;
+        left: 0;
+        right: 0;
+        height: 2rem;
+        background: linear-gradient(transparent, #111);
+        pointer-events: none;
+      }
+
+      body.inverted .testimonial-slide.overflowing::after {
+        background: linear-gradient(transparent, #f5f5f5);
       }
 
       .testimonial-text {
@@ -213,44 +198,146 @@
         line-height: 1.6;
         flex-grow: 1;
         font-style: italic;
-        font-family: "Karla", sans-serif;
+        font-family: "Spectral", serif;
         font-weight: 400;
         letter-spacing: 0.01em;
       }
 
       .testimonial-author {
         position: absolute;
-        bottom: 0.75rem;
-        right: 1.2rem;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        padding: 0.4rem 1.2rem 0.5rem;
         font-family: "Karla", sans-serif;
         font-size: 0.78rem;
-        font-weight: 600;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-align: right;
+        background: #111;
+      }
+
+      body.inverted .testimonial-author {
+        background: #f5f5f5;
+      }
+
+      .tap-hint {
+        position: absolute;
+        bottom: 0.75rem;
+        left: 1.2rem;
+        font-family: "Spectral", serif;
+        font-size: 0.65rem;
+        letter-spacing: 0.05em;
+        opacity: 0.45;
+        font-style: normal;
+        display: none;
+      }
+
+      .testimonial-slide.overflowing .tap-hint {
+        display: block;
+      }
+
+      /* ── TESTIMONIAL NAV ARROWS ── */
+      .testimonials-nav {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 0.6rem;
+      }
+
+      .testimonials-prev,
+      .testimonials-next {
+        background: none;
+        border: 1.5px solid currentColor;
+        color: inherit;
+        font-size: 1.1rem;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          background 0.2s,
+          color 0.2s;
+      }
+
+      .testimonials-prev:hover,
+      .testimonials-next:hover {
+        background: #ff0;
+        border-color: #ff0;
+        color: #000;
+      }
+
+      /* ── TESTIMONIAL POPUP ── */
+      .testimonial-popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        padding: 1.5rem;
+      }
+
+      .testimonial-popup.open {
+        display: flex;
+      }
+
+      .testimonial-popup-card {
+        background: #1a1a1a;
+        border: 1.5px solid #444;
+        border-radius: 14px;
+        padding: 1.5rem 1.5rem 1.2rem;
+        max-width: 380px;
+        width: 100%;
+        position: relative;
+      }
+
+      body.inverted .testimonial-popup-card {
+        background: #fff;
+        border-color: #ccc;
+        color: #000;
+      }
+
+      .testimonial-popup-text {
+        font-size: 0.95rem;
+        line-height: 1.65;
+        font-style: italic;
+        font-family: "Spectral", serif;
+        font-weight: 400;
+        letter-spacing: 0.01em;
+        margin-bottom: 1rem;
+      }
+
+      .testimonial-popup-author {
+        font-family: "Karla", sans-serif;
+        font-size: 0.78rem;
+        font-weight: 500;
         letter-spacing: 0.08em;
         opacity: 0.7;
         text-align: right;
       }
 
-      .testimonials-swiper .swiper-pagination {
-        position: relative;
-        margin-top: 0.6rem;
-        margin-bottom: 0;
+      .testimonial-popup-close {
+        position: absolute;
+        top: 0.6rem;
+        right: 0.9rem;
+        font-size: 1.2rem;
+        cursor: pointer;
+        opacity: 0.5;
+        background: none;
+        border: none;
+        color: inherit;
+        line-height: 1;
       }
 
-      .testimonials-swiper .swiper-pagination-bullet {
-        background: #fff;
-        opacity: 0.3;
-      }
-
-      .testimonials-swiper .swiper-pagination-bullet-active {
-        background: #ff0;
-        opacity: 1;
-      }
-
-      body.inverted .testimonials-swiper .swiper-pagination-bullet {
-        background: #000;
-      }
-      body.inverted .testimonials-swiper .swiper-pagination-bullet-active {
-        background: #000;
+      .testimonial-popup-close:hover {
         opacity: 1;
       }
 
@@ -353,7 +440,7 @@
         justify-content: center;
         align-items: center;
         background-color: rgba(0, 0, 0, 0.85);
-        z-index: 9999;
+        z-index: 9998;
       }
 
       .lightbox img {
@@ -468,7 +555,6 @@
           ></iframe>
         </div>
       </div>
-      <div class="swiper-pagination"></div>
     </div>
 
     <!-- TESTIMONIALS -->
@@ -477,61 +563,122 @@
       <div class="testimonials-swiper swiper-container">
         <div class="swiper-wrapper">
           <div class="swiper-slide">
-            <div class="testimonial-slide">
+            <div
+              class="testimonial-slide"
+              data-text="We love Phil. He is the BEST. He is patient, supportive, and explains concepts in a way that truly helps my daughter understand and feel more confident. He is also very communicative with me and always willing to take the extra step to help, whether that means checking in, offering feedback, contacting the teacher or providing additional support when needed. I would highly recommend him to any parent looking for a dedicated and effective math tutor."
+              data-author="— LL, Barlett"
+            >
               <div class="testimonial-text">
-                My daughter needed a good grade on the final to place into
-                honors next year. Phil helped her study the night before, and
-                she placed into Honors Geometry!
+                We love Phil. He is the BEST. He is patient, supportive, and
+                explains concepts in a way that truly helps my daughter
+                understand and feel more confident. He is also very
+                communicative with me and always willing to take the extra step
+                to help, whether that means checking in, offering feedback,
+                contacting the teacher or providing additional support when
+                needed. I would highly recommend him to any parent looking for a
+                dedicated and effective math tutor.
+              </div>
+              <div class="testimonial-author">— LL, Barlett</div>
+              <div class="tap-hint">tap to read more</div>
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div
+              class="testimonial-slide"
+              data-text="Daughter needed a good grade on the final to pass the class.
+Phil came and helped her study for an hour and a half the night before, and she did great on the test and passed the class!
+Very personable and funny as well, which definitely helps with a 14 yr old."
+              data-author="— Joe S, Schaumburg"
+            >
+              <div class="testimonial-text">
+                Daughter needed a good grade on the final to pass the class.
+                Phil came and helped her study for an hour and a half the night
+                before, and she did great on the test and passed the class! Very
+                personable and funny as well, which definitely helps with a 14
+                yr old.
               </div>
               <div class="testimonial-author">— Joe S, Schaumburg</div>
+              <div class="tap-hint">tap to read more</div>
             </div>
           </div>
 
           <div class="swiper-slide">
-            <div class="testimonial-slide">
+            <div
+              class="testimonial-slide"
+              data-text="Phil is awesome!! Sarah's Geometry grade went from a C- to a B+ after a month of tutoring! My daughter really likes the study sheets Phil makes at the end of every session. Thank you!"
+              data-author="— Anne B, Elgin"
+            >
               <div class="testimonial-text">
                 Phil is awesome!! Sarah's Geometry grade went from a C- to a B+
                 after a month of tutoring! My daughter really likes the study
                 sheets Phil makes at the end of every session. Thank you!
               </div>
               <div class="testimonial-author">— Anne B, Elgin</div>
+              <div class="tap-hint">tap to read more</div>
             </div>
           </div>
 
           <div class="swiper-slide">
-            <div class="testimonial-slide">
+            <div
+              class="testimonial-slide"
+              data-text="Phil is a pro! My son's scores are up and doesn't complain about math anymore. Phil's session notes are very helpful insight into what my son is learning. Highly recommend."
+              data-author="— Bill C, Barrington"
+            >
               <div class="testimonial-text">
                 Phil is a pro! My son's scores are up and doesn't complain about
                 math anymore. Phil's session notes are very helpful insight into
                 what my son is learning. Highly recommend.
               </div>
               <div class="testimonial-author">— Bill C, Barrington</div>
+              <div class="tap-hint">tap to read more</div>
             </div>
           </div>
 
           <div class="swiper-slide">
-            <div class="testimonial-slide">
+            <div
+              class="testimonial-slide"
+              data-text="Vacation went long and my kid fell behind. Phil showed up and tutored Brandon 3 nights in a row so he could pass the class. Dude is solid. Thanks again!"
+              data-author="— Kevin H, Lombard"
+            >
               <div class="testimonial-text">
                 Vacation went long and my kid fell behind. Phil showed up and
                 tutored Brandon 3 nights in a row so he could pass the class.
                 Dude is solid. Thanks again!
               </div>
               <div class="testimonial-author">— Kevin H, Lombard</div>
+              <div class="tap-hint">tap to read more</div>
             </div>
           </div>
 
           <div class="swiper-slide">
-            <div class="testimonial-slide">
+            <div
+              class="testimonial-slide"
+              data-text="Was getting ripped off at Mathnasium. Phil tutors my kid longer and for less money. Plus he has a Master's degree! Simply the best!"
+              data-author="— Yazan A, Barrington"
+            >
               <div class="testimonial-text">
                 Was getting ripped off at Mathnasium. Phil tutors my kid longer
                 and for less money. Plus he has a Master's degree! Simply the
                 best!
               </div>
-              <div class="testimonial-author">— Yazan A, Barringon</div>
+              <div class="testimonial-author">— Yazan A, Barrington</div>
+              <div class="tap-hint">tap to read more</div>
             </div>
           </div>
         </div>
-        <div class="swiper-pagination"></div>
+      </div>
+      <div class="testimonials-nav">
+        <button class="testimonials-prev">&#8592;</button>
+        <button class="testimonials-next">&#8594;</button>
+      </div>
+    </div>
+
+    <!-- TESTIMONIAL POPUP -->
+    <div class="testimonial-popup" id="testimonialPopup">
+      <div class="testimonial-popup-card">
+        <button class="testimonial-popup-close" id="popupClose">✕</button>
+        <div class="testimonial-popup-text" id="popupText"></div>
+        <div class="testimonial-popup-author" id="popupAuthor"></div>
       </div>
     </div>
 
@@ -679,10 +826,9 @@
         logo.src = isInverted ? "D7-bg-white.png" : "D7-bg-black.png";
       });
 
-      // Image/video slideshow
       const swiper = new Swiper(".swiper-container", {
         loop: true,
-        pagination: { el: ".swiper-container .swiper-pagination" },
+        pagination: { el: ".swiper-container" },
         on: {
           slideChange: function () {
             document
@@ -692,20 +838,46 @@
         },
       });
 
-      // Testimonials slideshow
       const testimonialSwiper = new Swiper(".testimonials-swiper", {
         loop: true,
-        autoplay: {
-          delay: 5000,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: true,
-        },
-        pagination: {
-          el: ".testimonials-swiper .swiper-pagination",
-          clickable: true,
+        navigation: {
+          nextEl: ".testimonials-next",
+          prevEl: ".testimonials-prev",
         },
         grabCursor: true,
-        effect: "slide",
+      });
+
+      // Detect overflowing slides and mark them
+      setTimeout(() => {
+        document.querySelectorAll(".testimonial-slide").forEach((slide) => {
+          const text = slide.querySelector(".testimonial-text");
+          if (text.scrollHeight > slide.clientHeight - 40) {
+            slide.classList.add("overflowing");
+          }
+        });
+      }, 400);
+
+      // Popup logic
+      const popup = document.getElementById("testimonialPopup");
+      const popupText = document.getElementById("popupText");
+      const popupAuthor = document.getElementById("popupAuthor");
+      const popupClose = document.getElementById("popupClose");
+
+      document.querySelectorAll(".testimonial-slide").forEach((slide) => {
+        slide.addEventListener("click", () => {
+          if (!slide.classList.contains("overflowing")) return;
+          popupText.textContent = slide.dataset.text;
+          popupAuthor.textContent = slide.dataset.author;
+          popup.classList.add("open");
+        });
+      });
+
+      popupClose.addEventListener("click", () => {
+        popup.classList.remove("open");
+      });
+
+      popup.addEventListener("click", (e) => {
+        if (e.target === popup) popup.classList.remove("open");
       });
 
       document.querySelectorAll(".swiper-slide img").forEach((img) => {
@@ -735,9 +907,7 @@
 
       const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-          }
+          if (entry.isIntersecting) entry.target.classList.add("visible");
         });
       });
 
