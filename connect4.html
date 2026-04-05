@@ -573,7 +573,10 @@
       </div>
     </div>
 
-    <div class="your-role" id="yourRole"></div>
+    <div style="display:flex;gap:0.5rem;width:100%;margin-bottom:0.4rem;">
+      <div class="your-role" id="yourRole" style="flex:1;margin-bottom:0"></div>
+      <div style="font-size:clamp(0.25rem,1.8vw,0.34rem);letter-spacing:0.1em;background:#000;border:1px solid #1e1e1e;border-radius:4px;padding:0.3rem 0.6rem;color:#444;white-space:nowrap;display:flex;align-items:center;gap:4px;">ROOM: <span id="roomCodeDisplay" style="color:#666;letter-spacing:0.2em"></span></div>
+    </div>
     <div id="status"></div>
 
     <div id="board-area">
@@ -725,6 +728,7 @@
         dot(myRole-1) + `You are ${myRole===1
           ? '<span style="color:#cc0000">RED</span>'
           : '<span style="color:#00cc44">GREEN</span>'}`;
+      document.getElementById('roomCodeDisplay').textContent = roomCode;
       listenForGameState();
       listenForChat();
     }
