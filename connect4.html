@@ -59,20 +59,20 @@
     /* ── LOBBY ── */
     .lobby-box {
       background: #000;
-      border: 2px solid #ff0;
+      border: 2px solid #444;
       border-radius: 10px;
       padding: 1rem 1.1rem;
       width: 100%;
       margin-bottom: 0.8rem;
-      box-shadow: 0 0 12px rgba(255,255,0,0.2);
+      box-shadow: 0 0 6px rgba(255,255,255,0.04);
     }
 
     .lobby-box h2 {
       font-size: clamp(0.4rem, 3vw, 0.55rem);
       letter-spacing: 0.1em;
       margin-bottom: 0.8rem;
-      color: #ff0;
-      text-shadow: 0 0 6px #ff0;
+      color: #888;
+      
     }
 
     .big-btn {
@@ -81,12 +81,12 @@
       padding: 0.85rem 1rem;
       width: 100%;
       background: #000;
-      border: 2px solid #ff0;
+      border: 2px solid #444;
       color: #ff0;
       cursor: pointer;
       letter-spacing: 0.05em;
       border-radius: 6px;
-      text-shadow: 0 0 6px #ff0;
+      
       transition: background 0.15s, color 0.15s;
       margin-bottom: 0.5rem;
       touch-action: manipulation;
@@ -171,10 +171,10 @@
       gap: 1rem;
       margin-bottom: 0.5rem;
       background: #000;
-      border: 2px solid #ff0;
+      border: 2px solid #444;
       border-radius: 6px;
       padding: 0.4rem 1rem;
-      box-shadow: 0 0 10px rgba(255,255,0,0.25);
+      box-shadow: none;
       width: 100%;
       justify-content: center;
     }
@@ -200,11 +200,11 @@
       width: 100%;
     }
 
-    #status.p1-turn      { border-color: #cc0000; box-shadow: 0 0 8px rgba(200,0,0,0.5); }
-    #status.p2-turn      { border-color: #00cc44; box-shadow: 0 0 8px rgba(0,200,60,0.4); }
-    #status.winner       { border-color: #0f0; box-shadow: 0 0 12px rgba(0,255,0,0.5); color: #0f0; }
+    #status.p1-turn      { border-color: #660000; box-shadow: none; }
+    #status.p2-turn      { border-color: #005522; box-shadow: none; }
+    #status.winner       { border-color: #444; color: #aaa; }
     #status.draw         { border-color: #888; color: #aaa; }
-    #status.disconnected { border-color: #ff6600; box-shadow: 0 0 10px rgba(255,100,0,0.5); color: #ff6600; }
+    #status.disconnected { border-color: #553300; color: #aa6600; }
 
     .your-role {
       font-size: clamp(0.28rem, 2vw, 0.38rem);
@@ -214,7 +214,7 @@
       padding: 0.3rem 0.6rem;
       border-radius: 4px;
       background: #000;
-      border: 1px solid #222;
+      border: 1px solid #1e1e1e;
       width: 100%;
     }
 
@@ -253,8 +253,8 @@
       background: #0022cc;
       border-radius: 10px;
       padding: 6px;
-      border: 3px solid #4488ff;
-      box-shadow: 0 0 20px rgba(0,100,255,0.5);
+      border: 3px solid #334;
+      box-shadow: none;
       width: 100%;
     }
 
@@ -440,12 +440,12 @@
       font-size: clamp(0.3rem, 2.5vw, 0.42rem);
       padding: 0.6rem 1rem;
       background: #000;
-      border: 2px solid #ff0;
+      border: 2px solid #444;
       color: #ff0;
       cursor: pointer;
       letter-spacing: 0.05em;
       border-radius: 6px;
-      text-shadow: 0 0 6px #ff0;
+      
       touch-action: manipulation;
       flex: 1;
       min-width: 100px;
@@ -507,11 +507,11 @@
       font-size: clamp(0.35rem, 3vw, 0.5rem);
       padding: 0.8rem 1.5rem;
       background: #000;
-      border: 2px solid #ff0;
+      border: 2px solid #444;
       color: #ff0;
       cursor: pointer;
       border-radius: 6px;
-      text-shadow: 0 0 6px #ff0;
+      
       touch-action: manipulation;
     }
 
@@ -744,7 +744,8 @@
         const board2d = [];
         for (let r=0;r<ROWS;r++) board2d.push((d.board||[]).slice(r*COLS,r*COLS+COLS));
         const winSet = new Set((d.winCells||[]).map(i => Math.floor(i/COLS)+','+(i%COLS)));
-        renderBoard(board2d, winSet, d.currentPlayer, d.state);
+        const lastCol = (d.lastCol !== undefined && d.lastCol !== null) ? d.lastCol : -1;
+        renderBoard(board2d, winSet, d.currentPlayer, d.state, lastCol);
 
         if (d.state === 'done') {
           if (d.winner === 0) {
@@ -764,18 +765,28 @@
       });
     }
 
-    function renderBoard(board, winSet, currentPlayer, state) {
+    function renderBoard(board, winSet, currentPlayer, state, lastCol) {
       const boardEl  = document.getElementById('board');
       const arrowsEl = document.getElementById('col-arrows');
       boardEl.innerHTML  = '';
       arrowsEl.innerHTML = '';
       const myTurn = currentPlayer===myRole && state==='playing';
+      const lastPlayer = lastCol >= 0 ? (currentPlayer === 1 ? 2 : 1) : -1;
+      const lastColor  = lastPlayer >= 1 ? COLORS[lastPlayer-1] : null;
 
       for (let c=0;c<COLS;c++) {
         const btn = document.createElement('button');
         btn.className = 'col-btn';
         btn.textContent = '▼';
-        btn.style.opacity = myTurn ? '0.5' : '0.15';
+        if (c === lastCol && lastColor) {
+          btn.style.opacity = '1';
+          btn.style.color = lastColor;
+          btn.style.textShadow = `0 0 8px ${lastColor}`;
+        } else {
+          btn.style.opacity = myTurn ? '0.5' : '0.15';
+          btn.style.color = '#0ff';
+          btn.style.textShadow = '';
+        }
         btn.disabled = !myTurn;
         btn.addEventListener('click', () => myTurn && dropPiece(c, board));
         arrowsEl.appendChild(btn);
@@ -821,18 +832,18 @@
         newScores[myRole-1]++;
         await update(ref(db, `rooms/${roomCode}`), {
           board: newBoard, currentPlayer: myRole===1?2:1,
-          state: 'done', winner: myRole, winCells: winning, scores: newScores
+          state: 'done', winner: myRole, winCells: winning, scores: newScores, lastCol: col
         });
         return;
       }
 
       const isDraw = newBoard.slice(0,COLS).every(v=>v!==0);
       if (isDraw) {
-        await update(ref(db, `rooms/${roomCode}`), { board: newBoard, state:'done', winner:0, winCells:[] });
+        await update(ref(db, `rooms/${roomCode}`), { board: newBoard, state:'done', winner:0, winCells:[], lastCol: col });
         return;
       }
 
-      await update(ref(db, `rooms/${roomCode}`), { board: newBoard, currentPlayer: myRole===1?2:1 });
+      await update(ref(db, `rooms/${roomCode}`), { board: newBoard, currentPlayer: myRole===1?2:1, lastCol: col });
     }
 
     function checkWin(board, row, col, player) {
@@ -868,7 +879,7 @@
       await update(ref(db, `rooms/${roomCode}`), {
         board: Array(ROWS*COLS).fill(0),
         currentPlayer: 1, state:'playing',
-        winner: null, winCells: []
+        winner: null, winCells: [], lastCol: null
       });
     }
 
