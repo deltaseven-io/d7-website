@@ -6,7 +6,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>CONNECT 4</title>
+  <title>CONNECT FOUR</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -520,7 +520,7 @@
 </head>
 <body>
 
-  <h1>CONNECT 4</h1>
+  <h1>CONNECT FOUR</h1>
   <div class="subtitle">— 2 PLAYER —</div>
 
   <!-- LOBBY -->
@@ -554,7 +554,8 @@
     <div class="lobby-box" style="text-align:center">
       <h2>▶ ROOM CODE</h2>
       <div class="room-code-display" id="displayCode"></div>
-      <div style="font-size:clamp(0.28rem,2.2vw,0.38rem);color:#aaa;letter-spacing:0.08em;margin-bottom:0.5rem">Share this code with your opponent</div>
+      <div style="font-size:clamp(0.28rem,2.2vw,0.38rem);color:#aaa;letter-spacing:0.08em;margin-bottom:0.8rem">Share this code with your opponent</div>
+      <button id="copyWaitLinkBtn" class="big-btn cyan" style="margin-bottom:0.8rem">&#128279; COPY JOIN LINK</button>
       <div style="font-size:clamp(0.28rem,2.2vw,0.38rem);color:#0ff;letter-spacing:0.08em">Waiting<span class="waiting-dots"></span></div>
     </div>
   </div>
@@ -565,17 +566,22 @@
       <div class="score-item">
         <span class="score-label p1-color" id="p1name-display">RED</span>
         <span class="score-num p1-color" id="score1">00</span>
+        <span class="score-star" id="p1star" style="font-size:12px;display:none">&#11088;</span>
       </div>
       <span class="vs-label">VS</span>
       <div class="score-item">
         <span class="score-label p2-color" id="p2name-display">GREEN</span>
         <span class="score-num p2-color" id="score2">00</span>
+        <span class="score-star" id="p2star" style="font-size:12px;display:none">&#11088;</span>
       </div>
     </div>
 
-    <div style="display:flex;gap:0.5rem;width:100%;margin-bottom:0.4rem;">
-      <div class="your-role" id="yourRole" style="flex:1;margin-bottom:0"></div>
-      <div style="font-size:clamp(0.25rem,1.8vw,0.34rem);letter-spacing:0.1em;background:#000;border:1px solid #1e1e1e;border-radius:4px;padding:0.3rem 0.6rem;color:#444;white-space:nowrap;display:flex;align-items:center;gap:4px;">ROOM: <span id="roomCodeDisplay" style="color:#666;letter-spacing:0.2em"></span></div>
+    <div style="display:flex;gap:0.5rem;width:100%;margin-bottom:0.4rem;align-items:stretch;">
+      <div id="roomCodeBar" style="display:flex;align-items:center;gap:6px;background:#000;border:1px solid #1e1e1e;border-radius:4px;padding:0.3rem 0.7rem;flex:1;">
+        <span style="font-size:clamp(0.25rem,1.8vw,0.32rem);letter-spacing:0.08em;color:#444;">ROOM</span>
+        <span id="roomCodeDisplay" style="font-size:clamp(0.35rem,2.2vw,0.48rem);color:#888;letter-spacing:0.25em;font-family:'Press Start 2P',monospace;"></span>
+        <button id="copyLinkBtn" style="margin-left:auto;font-family:'Press Start 2P',monospace;font-size:clamp(0.22rem,1.6vw,0.3rem);padding:0.25rem 0.5rem;background:#000;border:1px solid #333;color:#555;border-radius:3px;cursor:pointer;letter-spacing:0.05em;touch-action:manipulation;white-space:nowrap;">&#128279; COPY LINK</button>
+      </div>
     </div>
     <div id="status"></div>
 
@@ -670,6 +676,7 @@
       });
       onDisconnect(ref(db, `rooms/${roomCode}/p1connected`)).set(false);
       document.getElementById('displayCode').textContent = roomCode;
+      document.getElementById('copyWaitLinkBtn').addEventListener('click', function(){ copyLink(this); });
       show('screen-name');
     });
 
@@ -721,14 +728,28 @@
       });
     }
 
+    function getJoinLink() {
+      return window.location.href.split('?')[0] + '?join=' + roomCode;
+    }
+
+    function copyLink(btn) {
+      navigator.clipboard.writeText(getJoinLink()).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '&#10003; COPIED!';
+        btn.style.color = '#0f0';
+        btn.style.borderColor = '#0f0';
+        setTimeout(() => { btn.innerHTML = orig; btn.style.color=''; btn.style.borderColor=''; }, 2000);
+      });
+    }
+
     // ── GAME ──
     function startGame() {
       show('screen-game');
-      document.getElementById('yourRole').innerHTML =
-        dot(myRole-1) + `You are ${myRole===1
-          ? '<span style="color:#cc0000">RED</span>'
-          : '<span style="color:#00cc44">GREEN</span>'}`;
+      // Star indicator on correct side
+      document.getElementById('p1star').style.display = myRole===1 ? 'inline' : 'none';
+      document.getElementById('p2star').style.display = myRole===2 ? 'inline' : 'none';
       document.getElementById('roomCodeDisplay').textContent = roomCode;
+      document.getElementById('copyLinkBtn').addEventListener('click', function(){ copyLink(this); });
       listenForGameState();
       listenForChat();
     }
@@ -942,6 +963,16 @@
     document.getElementById('chat-input').addEventListener('keydown', e => {
       if (e.key==='Enter') { sendChat(e.target.value); e.target.value=''; }
     });
+    // ── AUTO-JOIN FROM URL ──
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('join');
+      if (code) {
+        document.getElementById('joinCodeInput').value = code.toUpperCase();
+        // slight delay so DOM is ready
+        setTimeout(() => document.getElementById('joinBtn').click(), 200);
+      }
+    })();
   </script>
 </body>
 </html>
