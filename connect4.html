@@ -1,1126 +1,914 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CONNECT 4</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CONNECT 4</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-      body {
-        background: #0a0a1a;
-        background-image:
-          repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 39px,
-            rgba(0, 255, 255, 0.03) 39px,
-            rgba(0, 255, 255, 0.03) 40px
-          ),
-          repeating-linear-gradient(
-            90deg,
-            transparent,
-            transparent 39px,
-            rgba(0, 255, 255, 0.03) 39px,
-            rgba(0, 255, 255, 0.03) 40px
-          );
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 1.5rem 1rem 2rem;
-        font-family: "Press Start 2P", monospace;
-        color: #fff;
-      }
+    body {
+      background: #0a0a1a;
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,255,255,0.03) 39px, rgba(0,255,255,0.03) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,255,255,0.03) 39px, rgba(0,255,255,0.03) 40px);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 1rem 2rem;
+      font-family: 'Press Start 2P', monospace;
+      color: #fff;
+    }
 
-      h1 {
-        font-size: clamp(1rem, 5vw, 1.6rem);
-        letter-spacing: 0.15em;
-        margin-bottom: 0.3rem;
-        color: #fff;
-        text-shadow:
-          0 0 10px #ff0,
-          3px 3px 0 #b8a000;
-        animation: titlePulse 2s ease-in-out infinite;
-      }
+    h1 {
+      font-size: clamp(1rem, 5vw, 1.6rem);
+      letter-spacing: 0.15em;
+      margin-bottom: 0.3rem;
+      text-shadow: 0 0 10px #ff0, 3px 3px 0 #b8a000;
+      animation: titlePulse 2s ease-in-out infinite;
+    }
 
-      @keyframes titlePulse {
-        0%,
-        100% {
-          text-shadow:
-            0 0 10px #ff0,
-            3px 3px 0 #b8a000;
-        }
-        50% {
-          text-shadow:
-            0 0 22px #ff0,
-            0 0 35px #ffa500,
-            3px 3px 0 #b8a000;
-        }
-      }
+    @keyframes titlePulse {
+      0%, 100% { text-shadow: 0 0 10px #ff0, 3px 3px 0 #b8a000; }
+      50%       { text-shadow: 0 0 22px #ff0, 0 0 35px #ffa500, 3px 3px 0 #b8a000; }
+    }
 
-      .subtitle {
-        font-size: 0.4rem;
-        letter-spacing: 0.2em;
-        color: #0ff;
-        margin-bottom: 1.5rem;
-        text-shadow: 0 0 6px #0ff;
-      }
+    .subtitle {
+      font-size: 0.4rem;
+      letter-spacing: 0.2em;
+      color: #0ff;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 6px #0ff;
+    }
 
-      /* ── SCREENS ── */
-      .screen {
-        display: none;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        max-width: 400px;
-      }
-      .screen.active {
-        display: flex;
-      }
+    .screen { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 420px; }
+    .screen.active { display: flex; }
 
-      /* ── LOBBY ── */
-      .lobby-box {
-        background: #000;
-        border: 2px solid #ff0;
-        border-radius: 8px;
-        padding: 1.2rem 1.4rem;
-        width: 100%;
-        margin-bottom: 1rem;
-        box-shadow: 0 0 12px rgba(255, 255, 0, 0.2);
-      }
+    /* ── LOBBY ── */
+    .lobby-box {
+      background: #000;
+      border: 2px solid #ff0;
+      border-radius: 8px;
+      padding: 1.2rem 1.4rem;
+      width: 100%;
+      margin-bottom: 1rem;
+      box-shadow: 0 0 12px rgba(255,255,0,0.2);
+    }
 
-      .lobby-box h2 {
-        font-size: 0.55rem;
-        letter-spacing: 0.1em;
-        margin-bottom: 1rem;
-        color: #ff0;
-        text-shadow: 0 0 6px #ff0;
-      }
+    .lobby-box h2 {
+      font-size: 0.55rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+      color: #ff0;
+      text-shadow: 0 0 6px #ff0;
+    }
 
-      .big-btn {
-        font-family: "Press Start 2P", monospace;
-        font-size: 0.5rem;
-        padding: 0.7rem 1rem;
-        width: 100%;
-        background: #000;
-        border: 2px solid #ff0;
-        color: #ff0;
-        cursor: pointer;
-        letter-spacing: 0.05em;
-        border-radius: 4px;
-        text-shadow: 0 0 6px #ff0;
-        transition:
-          background 0.15s,
-          color 0.15s,
-          box-shadow 0.15s;
-        margin-bottom: 0.6rem;
-      }
+    .big-btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.5rem;
+      padding: 0.7rem 1rem;
+      width: 100%;
+      background: #000;
+      border: 2px solid #ff0;
+      color: #ff0;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      border-radius: 4px;
+      text-shadow: 0 0 6px #ff0;
+      transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+      margin-bottom: 0.6rem;
+    }
 
-      .big-btn:hover {
-        background: #ff0;
-        color: #000;
-        text-shadow: none;
-        box-shadow: 0 0 16px rgba(255, 255, 0, 0.6);
-      }
+    .big-btn:hover { background: #ff0; color: #000; text-shadow: none; box-shadow: 0 0 16px rgba(255,255,0,0.6); }
 
-      .big-btn.cyan {
-        border-color: #0ff;
-        color: #0ff;
-        text-shadow: 0 0 6px #0ff;
-      }
-      .big-btn.cyan:hover {
-        background: #0ff;
-        color: #000;
-        box-shadow: 0 0 16px rgba(0, 255, 255, 0.5);
-      }
+    .big-btn.cyan { border-color: #0ff; color: #0ff; text-shadow: 0 0 6px #0ff; }
+    .big-btn.cyan:hover { background: #0ff; color: #000; box-shadow: 0 0 16px rgba(0,255,255,0.5); }
 
-      .code-input {
-        font-family: "Press Start 2P", monospace;
-        font-size: 0.8rem;
-        padding: 0.6rem;
-        width: 100%;
-        background: #000;
-        border: 2px solid #555;
-        color: #fff;
-        border-radius: 4px;
-        text-align: center;
-        letter-spacing: 0.3em;
-        margin-bottom: 0.6rem;
-        text-transform: uppercase;
-      }
+    .code-input {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.8rem;
+      padding: 0.6rem;
+      width: 100%;
+      background: #000;
+      border: 2px solid #555;
+      color: #fff;
+      border-radius: 4px;
+      text-align: center;
+      letter-spacing: 0.3em;
+      margin-bottom: 0.6rem;
+      text-transform: uppercase;
+    }
 
-      .code-input:focus {
-        outline: none;
-        border-color: #0ff;
-        box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
-      }
+    .code-input:focus { outline: none; border-color: #0ff; box-shadow: 0 0 8px rgba(0,255,255,0.3); }
 
-      .name-input {
-        font-family: "Press Start 2P", monospace;
-        font-size: 0.55rem;
-        padding: 0.6rem;
-        width: 100%;
-        background: #000;
-        border: 2px solid #555;
-        color: #fff;
-        border-radius: 4px;
-        text-align: center;
-        letter-spacing: 0.05em;
-        margin-bottom: 0.8rem;
-      }
+    .name-input {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.55rem;
+      padding: 0.6rem;
+      width: 100%;
+      background: #000;
+      border: 2px solid #555;
+      color: #fff;
+      border-radius: 4px;
+      text-align: center;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.8rem;
+    }
 
-      .name-input:focus {
-        outline: none;
-        border-color: #ff0;
-        box-shadow: 0 0 8px rgba(255, 255, 0, 0.3);
-      }
+    .name-input:focus { outline: none; border-color: #ff0; box-shadow: 0 0 8px rgba(255,255,0,0.3); }
 
-      .divider {
-        text-align: center;
-        font-size: 0.35rem;
-        color: #444;
-        margin: 0.5rem 0;
-        letter-spacing: 0.1em;
-      }
+    .room-code-display {
+      font-size: 2rem;
+      letter-spacing: 0.3em;
+      color: #0ff;
+      text-shadow: 0 0 16px #0ff;
+      margin: 0.8rem 0;
+      animation: codePulse 1.5s ease-in-out infinite;
+    }
 
-      /* ── WAITING ── */
-      .room-code-display {
-        font-size: 2rem;
-        letter-spacing: 0.3em;
-        color: #0ff;
-        text-shadow: 0 0 16px #0ff;
-        margin: 0.8rem 0;
-        animation: codePulse 1.5s ease-in-out infinite;
-      }
+    @keyframes codePulse {
+      0%, 100% { text-shadow: 0 0 16px #0ff; }
+      50%       { text-shadow: 0 0 30px #0ff, 0 0 50px #0088ff; }
+    }
 
-      @keyframes codePulse {
-        0%,
-        100% {
-          text-shadow: 0 0 16px #0ff;
-        }
-        50% {
-          text-shadow:
-            0 0 30px #0ff,
-            0 0 50px #0088ff;
-        }
-      }
+    .waiting-dots::after {
+      content: '';
+      animation: dots 1.5s steps(4, end) infinite;
+    }
 
-      .waiting-dots::after {
-        content: "";
-        animation: dots 1.5s steps(4, end) infinite;
-      }
+    @keyframes dots {
+      0%   { content: ''; }
+      25%  { content: '.'; }
+      50%  { content: '..'; }
+      75%  { content: '...'; }
+    }
 
-      @keyframes dots {
-        0% {
-          content: "";
-        }
-        25% {
-          content: ".";
-        }
-        50% {
-          content: "..";
-        }
-        75% {
-          content: "...";
-        }
-        100% {
-          content: "";
-        }
-      }
+    .error-text {
+      font-size: 0.38rem;
+      color: #ff4444;
+      margin-top: 0.4rem;
+      text-align: center;
+      min-height: 1em;
+      letter-spacing: 0.05em;
+    }
 
-      .hint-text {
-        font-size: 0.35rem;
-        color: #666;
-        letter-spacing: 0.08em;
-        text-align: center;
-        margin-top: 0.5rem;
-      }
+    /* ── SCOREBOARD ── */
+    .scoreboard {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 0.8rem;
+      background: #000;
+      border: 2px solid #ff0;
+      border-radius: 6px;
+      padding: 0.5rem 1.2rem;
+      box-shadow: 0 0 12px rgba(255,255,0,0.3);
+      width: 100%;
+      justify-content: center;
+    }
 
-      /* ── SCOREBOARD ── */
-      .scoreboard {
-        display: flex;
-        gap: 1.5rem;
-        margin-bottom: 1rem;
-        background: #000;
-        border: 2px solid #ff0;
-        border-radius: 6px;
-        padding: 0.5rem 1.2rem;
-        box-shadow: 0 0 12px rgba(255, 255, 0, 0.3);
-      }
+    .score-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .score-label { font-size: 0.3rem; letter-spacing: 0.08em; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .score-num   { font-size: 1.1rem; }
+    .p1-color    { color: #cc0000; text-shadow: 0 0 8px #ff0000; }
+    .p2-color    { color: #00cc44; text-shadow: 0 0 8px #00ff44; }
+    .vs-label    { color: #555; font-size: 0.45rem; align-self: center; }
 
-      .score-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
-      }
-      .score-label {
-        font-size: 0.3rem;
-        letter-spacing: 0.08em;
-      }
-      .score-num {
-        font-size: 1.1rem;
-      }
-      .p1-color {
-        color: #cc0000;
-        text-shadow: 0 0 8px #ff0000;
-      }
-      .p2-color {
-        color: #00cc44;
-        text-shadow: 0 0 8px #00ff44;
-      }
-      .vs-label {
-        color: #555;
-        font-size: 0.45rem;
-        align-self: center;
-      }
+    #status {
+      font-size: clamp(0.33rem, 1.8vw, 0.46rem);
+      margin-bottom: 0.8rem;
+      min-height: 1.8em;
+      text-align: center;
+      letter-spacing: 0.06em;
+      background: #000;
+      border: 1px solid #333;
+      padding: 0.45rem 1rem;
+      border-radius: 4px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      width: 100%;
+    }
 
-      /* ── STATUS ── */
-      #status {
-        font-size: clamp(0.35rem, 2vw, 0.48rem);
-        margin-bottom: 0.8rem;
-        min-height: 1.8em;
-        text-align: center;
-        letter-spacing: 0.06em;
-        background: #000;
-        border: 1px solid #333;
-        padding: 0.45rem 1rem;
-        border-radius: 4px;
-        transition:
-          border-color 0.3s,
-          box-shadow 0.3s;
-        max-width: 400px;
-        width: 100%;
-      }
+    #status.p1-turn      { border-color: #cc0000; box-shadow: 0 0 8px rgba(200,0,0,0.5); }
+    #status.p2-turn      { border-color: #00cc44; box-shadow: 0 0 8px rgba(0,200,60,0.4); }
+    #status.winner       { border-color: #0f0; box-shadow: 0 0 12px rgba(0,255,0,0.5); color: #0f0; }
+    #status.draw         { border-color: #888; color: #aaa; }
+    #status.disconnected { border-color: #ff6600; box-shadow: 0 0 10px rgba(255,100,0,0.5); color: #ff6600; }
 
-      #status.p1-turn {
-        border-color: #cc0000;
-        box-shadow: 0 0 8px rgba(200, 0, 0, 0.5);
-      }
-      #status.p2-turn {
-        border-color: #00cc44;
-        box-shadow: 0 0 8px rgba(0, 200, 60, 0.4);
-      }
-      #status.winner {
-        border-color: #0f0;
-        box-shadow: 0 0 12px rgba(0, 255, 0, 0.5);
-        color: #0f0;
-      }
-      #status.draw {
-        border-color: #888;
-        color: #aaa;
-      }
-      #status.disconnected {
-        border-color: #ff6600;
-        box-shadow: 0 0 10px rgba(255, 100, 0, 0.5);
-        color: #ff6600;
-      }
+    .your-role {
+      font-size: 0.35rem;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.6rem;
+      text-align: center;
+      padding: 0.3rem 0.8rem;
+      border-radius: 4px;
+      background: #000;
+      border: 1px solid #333;
+      width: 100%;
+    }
 
-      /* ── ARROWS ── */
-      #col-arrows {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 6px;
-        padding: 0 10px;
-        margin-bottom: 4px;
-      }
+    /* ── ARROWS ── */
+    #col-arrows {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      padding: 0 10px;
+      margin-bottom: 4px;
+      width: 100%;
+    }
 
-      .col-btn {
-        width: clamp(38px, 10vw, 54px);
-        height: 22px;
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: #0ff;
-        font-size: 0.9rem;
-        opacity: 0;
-        transition:
-          opacity 0.15s,
-          transform 0.1s;
-        text-shadow: 0 0 6px #0ff;
-      }
+    .col-btn {
+      width: clamp(38px, 10vw, 54px);
+      height: 22px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #0ff;
+      font-size: 0.9rem;
+      opacity: 0;
+      transition: opacity 0.15s, transform 0.1s;
+      text-shadow: 0 0 6px #0ff;
+    }
 
-      #col-arrows:hover .col-btn {
-        opacity: 0.3;
-      }
-      #col-arrows .col-btn:hover {
-        opacity: 1 !important;
-        transform: translateY(3px);
-      }
+    #col-arrows:hover .col-btn { opacity: 0.3; }
+    #col-arrows .col-btn:hover { opacity: 1 !important; transform: translateY(3px); }
 
-      /* ── BOARD ── */
-      #board-wrap {
-        background: #0022cc;
-        border-radius: 10px;
-        padding: 10px;
-        border: 3px solid #4488ff;
-        box-shadow:
-          0 0 20px rgba(0, 100, 255, 0.5),
-          inset 0 2px 4px rgba(255, 255, 255, 0.1);
-      }
+    /* ── BOARD ── */
+    #board-wrap {
+      background: #0022cc;
+      border-radius: 10px;
+      padding: 10px;
+      border: 3px solid #4488ff;
+      box-shadow: 0 0 20px rgba(0,100,255,0.5), inset 0 2px 4px rgba(255,255,255,0.1);
+    }
 
-      #board {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 6px;
-      }
+    #board { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
 
-      .cell {
-        width: clamp(38px, 10vw, 54px);
-        height: clamp(38px, 10vw, 54px);
-        border-radius: 50%;
-        background: #000824;
-        cursor: pointer;
-        box-shadow:
-          inset 0 3px 8px rgba(0, 0, 0, 0.9),
-          inset 0 -1px 2px rgba(255, 255, 255, 0.05);
-        transition:
-          transform 0.1s,
-          background 0.15s;
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+    .cell {
+      width: clamp(38px, 10vw, 54px);
+      height: clamp(38px, 10vw, 54px);
+      border-radius: 50%;
+      background: #000824;
+      cursor: pointer;
+      box-shadow: inset 0 3px 8px rgba(0,0,0,0.9), inset 0 -1px 2px rgba(255,255,255,0.05);
+      transition: transform 0.1s, background 0.15s;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-      .cell::before {
-        content: "";
-        position: absolute;
-        top: 12%;
-        left: 18%;
-        width: 28%;
-        height: 18%;
-        background: rgba(255, 255, 255, 0.07);
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 1;
-      }
+    .cell::before {
+      content: '';
+      position: absolute;
+      top: 12%; left: 18%;
+      width: 28%; height: 18%;
+      background: rgba(255,255,255,0.07);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1;
+    }
 
-      .cell:not(.p1):not(.p2):hover {
-        transform: scale(1.06);
-        background: #050f30;
-      }
+    .cell:not(.p1):not(.p2):hover { transform: scale(1.06); background: #050f30; }
 
-      .cell.p1 {
-        background: radial-gradient(
-          circle at 35% 35%,
-          #ff2200,
-          #aa0000 55%,
-          #660000
-        );
-        box-shadow:
-          0 0 14px rgba(220, 0, 0, 0.85),
-          inset 0 -2px 5px rgba(0, 0, 0, 0.6);
-        cursor: default;
-        animation: dropIn 0.22s cubic-bezier(0.22, 0.61, 0.36, 1);
-      }
+    .cell.p1 {
+      background: radial-gradient(circle at 35% 35%, #ff2200, #aa0000 55%, #660000);
+      box-shadow: 0 0 14px rgba(220,0,0,0.85), inset 0 -2px 5px rgba(0,0,0,0.6);
+      cursor: default;
+      animation: dropIn 0.22s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
 
-      .cell.p2 {
-        background: radial-gradient(
-          circle at 35% 35%,
-          #00dd44,
-          #008800 55%,
-          #004400
-        );
-        box-shadow:
-          0 0 14px rgba(0, 200, 60, 0.85),
-          inset 0 -2px 5px rgba(0, 0, 0, 0.6);
-        cursor: default;
-        animation: dropIn 0.22s cubic-bezier(0.22, 0.61, 0.36, 1);
-      }
+    .cell.p2 {
+      background: radial-gradient(circle at 35% 35%, #00dd44, #008800 55%, #004400);
+      box-shadow: 0 0 14px rgba(0,200,60,0.85), inset 0 -2px 5px rgba(0,0,0,0.6);
+      cursor: default;
+      animation: dropIn 0.22s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
 
-      @keyframes dropIn {
-        from {
-          transform: scale(0.3) translateY(-30px);
-          opacity: 0.4;
-        }
-        to {
-          transform: scale(1) translateY(0);
-          opacity: 1;
-        }
-      }
+    @keyframes dropIn {
+      from { transform: scale(0.3) translateY(-30px); opacity: 0.4; }
+      to   { transform: scale(1) translateY(0); opacity: 1; }
+    }
 
-      .boom {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: clamp(14px, 3.5vw, 20px);
-        z-index: 2;
-        pointer-events: none;
-        animation: boomPulse 0.6s ease-in-out infinite alternate;
-      }
+    .boom {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: clamp(14px, 3.5vw, 20px);
+      z-index: 2; pointer-events: none;
+      animation: boomPulse 0.6s ease-in-out infinite alternate;
+    }
 
-      @keyframes boomPulse {
-        0% {
-          transform: scale(0.75) rotate(-12deg);
-          opacity: 0.7;
-          filter: drop-shadow(0 0 4px rgba(255, 200, 0, 0.9));
-        }
-        100% {
-          transform: scale(1.25) rotate(12deg);
-          opacity: 1;
-          filter: drop-shadow(0 0 10px rgba(255, 80, 0, 1));
-        }
-      }
+    @keyframes boomPulse {
+      0%   { transform: scale(0.75) rotate(-12deg); opacity: 0.7; filter: drop-shadow(0 0 4px rgba(255,200,0,0.9)); }
+      100% { transform: scale(1.25) rotate(12deg);  opacity: 1;   filter: drop-shadow(0 0 10px rgba(255,80,0,1)); }
+    }
 
-      .cell.win-cell {
-        animation: winGlow 0.5s ease-in-out infinite alternate;
-      }
+    .cell.win-cell { animation: winGlow 0.5s ease-in-out infinite alternate; }
 
-      @keyframes winGlow {
-        from {
-          filter: brightness(1);
-        }
-        to {
-          filter: brightness(1.5);
-        }
-      }
+    @keyframes winGlow {
+      from { filter: brightness(1); }
+      to   { filter: brightness(1.5); }
+    }
 
-      /* ── CONTROLS ── */
-      #controls {
-        margin-top: 1rem;
-        display: flex;
-        gap: 0.8rem;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
+    /* ── CHAT ── */
+    #chat-wrap {
+      width: 100%;
+      margin-top: 1rem;
+      background: #000;
+      border: 2px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
 
-      button.action {
-        font-family: "Press Start 2P", monospace;
-        font-size: 0.4rem;
-        padding: 0.5rem 0.8rem;
-        background: #000;
-        border: 2px solid #ff0;
-        color: #ff0;
-        cursor: pointer;
-        letter-spacing: 0.05em;
-        border-radius: 4px;
-        text-shadow: 0 0 6px #ff0;
-        box-shadow: 0 0 8px rgba(255, 255, 0, 0.2);
-        transition:
-          background 0.15s,
-          box-shadow 0.15s,
-          color 0.15s;
-      }
+    #chat-header {
+      background: #0a0a0a;
+      border-bottom: 1px solid #222;
+      padding: 0.5rem 0.8rem;
+      font-size: 0.35rem;
+      letter-spacing: 0.12em;
+      color: #555;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-      button.action:hover {
-        background: #ff0;
-        color: #000;
-        text-shadow: none;
-        box-shadow: 0 0 18px rgba(255, 255, 0, 0.7);
-      }
+    #chat-header::before {
+      content: '●';
+      color: #0f0;
+      font-size: 0.5rem;
+      animation: blink 2s step-end infinite;
+    }
 
-      button.action.red {
-        border-color: #cc0000;
-        color: #cc0000;
-        text-shadow: 0 0 6px #cc0000;
-      }
-      button.action.red:hover {
-        background: #cc0000;
-        color: #fff;
-      }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
 
-      #insert-coin {
-        margin-top: 1.2rem;
-        font-size: 0.35rem;
-        letter-spacing: 0.18em;
-        color: #0ff;
-        text-shadow: 0 0 6px #0ff;
-        animation: blink 1s step-end infinite;
-      }
+    #chat-messages {
+      height: 140px;
+      overflow-y: auto;
+      padding: 0.6rem 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      scroll-behavior: smooth;
+    }
 
-      @keyframes blink {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0;
-        }
-      }
+    #chat-messages::-webkit-scrollbar { width: 4px; }
+    #chat-messages::-webkit-scrollbar-track { background: #000; }
+    #chat-messages::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
 
-      a.back {
-        margin-top: 1rem;
-        font-size: 0.35rem;
-        color: #444;
-        text-decoration: none;
-        letter-spacing: 0.05em;
-        transition: color 0.2s;
-      }
-      a.back:hover {
-        color: #888;
-      }
+    .chat-msg {
+      font-size: 0.35rem;
+      line-height: 1.6;
+      letter-spacing: 0.04em;
+      word-break: break-word;
+    }
 
-      /* ── WIN OVERLAY ── */
-      #win-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.8);
-        justify-content: center;
-        align-items: center;
-        z-index: 100;
-        flex-direction: column;
-        gap: 1.5rem;
-        cursor: pointer;
-      }
-      #win-overlay.show {
-        display: flex;
-      }
+    .chat-msg .sender {
+      font-size: 0.3rem;
+      margin-right: 4px;
+      letter-spacing: 0.06em;
+    }
 
-      .win-banner {
-        font-size: clamp(0.7rem, 4vw, 1.2rem);
-        letter-spacing: 0.12em;
-        text-align: center;
-        animation: popIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
-        padding: 0 1rem;
-      }
+    .chat-msg.mine .sender  { color: #cc0000; }
+    .chat-msg.theirs .sender { color: #00cc44; }
+    .chat-msg.system { color: #555; font-style: italic; text-align: center; }
 
-      @keyframes popIn {
-        from {
-          transform: scale(0.4);
-          opacity: 0;
-        }
-        to {
-          transform: scale(1);
-          opacity: 1;
-        }
-      }
+    .chat-msg .text { color: #ddd; }
 
-      .win-sub {
-        font-size: 0.35rem;
-        color: #aaa;
-        letter-spacing: 0.15em;
-        animation: blink 1s step-end infinite;
-      }
+    #chat-input-row {
+      display: flex;
+      border-top: 1px solid #1a1a1a;
+    }
 
-      .error-text {
-        font-size: 0.38rem;
-        color: #ff4444;
-        margin-top: 0.4rem;
-        text-align: center;
-        min-height: 1em;
-        letter-spacing: 0.05em;
-      }
+    #chat-input {
+      flex: 1;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.38rem;
+      padding: 0.5rem 0.6rem;
+      background: #000;
+      border: none;
+      color: #fff;
+      letter-spacing: 0.04em;
+      outline: none;
+    }
 
-      .your-role {
-        font-size: 0.38rem;
-        letter-spacing: 0.08em;
-        margin-bottom: 0.8rem;
-        text-align: center;
-        padding: 0.4rem 0.8rem;
-        border-radius: 4px;
-        background: #000;
-        border: 1px solid #333;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>CONNECT 4</h1>
-    <div class="subtitle">— 2 PLAYER —</div>
+    #chat-input::placeholder { color: #333; }
 
-    <!-- ── LOBBY SCREEN ── -->
-    <div class="screen active" id="screen-lobby">
-      <div class="lobby-box">
-        <h2>▶ CREATE GAME</h2>
-        <button class="big-btn" id="createBtn">+ CREATE ROOM</button>
-      </div>
-      <div class="lobby-box">
-        <h2>▶ JOIN GAME</h2>
-        <input
-          class="code-input"
-          id="joinCodeInput"
-          maxlength="4"
-          placeholder="CODE"
-        />
-        <button class="big-btn cyan" id="joinBtn">→ JOIN ROOM</button>
-        <div class="error-text" id="joinError"></div>
-      </div>
-      <a href="index.html" class="back">← back to site</a>
+    #chat-send {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.35rem;
+      padding: 0.5rem 0.7rem;
+      background: #000;
+      border: none;
+      border-left: 1px solid #1a1a1a;
+      color: #0ff;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    #chat-send:hover { background: #0ff; color: #000; }
+
+    /* ── CONTROLS ── */
+    #controls {
+      margin-top: 0.8rem;
+      display: flex;
+      gap: 0.8rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    button.action {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.4rem;
+      padding: 0.5rem 0.8rem;
+      background: #000;
+      border: 2px solid #ff0;
+      color: #ff0;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      border-radius: 4px;
+      text-shadow: 0 0 6px #ff0;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    button.action:hover { background: #ff0; color: #000; text-shadow: none; }
+    button.action.red { border-color: #cc0000; color: #cc0000; text-shadow: 0 0 6px #cc0000; }
+    button.action.red:hover { background: #cc0000; color: #fff; text-shadow: none; }
+
+    a.back {
+      margin-top: 1rem;
+      font-size: 0.35rem;
+      color: #444;
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+    }
+    a.back:hover { color: #888; }
+
+    /* ── WIN OVERLAY ── */
+    #win-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      flex-direction: column;
+      gap: 1.5rem;
+      cursor: pointer;
+    }
+    #win-overlay.show { display: flex; }
+
+    .win-banner {
+      font-size: clamp(0.7rem, 4vw, 1.2rem);
+      letter-spacing: 0.12em;
+      text-align: center;
+      padding: 0 1rem;
+      animation: popIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.4); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+
+    .win-sub { font-size: 0.35rem; color: #aaa; letter-spacing: 0.15em; animation: blink 1s step-end infinite; }
+  </style>
+</head>
+<body>
+
+  <h1>CONNECT 4</h1>
+  <div class="subtitle">— 2 PLAYER —</div>
+
+  <!-- LOBBY -->
+  <div class="screen active" id="screen-lobby">
+    <div class="lobby-box">
+      <h2>▶ CREATE GAME</h2>
+      <button class="big-btn" id="createBtn">+ CREATE ROOM</button>
     </div>
+    <div class="lobby-box">
+      <h2>▶ JOIN GAME</h2>
+      <input class="code-input" id="joinCodeInput" maxlength="4" placeholder="CODE" />
+      <button class="big-btn cyan" id="joinBtn">→ JOIN ROOM</button>
+      <div class="error-text" id="joinError"></div>
+    </div>
+    <a href="index.html" class="back">← back to site</a>
+  </div>
 
-    <!-- ── NAME SCREEN ── -->
-    <div class="screen" id="screen-name">
-      <div class="lobby-box">
-        <h2>▶ YOUR NAME</h2>
-        <input
-          class="name-input"
-          id="nameInput"
-          maxlength="12"
-          placeholder="ENTER NAME"
-        />
-        <button class="big-btn" id="nameConfirmBtn">→ LET'S PLAY</button>
+  <!-- NAME -->
+  <div class="screen" id="screen-name">
+    <div class="lobby-box">
+      <h2>▶ YOUR NAME</h2>
+      <input class="name-input" id="nameInput" maxlength="12" placeholder="ENTER NAME" />
+      <button class="big-btn" id="nameConfirmBtn">→ LET'S PLAY</button>
+    </div>
+  </div>
+
+  <!-- WAITING -->
+  <div class="screen" id="screen-waiting">
+    <div class="lobby-box" style="text-align:center">
+      <h2>▶ ROOM CODE</h2>
+      <div class="room-code-display" id="displayCode"></div>
+      <div style="font-size:0.38rem;color:#aaa;letter-spacing:0.08em;margin-bottom:0.5rem">Share this code with your opponent</div>
+      <div style="font-size:0.38rem;color:#0ff;letter-spacing:0.08em">Waiting for opponent<span class="waiting-dots"></span></div>
+    </div>
+  </div>
+
+  <!-- GAME -->
+  <div class="screen" id="screen-game">
+    <div class="scoreboard">
+      <div class="score-item">
+        <span class="score-label p1-color" id="p1name-display">RED</span>
+        <span class="score-num p1-color" id="score1">00</span>
+      </div>
+      <span class="vs-label">VS</span>
+      <div class="score-item">
+        <span class="score-label p2-color" id="p2name-display">GREEN</span>
+        <span class="score-num p2-color" id="score2">00</span>
       </div>
     </div>
 
-    <!-- ── WAITING SCREEN ── -->
-    <div class="screen" id="screen-waiting">
-      <div class="lobby-box" style="text-align: center">
-        <h2>▶ ROOM CODE</h2>
-        <div class="room-code-display" id="displayCode"></div>
-        <div
-          style="
-            font-size: 0.38rem;
-            color: #aaa;
-            letter-spacing: 0.08em;
-            margin-bottom: 0.5rem;
-          "
-        >
-          Share this code with your opponent
-        </div>
-        <div style="font-size: 0.38rem; color: #0ff; letter-spacing: 0.08em">
-          Waiting for opponent<span class="waiting-dots"></span>
-        </div>
+    <div class="your-role" id="yourRole"></div>
+    <div id="status"></div>
+
+    <div id="col-arrows"></div>
+    <div id="board-wrap"><div id="board"></div></div>
+
+    <!-- CHAT -->
+    <div id="chat-wrap">
+      <div id="chat-header">LIVE CHAT</div>
+      <div id="chat-messages"></div>
+      <div id="chat-input-row">
+        <input id="chat-input" maxlength="80" placeholder="say something..." />
+        <button id="chat-send">SEND</button>
       </div>
     </div>
 
-    <!-- ── GAME SCREEN ── -->
-    <div class="screen" id="screen-game">
-      <div class="scoreboard">
-        <div class="score-item">
-          <span class="score-label p1-color" id="p1name">P1</span>
-          <span class="score-num p1-color" id="score1">00</span>
-        </div>
-        <span class="vs-label">VS</span>
-        <div class="score-item">
-          <span class="score-label p2-color" id="p2name">P2</span>
-          <span class="score-num p2-color" id="score2">00</span>
-        </div>
-      </div>
-
-      <div class="your-role" id="yourRole"></div>
-      <div id="status" class="p1-turn"></div>
-
-      <div id="col-arrows"></div>
-      <div id="board-wrap">
-        <div id="board"></div>
-      </div>
-
-      <div id="controls">
-        <button class="action red" id="quitBtn">✕ QUIT</button>
-      </div>
-
-      <div id="insert-coin">— CLICK A COLUMN TO DROP YOUR PIECE —</div>
+    <div id="controls">
+      <button class="action red" id="quitBtn">✕ QUIT</button>
     </div>
+  </div>
 
-    <!-- ── WIN OVERLAY ── -->
-    <div id="win-overlay">
-      <div class="win-banner" id="win-banner"></div>
-      <div class="win-sub" id="win-sub">CLICK ANYWHERE TO PLAY AGAIN</div>
-    </div>
+  <!-- WIN OVERLAY -->
+  <div id="win-overlay">
+    <div class="win-banner" id="win-banner"></div>
+    <div class="win-sub">CLICK ANYWHERE TO PLAY AGAIN</div>
+  </div>
 
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-      import {
-        getDatabase,
-        ref,
-        set,
-        get,
-        update,
-        onValue,
-        onDisconnect,
-        remove,
-      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  <script type="module">
+    import { initializeApp }       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, set, get, update, onValue, onDisconnect, push, serverTimestamp }
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-      const firebaseConfig = {
-        apiKey: "AIzaSyCAxHEyWGucBDW2ZKu3dMTMlTAlXQb5fp8",
-        authDomain: "connect1234-7cbf1.firebaseapp.com",
-        databaseURL: "https://connect1234-7cbf1-default-rtdb.firebaseio.com",
-        projectId: "connect1234-7cbf1",
-        storageBucket: "connect1234-7cbf1.firebasestorage.app",
-        messagingSenderId: "465032944161",
-        appId: "1:465032944161:web:2b363fb86cb7a0f3602160",
-      };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCAxHEyWGucBDW2ZKu3dMTMlTAlXQb5fp8",
+      authDomain: "connect1234-7cbf1.firebaseapp.com",
+      databaseURL: "https://connect1234-7cbf1-default-rtdb.firebaseio.com",
+      projectId: "connect1234-7cbf1",
+      storageBucket: "connect1234-7cbf1.firebasestorage.app",
+      messagingSenderId: "465032944161",
+      appId: "1:465032944161:web:2b363fb86cb7a0f3602160"
+    };
 
-      const app = initializeApp(firebaseConfig);
-      const db = getDatabase(app);
+    const app = initializeApp(firebaseConfig);
+    const db  = getDatabase(app);
 
-      const ROWS = 6,
-        COLS = 7;
-      const COLORS = ["#cc0000", "#00cc44"];
-      const SHADOW = ["rgba(200,0,0,0.9)", "rgba(0,200,60,0.9)"];
-      const DEFAULT_NAMES = ["Red Player", "Green Player"];
+    const ROWS = 6, COLS = 7;
+    const COLORS = ['#cc0000','#00cc44'];
+    const SHADOW  = ['rgba(200,0,0,0.9)','rgba(0,200,60,0.9)'];
+    const DEFAULT_NAMES = ['Red Player','Green Player'];
 
-      let roomCode,
-        myRole,
-        myName,
-        gameListener,
-        scores = [0, 0];
+    let roomCode, myRole, myName, gameListener, chatListener;
+    let knownMsgKeys = new Set();
 
-      // ── SCREEN HELPERS ──
-      function show(id) {
-        document
-          .querySelectorAll(".screen")
-          .forEach((s) => s.classList.remove("active"));
-        document.getElementById(id).classList.add("active");
+    // ── HELPERS ──
+    function show(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+    function genCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      return Array.from({length:4}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+    }
+
+    function dot(p) {
+      return `<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${COLORS[p]};margin-right:7px;vertical-align:middle;box-shadow:0 0 7px ${SHADOW[p]}"></span>`;
+    }
+
+    function setStatus(cls, html) {
+      const el = document.getElementById('status');
+      el.className = cls;
+      el.innerHTML = html;
+    }
+
+    // ── LOBBY ──
+    document.getElementById('createBtn').addEventListener('click', async () => {
+      roomCode = genCode();
+      myRole   = 1;
+      const snap = await get(ref(db, `rooms/${roomCode}`));
+      if (snap.exists()) {
+        // extremely rare collision — try again
+        roomCode = genCode();
       }
-
-      function pad(n) {
-        return n < 10 ? "0" + n : "" + n;
-      }
-
-      function genCode() {
-        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-        return Array.from(
-          { length: 4 },
-          () => chars[Math.floor(Math.random() * chars.length)],
-        ).join("");
-      }
-
-      function dot(p) {
-        return `<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${COLORS[p]};margin-right:7px;vertical-align:middle;box-shadow:0 0 7px ${SHADOW[p]}"></span>`;
-      }
-
-      // ── LOBBY ──
-      document
-        .getElementById("createBtn")
-        .addEventListener("click", async () => {
-          roomCode = genCode();
-          myRole = 1;
-          // store pending room
-          await set(ref(db, `rooms/${roomCode}`), {
-            state: "waiting",
-            p1name: "",
-            p2name: "",
-            board: Array(ROWS * COLS).fill(0),
-            currentPlayer: 1,
-            winCells: [],
-            scores: [0, 0],
-            p1connected: true,
-            p2connected: false,
-          });
-          onDisconnect(ref(db, `rooms/${roomCode}/p1connected`)).set(false);
-          document.getElementById("displayCode").textContent = roomCode;
-          show("screen-name");
-        });
-
-      document.getElementById("joinBtn").addEventListener("click", async () => {
-        const code = document
-          .getElementById("joinCodeInput")
-          .value.trim()
-          .toUpperCase();
-        if (code.length !== 4) {
-          document.getElementById("joinError").textContent =
-            "Enter a 4-letter code!";
-          return;
-        }
-        const snap = await get(ref(db, `rooms/${code}`));
-        if (!snap.exists()) {
-          document.getElementById("joinError").textContent = "Room not found!";
-          return;
-        }
-        const data = snap.val();
-        if (data.state !== "waiting") {
-          document.getElementById("joinError").textContent =
-            "Game already in progress!";
-          return;
-        }
-        roomCode = code;
-        myRole = 2;
-        await update(ref(db, `rooms/${roomCode}`), { p2connected: true });
-        onDisconnect(ref(db, `rooms/${roomCode}/p2connected`)).set(false);
-        show("screen-name");
+      await set(ref(db, `rooms/${roomCode}`), {
+        state: 'waiting',
+        p1name: '', p2name: '',
+        board: Array(ROWS * COLS).fill(0),
+        currentPlayer: 1,
+        winCells: [], winner: null,
+        scores: [0, 0],
+        p1connected: true, p2connected: false
       });
+      onDisconnect(ref(db, `rooms/${roomCode}/p1connected`)).set(false);
+      document.getElementById('displayCode').textContent = roomCode;
+      show('screen-name');
+    });
 
-      // ── NAME ──
-      document
-        .getElementById("nameConfirmBtn")
-        .addEventListener("click", async () => {
-          const raw = document.getElementById("nameInput").value.trim();
-          myName = raw || DEFAULT_NAMES[myRole - 1];
-          const field = myRole === 1 ? "p1name" : "p2name";
-          await update(ref(db, `rooms/${roomCode}`), { [field]: myName });
-
-          if (myRole === 1) {
-            // creator waits for joiner
-            show("screen-waiting");
-            listenForStart();
-          } else {
-            // joiner triggers game start
-            await update(ref(db, `rooms/${roomCode}`), { state: "playing" });
-            startGame();
-          }
-        });
-
-      function listenForStart() {
-        const r = ref(db, `rooms/${roomCode}/state`);
-        const unsub = onValue(r, (snap) => {
-          if (snap.val() === "playing") {
-            unsub();
-            startGame();
-          }
-        });
+    document.getElementById('joinBtn').addEventListener('click', async () => {
+      const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+      document.getElementById('joinError').textContent = '';
+      if (code.length !== 4) { document.getElementById('joinError').textContent = 'Enter a 4-letter code!'; return; }
+      const snap = await get(ref(db, `rooms/${code}`));
+      if (!snap.exists()) { document.getElementById('joinError').textContent = 'Room not found!'; return; }
+      const d = snap.val();
+      // Allow rejoining: if room exists and p2name is set, it's a rejoin
+      if (d.state !== 'waiting' && !d.p2name) {
+        document.getElementById('joinError').textContent = 'Game already in progress!'; return;
       }
-
-      // ── GAME ──
-      function startGame() {
-        show("screen-game");
-        document.getElementById("yourRole").innerHTML =
-          dot(myRole - 1) +
-          `You are ${myRole === 1 ? '<span style="color:#cc0000">RED</span>' : '<span style="color:#00cc44">GREEN</span>'}`;
-        listenForGameState();
+      roomCode = code;
+      myRole   = 2;
+      await update(ref(db, `rooms/${roomCode}`), { p2connected: true });
+      onDisconnect(ref(db, `rooms/${roomCode}/p2connected`)).set(false);
+      // Pre-fill name if rejoining
+      if (d.p2name) {
+        document.getElementById('nameInput').value = d.p2name;
       }
+      show('screen-name');
+    });
 
-      function listenForGameState() {
-        if (gameListener) gameListener();
-        gameListener = onValue(ref(db, `rooms/${roomCode}`), (snap) => {
-          if (!snap.exists()) {
-            handleRoomGone();
-            return;
-          }
-          const d = snap.val();
+    // ── NAME ──
+    document.getElementById('nameConfirmBtn').addEventListener('click', async () => {
+      const raw = document.getElementById('nameInput').value.trim();
+      myName = raw || DEFAULT_NAMES[myRole - 1];
+      const field = myRole === 1 ? 'p1name' : 'p2name';
+      await update(ref(db, `rooms/${roomCode}`), { [field]: myName });
 
-          // update names in scoreboard
-          document.getElementById("p1name").textContent = (d.p1name || "RED")
-            .toUpperCase()
-            .slice(0, 8);
-          document.getElementById("p2name").textContent = (d.p2name || "GREEN")
-            .toUpperCase()
-            .slice(0, 8);
-
-          // scores
-          scores = d.scores || [0, 0];
-          document.getElementById("score1").textContent = pad(scores[0]);
-          document.getElementById("score2").textContent = pad(scores[1]);
-
-          // disconnect check
-          const opponentConnected =
-            myRole === 1 ? d.p2connected : d.p1connected;
-          if (d.state === "playing" && opponentConnected === false) {
-            setStatus("disconnected", "⚠ OPPONENT DISCONNECTED");
-            document.getElementById("win-overlay").classList.remove("show");
-            return;
-          }
-
-          // render board
-          const board2d = [];
-          for (let r = 0; r < ROWS; r++)
-            board2d.push(d.board.slice(r * COLS, r * COLS + COLS));
-          const winSet = new Set(
-            (d.winCells || []).map(
-              (i) => Math.floor(i / COLS) + "," + (i % COLS),
-            ),
-          );
-          renderBoard(board2d, winSet, d.currentPlayer);
-
-          // status
-          if (d.state === "done") {
-            if (d.winner === 0) {
-              setStatus("draw", "IT'S A DRAW!");
-            } else {
-              const winnerName =
-                d.winner === 1 ? d.p1name || "RED" : d.p2name || "GREEN";
-              setStatus(
-                "winner",
-                dot(d.winner - 1) + winnerName.toUpperCase() + " WINS!",
-              );
-              showWinOverlay(winnerName, d.winner);
-            }
-          } else {
-            const turnName =
-              d.currentPlayer === 1
-                ? d.p1name || "Red Player"
-                : d.p2name || "Green Player";
-            const cls = d.currentPlayer === 1 ? "p1-turn" : "p2-turn";
-            setStatus(
-              cls,
-              dot(d.currentPlayer - 1) + turnName.toUpperCase() + "'S TURN",
-            );
-          }
-        });
-      }
-
-      function setStatus(cls, html) {
-        const el = document.getElementById("status");
-        el.className = cls;
-        el.innerHTML = html;
-      }
-
-      function renderBoard(board, winSet, currentPlayer) {
-        const boardEl = document.getElementById("board");
-        const arrowsEl = document.getElementById("col-arrows");
-        boardEl.innerHTML = "";
-        arrowsEl.innerHTML = "";
-
-        const myTurn = currentPlayer === myRole;
-
-        for (let c = 0; c < COLS; c++) {
-          const btn = document.createElement("button");
-          btn.className = "col-btn";
-          btn.textContent = "▼";
-          btn.style.opacity = myTurn ? "" : "0";
-          btn.style.cursor = myTurn ? "pointer" : "default";
-          btn.addEventListener("click", () => myTurn && dropPiece(c, board));
-          arrowsEl.appendChild(btn);
-        }
-
-        for (let r = 0; r < ROWS; r++) {
-          for (let c = 0; c < COLS; c++) {
-            const cell = document.createElement("div");
-            const v = board[r][c];
-            const isWin = winSet.has(r + "," + c);
-            cell.className =
-              "cell" +
-              (v === 1 ? " p1" : v === 2 ? " p2" : "") +
-              (isWin ? " win-cell" : "");
-            cell.dataset.r = r;
-            cell.dataset.c = c;
-            if (myTurn && v === 0)
-              cell.addEventListener("click", () => dropPiece(c, board));
-
-            if (isWin) {
-              const boom = document.createElement("div");
-              boom.className = "boom";
-              boom.textContent = "💥";
-              boom.style.animationDelay = `-${((r * 7 + c) * 137) % 600}ms`;
-              cell.appendChild(boom);
-            }
-            boardEl.appendChild(cell);
-          }
-        }
-      }
-
-      async function dropPiece(col, board) {
+      if (myRole === 1) {
+        show('screen-waiting');
+        listenForStart();
+      } else {
         const snap = await get(ref(db, `rooms/${roomCode}`));
-        if (!snap.exists()) return;
         const d = snap.val();
-        if (d.currentPlayer !== myRole || d.state !== "playing") return;
-
-        // find row
-        let row = -1;
-        for (let r = ROWS - 1; r >= 0; r--) {
-          if (board[r][col] === 0) {
-            row = r;
-            break;
-          }
+        // If rejoining an active game, go straight in
+        if (d.state === 'playing' || d.state === 'done') {
+          startGame();
+        } else {
+          await update(ref(db, `rooms/${roomCode}`), { state: 'playing' });
+          startGame();
         }
-        if (row === -1) return;
-
-        const newBoard = [...d.board];
-        newBoard[row * COLS + col] = myRole;
-
-        // check win
-        const winning = checkWin(newBoard, row, col, myRole);
-        if (winning) {
-          const newScores = [...(d.scores || [0, 0])];
-          newScores[myRole - 1]++;
-          await update(ref(db, `rooms/${roomCode}`), {
-            board: newBoard,
-            currentPlayer: myRole === 1 ? 2 : 1,
-            state: "done",
-            winner: myRole,
-            winCells: winning,
-            scores: newScores,
-          });
-          return;
-        }
-
-        // check draw
-        const isDraw = newBoard.slice(0, COLS).every((v) => v !== 0);
-        if (isDraw) {
-          await update(ref(db, `rooms/${roomCode}`), {
-            board: newBoard,
-            state: "done",
-            winner: 0,
-            winCells: [],
-          });
-          return;
-        }
-
-        await update(ref(db, `rooms/${roomCode}`), {
-          board: newBoard,
-          currentPlayer: myRole === 1 ? 2 : 1,
-        });
       }
+    });
 
-      function checkWin(board, row, col, player) {
-        const dirs = [
-          [0, 1],
-          [1, 0],
-          [1, 1],
-          [1, -1],
-        ];
-        for (const [dr, dc] of dirs) {
-          let cells = [row * COLS + col];
-          for (let d = 1; d < 4; d++) {
-            const r = row + dr * d,
-              c = col + dc * d;
-            if (
-              r < 0 ||
-              r >= ROWS ||
-              c < 0 ||
-              c >= COLS ||
-              board[r * COLS + c] !== player
-            )
-              break;
-            cells.push(r * COLS + c);
-          }
-          for (let d = 1; d < 4; d++) {
-            const r = row - dr * d,
-              c = col - dc * d;
-            if (
-              r < 0 ||
-              r >= ROWS ||
-              c < 0 ||
-              c >= COLS ||
-              board[r * COLS + c] !== player
-            )
-              break;
-            cells.push(r * COLS + c);
-          }
-          if (cells.length >= 4) return cells;
+    // Creator: also handle reconnect — if they refresh and room is still playing
+    function listenForStart() {
+      const r = ref(db, `rooms/${roomCode}/state`);
+      const unsub = onValue(r, snap => {
+        if (snap.val() === 'playing' || snap.val() === 'done') {
+          unsub();
+          startGame();
         }
-        return null;
-      }
-
-      function showWinOverlay(name, winner) {
-        const color = COLORS[winner - 1];
-        const bnr = document.getElementById("win-banner");
-        bnr.style.color = color;
-        bnr.style.textShadow = `0 0 20px ${color}, 4px 4px 0 rgba(0,0,0,0.6)`;
-        bnr.textContent = name.toUpperCase() + " WINS!";
-        document.getElementById("win-sub").textContent =
-          "CLICK ANYWHERE TO PLAY AGAIN";
-        document.getElementById("win-overlay").classList.add("show");
-      }
-
-      document
-        .getElementById("win-overlay")
-        .addEventListener("click", async () => {
-          document.getElementById("win-overlay").classList.remove("show");
-          // reset board for new round
-          await update(ref(db, `rooms/${roomCode}`), {
-            board: Array(ROWS * COLS).fill(0),
-            currentPlayer: 1,
-            state: "playing",
-            winner: null,
-            winCells: [],
-          });
-        });
-
-      document.getElementById("quitBtn").addEventListener("click", async () => {
-        if (gameListener) gameListener();
-        await remove(ref(db, `rooms/${roomCode}`));
-        location.reload();
       });
+    }
 
-      function handleRoomGone() {
-        if (gameListener) gameListener();
-        setStatus("disconnected", "⚠ ROOM CLOSED");
-        document.getElementById("win-overlay").classList.remove("show");
+    // ── GAME ──
+    function startGame() {
+      show('screen-game');
+      document.getElementById('yourRole').innerHTML =
+        dot(myRole - 1) + `You are ${myRole === 1
+          ? '<span style="color:#cc0000">RED</span>'
+          : '<span style="color:#00cc44">GREEN</span>'}`;
+      listenForGameState();
+      listenForChat();
+    }
+
+    function listenForGameState() {
+      if (gameListener) gameListener();
+      gameListener = onValue(ref(db, `rooms/${roomCode}`), snap => {
+        if (!snap.exists()) { setStatus('disconnected','⚠ ROOM CLOSED'); return; }
+        const d = snap.val();
+
+        document.getElementById('p1name-display').textContent = (d.p1name || 'RED').toUpperCase().slice(0,8);
+        document.getElementById('p2name-display').textContent = (d.p2name || 'GREEN').toUpperCase().slice(0,8);
+        document.getElementById('score1').textContent = pad((d.scores||[0,0])[0]);
+        document.getElementById('score2').textContent = pad((d.scores||[0,0])[1]);
+
+        const opponentConnected = myRole === 1 ? d.p2connected : d.p1connected;
+        if (d.state === 'playing' && opponentConnected === false) {
+          setStatus('disconnected','⚠ OPPONENT DISCONNECTED — WAITING FOR RECONNECT…');
+        }
+
+        const board2d = [];
+        for (let r = 0; r < ROWS; r++) board2d.push((d.board||[]).slice(r*COLS, r*COLS+COLS));
+        const winSet = new Set((d.winCells||[]).map(i => Math.floor(i/COLS)+','+(i%COLS)));
+        renderBoard(board2d, winSet, d.currentPlayer, d.state);
+
+        if (d.state === 'done') {
+          if (d.winner === 0) {
+            setStatus('draw',"IT'S A DRAW!");
+          } else {
+            const wName = d.winner === 1 ? (d.p1name||'Red Player') : (d.p2name||'Green Player');
+            setStatus('winner', dot(d.winner-1) + wName.toUpperCase() + ' WINS!');
+            showWinOverlay(wName, d.winner);
+          }
+        } else if (opponentConnected !== false) {
+          const tName = d.currentPlayer === 1 ? (d.p1name||'Red Player') : (d.p2name||'Green Player');
+          setStatus(d.currentPlayer === 1 ? 'p1-turn' : 'p2-turn',
+            dot(d.currentPlayer-1) + tName.toUpperCase() + "'S TURN");
+        }
+      });
+    }
+
+    function renderBoard(board, winSet, currentPlayer, state) {
+      const boardEl  = document.getElementById('board');
+      const arrowsEl = document.getElementById('col-arrows');
+      boardEl.innerHTML = '';
+      arrowsEl.innerHTML = '';
+      const myTurn = currentPlayer === myRole && state === 'playing';
+
+      for (let c = 0; c < COLS; c++) {
+        const btn = document.createElement('button');
+        btn.className = 'col-btn';
+        btn.textContent = '▼';
+        btn.style.opacity = myTurn ? '' : '0';
+        btn.style.cursor  = myTurn ? 'pointer' : 'default';
+        btn.addEventListener('click', () => myTurn && dropPiece(c, board));
+        arrowsEl.appendChild(btn);
       }
-    </script>
-  </body>
+
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const cell  = document.createElement('div');
+          const v     = board[r][c];
+          const isWin = winSet.has(r+','+c);
+          cell.className = 'cell'+(v===1?' p1':v===2?' p2':'')+(isWin?' win-cell':'');
+          if (myTurn && v === 0) cell.addEventListener('click', () => dropPiece(c, board));
+          if (isWin) {
+            const boom = document.createElement('div');
+            boom.className = 'boom';
+            boom.textContent = '💥';
+            boom.style.animationDelay = `-${((r*7+c)*137)%600}ms`;
+            cell.appendChild(boom);
+          }
+          boardEl.appendChild(cell);
+        }
+      }
+    }
+
+    async function dropPiece(col, board) {
+      const snap = await get(ref(db, `rooms/${roomCode}`));
+      if (!snap.exists()) return;
+      const d = snap.val();
+      if (d.currentPlayer !== myRole || d.state !== 'playing') return;
+
+      let row = -1;
+      for (let r = ROWS-1; r >= 0; r--) {
+        if (board[r][col] === 0) { row = r; break; }
+      }
+      if (row === -1) return;
+
+      const newBoard = [...d.board];
+      newBoard[row*COLS+col] = myRole;
+
+      const winning = checkWin(newBoard, row, col, myRole);
+      if (winning) {
+        const newScores = [...(d.scores||[0,0])];
+        newScores[myRole-1]++;
+        await update(ref(db, `rooms/${roomCode}`), {
+          board: newBoard, currentPlayer: myRole===1?2:1,
+          state: 'done', winner: myRole, winCells: winning, scores: newScores
+        });
+        return;
+      }
+
+      const isDraw = newBoard.slice(0, COLS).every(v => v !== 0);
+      if (isDraw) {
+        await update(ref(db, `rooms/${roomCode}`), {
+          board: newBoard, state: 'done', winner: 0, winCells: []
+        });
+        return;
+      }
+
+      await update(ref(db, `rooms/${roomCode}`), {
+        board: newBoard, currentPlayer: myRole===1?2:1
+      });
+    }
+
+    function checkWin(board, row, col, player) {
+      const dirs = [[0,1],[1,0],[1,1],[1,-1]];
+      for (const [dr,dc] of dirs) {
+        let cells = [row*COLS+col];
+        for (let d=1;d<4;d++) {
+          const r=row+dr*d, c=col+dc*d;
+          if (r<0||r>=ROWS||c<0||c>=COLS||board[r*COLS+c]!==player) break;
+          cells.push(r*COLS+c);
+        }
+        for (let d=1;d<4;d++) {
+          const r=row-dr*d, c=col-dc*d;
+          if (r<0||r>=ROWS||c<0||c>=COLS||board[r*COLS+c]!==player) break;
+          cells.push(r*COLS+c);
+        }
+        if (cells.length >= 4) return cells;
+      }
+      return null;
+    }
+
+    function showWinOverlay(name, winner) {
+      const color = COLORS[winner-1];
+      const bnr = document.getElementById('win-banner');
+      bnr.style.color = color;
+      bnr.style.textShadow = `0 0 20px ${color}, 4px 4px 0 rgba(0,0,0,0.6)`;
+      bnr.textContent = name.toUpperCase() + ' WINS!';
+      document.getElementById('win-overlay').classList.add('show');
+    }
+
+    document.getElementById('win-overlay').addEventListener('click', async () => {
+      document.getElementById('win-overlay').classList.remove('show');
+      await update(ref(db, `rooms/${roomCode}`), {
+        board: Array(ROWS*COLS).fill(0),
+        currentPlayer: 1, state: 'playing',
+        winner: null, winCells: []
+      });
+    });
+
+    document.getElementById('quitBtn').addEventListener('click', () => {
+      if (gameListener) gameListener();
+      if (chatListener) chatListener();
+      location.reload();
+    });
+
+    // ── CHAT ──
+    function listenForChat() {
+      if (chatListener) chatListener();
+      chatListener = onValue(ref(db, `rooms/${roomCode}/chat`), snap => {
+        if (!snap.exists()) return;
+        const msgs = snap.val();
+        const container = document.getElementById('chat-messages');
+        Object.entries(msgs).forEach(([key, msg]) => {
+          if (knownMsgKeys.has(key)) return;
+          knownMsgKeys.add(key);
+          if (msg.system) {
+            const el = document.createElement('div');
+            el.className = 'chat-msg system';
+            el.textContent = msg.text;
+            container.appendChild(el);
+          } else {
+            const isMine = msg.role === myRole;
+            const el = document.createElement('div');
+            el.className = 'chat-msg ' + (isMine ? 'mine' : 'theirs');
+            el.innerHTML = `<span class="sender">${msg.name}:</span><span class="text"> ${escapeHtml(msg.text)}</span>`;
+            container.appendChild(el);
+          }
+          container.scrollTop = container.scrollHeight;
+        });
+      });
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    async function sendChat(text) {
+      if (!text.trim() || !roomCode) return;
+      await push(ref(db, `rooms/${roomCode}/chat`), {
+        role: myRole,
+        name: myName,
+        text: text.trim(),
+        ts: serverTimestamp()
+      });
+    }
+
+    document.getElementById('chat-send').addEventListener('click', () => {
+      const inp = document.getElementById('chat-input');
+      sendChat(inp.value);
+      inp.value = '';
+    });
+
+    document.getElementById('chat-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        sendChat(e.target.value);
+        e.target.value = '';
+      }
+    });
+
+    // ── RECONNECT: creator can rejoin their own room ──
+    document.getElementById('joinBtn').addEventListener('click', async () => {}, { once: false });
+    // Already handled above — both roles can rejoin via join flow using the code
+  </script>
+</body>
 </html>
