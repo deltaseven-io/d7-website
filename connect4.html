@@ -638,6 +638,19 @@
     let roomCode, myRole, myName, gameListener, chatListener;
     let knownMsgKeys = new Set();
 
+    // ── SESSION PERSISTENCE ──
+    function saveSession() {
+      localStorage.setItem('c4_room', roomCode);
+      localStorage.setItem('c4_role', myRole);
+      localStorage.setItem('c4_name', myName);
+    }
+
+    function clearSession() {
+      localStorage.removeItem('c4_room');
+      localStorage.removeItem('c4_role');
+      localStorage.removeItem('c4_name');
+    }
+
     function show(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
@@ -744,6 +757,7 @@
 
     // ── GAME ──
     function startGame() {
+      saveSession();
       show('screen-game');
       // Star indicator on correct side
       document.getElementById('p1star').style.display = myRole===1 ? 'inline' : 'none';
@@ -757,7 +771,7 @@
     function listenForGameState() {
       if (gameListener) gameListener();
       gameListener = onValue(ref(db, `rooms/${roomCode}`), snap => {
-        if (!snap.exists()) { setStatus('disconnected','⚠ ROOM CLOSED'); return; }
+        if (!snap.exists()) { setStatus('disconnected','⚠ ROOM CLOSED'); clearSession(); return; }
         const d = snap.val();
 
         document.getElementById('p1name-display').textContent = (d.p1name||'RED').toUpperCase().slice(0,8);
@@ -914,6 +928,7 @@
     document.getElementById('quitBtn').addEventListener('click', () => {
       if (gameListener) gameListener();
       if (chatListener) chatListener();
+      clearSession();
       location.reload();
     });
 
@@ -966,11 +981,31 @@
     // ── AUTO-JOIN FROM URL ──
     (function() {
       const params = new URLSearchParams(window.location.search);
-      const code = params.get('join');
-      if (code) {
-        document.getElementById('joinCodeInput').value = code.toUpperCase();
-        // slight delay so DOM is ready
+      const urlCode = params.get('join');
+      if (urlCode) {
+        document.getElementById('joinCodeInput').value = urlCode.toUpperCase();
         setTimeout(() => document.getElementById('joinBtn').click(), 200);
+        return;
+      }
+
+      // ── RESTORE SESSION after disconnect/refresh ──
+      const savedRoom = localStorage.getItem('c4_room');
+      const savedRole = parseInt(localStorage.getItem('c4_role'));
+      const savedName = localStorage.getItem('c4_name');
+      if (savedRoom && savedRole && savedName) {
+        (async () => {
+          const snap = await get(ref(db, `rooms/${savedRoom}`));
+          if (!snap.exists()) { clearSession(); return; }
+          const d = snap.val();
+          if (d.state === 'waiting' && savedRole === 1) { clearSession(); return; }
+          roomCode = savedRoom;
+          myRole   = savedRole;
+          myName   = savedName;
+          const connField = myRole === 1 ? 'p1connected' : 'p2connected';
+          await update(ref(db, `rooms/${roomCode}`), { [connField]: true });
+          onDisconnect(ref(db, `rooms/${roomCode}/${connField}`)).set(false);
+          startGame();
+        })();
       }
     })();
   </script>
