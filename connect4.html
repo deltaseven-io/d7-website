@@ -978,34 +978,39 @@
     document.getElementById('chat-input').addEventListener('keydown', e => {
       if (e.key==='Enter') { sendChat(e.target.value); e.target.value=''; }
     });
-    // ── AUTO-JOIN FROM URL ──
-    (function() {
+    // ── STARTUP: session restore takes priority over URL join param ──
+    (async function() {
+      const savedRoom = localStorage.getItem('c4_room');
+      const savedRole = parseInt(localStorage.getItem('c4_role'));
+      const savedName = localStorage.getItem('c4_name');
+
+      // If we have a valid saved session, always restore it — ignore the URL param
+      if (savedRoom && savedRole && savedName) {
+        const snap = await get(ref(db, `rooms/${savedRoom}`));
+        if (snap.exists()) {
+          const d = snap.val();
+          // Only restore if the room is actually in progress (not just waiting for P2)
+          if (!(d.state === 'waiting' && savedRole === 1 && !d.p2name)) {
+            roomCode = savedRoom;
+            myRole   = savedRole;
+            myName   = savedName;
+            const connField = myRole === 1 ? 'p1connected' : 'p2connected';
+            await update(ref(db, `rooms/${roomCode}`), { [connField]: true });
+            onDisconnect(ref(db, `rooms/${roomCode}/${connField}`)).set(false);
+            startGame();
+            return;
+          }
+        }
+        // Session invalid — clear it and fall through
+        clearSession();
+      }
+
+      // No valid session — check URL for a join code
       const params = new URLSearchParams(window.location.search);
       const urlCode = params.get('join');
       if (urlCode) {
         document.getElementById('joinCodeInput').value = urlCode.toUpperCase();
         setTimeout(() => document.getElementById('joinBtn').click(), 200);
-        return;
-      }
-
-      // ── RESTORE SESSION after disconnect/refresh ──
-      const savedRoom = localStorage.getItem('c4_room');
-      const savedRole = parseInt(localStorage.getItem('c4_role'));
-      const savedName = localStorage.getItem('c4_name');
-      if (savedRoom && savedRole && savedName) {
-        (async () => {
-          const snap = await get(ref(db, `rooms/${savedRoom}`));
-          if (!snap.exists()) { clearSession(); return; }
-          const d = snap.val();
-          if (d.state === 'waiting' && savedRole === 1) { clearSession(); return; }
-          roomCode = savedRoom;
-          myRole   = savedRole;
-          myName   = savedName;
-          const connField = myRole === 1 ? 'p1connected' : 'p2connected';
-          await update(ref(db, `rooms/${roomCode}`), { [connField]: true });
-          onDisconnect(ref(db, `rooms/${roomCode}/${connField}`)).set(false);
-          startGame();
-        })();
       }
     })();
   </script>
