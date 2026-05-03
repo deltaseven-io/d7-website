@@ -822,7 +822,7 @@
               >Now on EZ Mode — multiple choice answers</span
             ></span
           >
-          <div class="s-pill on" id="opt-mode"><div class="s-knob"></div></div>
+          <div class="s-pill on" id="opt-mode" style="opacity:0.35;cursor:not-allowed;pointer-events:none"><div class="s-knob"></div></div>
         </div>
 
         <div class="opt-section">TIMER</div>
@@ -1343,17 +1343,10 @@
         bestStreak = 0;
 
       function updateModeToggleText() {
-        const isEz = S.mode === "ez";
         $("mode-label-text").innerHTML =
-          `${isEz ? "EZ Mode" : "Challenge Mode"}<span class="opt-sub">Now on ${isEz ? "EZ Mode — multiple choice answers" : "Challenge Mode — spin the number drums"}</span>`;
+          'EZ Mode<span class="opt-sub">Multiple choice answers</span>';
       }
 
-      const modePill = $("opt-mode");
-      modePill.addEventListener("click", () => {
-        S.mode = S.mode === "ez" ? "challenge" : "ez";
-        modePill.classList.toggle("on", S.mode === "ez");
-        updateModeToggleText();
-      });
       updateModeToggleText();
 
       function makePill(id, key) {
