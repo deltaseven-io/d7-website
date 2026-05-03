@@ -51,22 +51,11 @@
         pointer-events: none;
         z-index: 0;
       }
-      .star {
+      #star-canvas {
         position: absolute;
-        width: 2px;
-        height: 2px;
-        background: #fff;
-        border-radius: 50%;
-        animation: twinkle 3s infinite;
-      }
-      @keyframes twinkle {
-        0%,
-        100% {
-          opacity: 0.1;
-        }
-        50% {
-          opacity: 0.9;
-        }
+        inset: 0;
+        width: 100%;
+        height: 100%;
       }
 
       /* HUD */
@@ -218,37 +207,9 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 10px 14px 4px;
+        padding: 60px 14px 4px;
         position: relative;
         z-index: 2;
-      }
-      #timer-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 60px;
-        width: 100%;
-      }
-      #timer-bar-wrap {
-        flex: 1;
-        height: 5px;
-        background: #1a1a1a;
-        border-radius: 3px;
-        overflow: hidden;
-      }
-      #timer-bar {
-        height: 5px;
-        width: 100%;
-        border-radius: 3px;
-        transition:
-          width 0.1s linear,
-          background 0.3s;
-      }
-      #timer-num {
-        font-family: "Press Start 2P", monospace;
-        font-size: 10px;
-        min-width: 26px;
-        text-align: right;
       }
       #expression {
         font-family: "Press Start 2P", monospace;
@@ -707,19 +668,6 @@
         transform: translateX(19px);
         background: #ff0;
       }
-      #timer-slider-wrap {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        width: 100%;
-        margin-top: 4px;
-      }
-      #timer-slider {
-        flex: 1;
-        accent-color: #ff0;
-        cursor: pointer;
-        height: 4px;
-      }
       #timer-val {
         font-family: "Press Start 2P", monospace;
         font-size: 8px;
@@ -873,7 +821,7 @@
   </head>
   <body>
     <div id="game">
-      <div id="stars"></div>
+      <div id="stars"><canvas id="star-canvas"></canvas></div>
       <div id="hud">
         <div id="hud-left">
           <div id="score-label">SCORE</div>
@@ -904,10 +852,6 @@
       </div>
 
       <div id="question-area">
-        <div id="timer-row">
-          <div id="timer-bar-wrap"><div id="timer-bar"></div></div>
-          <div id="timer-num">60</div>
-        </div>
         <div id="expression"></div>
         <div id="topic-tag"></div>
         <div id="hint-text"></div>
@@ -944,29 +888,7 @@
           >
           <div class="s-pill on" id="opt-mode"><div class="s-knob"></div></div>
         </div>
-
-        <div class="opt-section">TIMER</div>
-        <div class="opt-row">
-          <span class="opt-label">Enable Timer</span>
-          <div class="s-pill" id="opt-timer"><div class="s-knob"></div></div>
-        </div>
-        <div
-          class="opt-row"
-          style="flex-direction: column; align-items: flex-start; gap: 5px"
-        >
-          <span class="opt-label">Time Limit</span>
-          <div id="timer-slider-wrap">
-            <input
-              type="range"
-              id="timer-slider"
-              min="10"
-              max="120"
-              step="5"
-              value="60"
-            />
-            <span id="timer-val">60s</span>
-          </div>
-        </div>
+      
 
         <div class="opt-section">QUESTION TYPES</div>
         <div class="opt-row">
@@ -1039,14 +961,131 @@
   <div id="streak-flash"></div>
 
     <script>
-      for (let i = 0; i < 40; i++) {
-        const s = document.createElement("div");
-        s.className = "star";
-        s.style.left = Math.random() * 100 + "%";
-        s.style.top = Math.random() * 100 + "%";
-        s.style.animationDelay = Math.random() * 3 + "s";
-        document.getElementById("stars").appendChild(s);
-      }
+      // ── STAR FIELD (canvas-based, supports hyperspace) ──
+      (function() {
+        const canvas = document.getElementById("star-canvas");
+        const gameEl = document.getElementById("game");
+        let W, H, ctx, stars, hyperspaceActive = false, hyperspaceT = 0;
+        const STAR_COUNT = 280;
+        const HYPER_DURATION = 3200; // ms
+
+        function resize() {
+          W = gameEl.offsetWidth || 420;
+          H = gameEl.offsetHeight || window.innerHeight;
+          canvas.width = W;
+          canvas.height = H;
+        }
+
+        function makeStar() {
+          // polar coords from center
+          const angle = Math.random() * Math.PI * 2;
+          const dist  = Math.random() * Math.max(W, H) * 0.72;
+          return {
+            angle,
+            dist,
+            baseDist: dist,
+            x: W/2 + Math.cos(angle) * dist,
+            y: H/2 + Math.sin(angle) * dist,
+            size: Math.random() * 2.0 + 0.6,
+            opacity: Math.random() * 0.8 + 0.25,
+            twinkleOffset: Math.random() * Math.PI * 2,
+            twinkleSpeed: 0.5 + Math.random() * 1.5,
+          };
+        }
+
+        function initStars() {
+          stars = Array.from({length: STAR_COUNT}, makeStar);
+        }
+
+        let lastT = 0;
+        let hyperStart = 0;
+
+        function draw(ts) {
+          if (!ctx) return;
+          resize();
+          ctx.clearRect(0, 0, W, H);
+
+          const t = ts / 1000;
+          const dt = t - lastT;
+          lastT = t;
+
+          if (hyperspaceActive) {
+            const elapsed = ts - hyperStart;
+            const progress = Math.min(elapsed / HYPER_DURATION, 1);
+            // ease-in curve — slow start, explosive end
+            const eased = progress < 0.5
+              ? 2 * progress * progress
+              : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+            stars.forEach(star => {
+              // stretch distance from center
+              const stretchFactor = 1 + eased * eased * 55;
+              const d = star.baseDist * stretchFactor;
+              const sx = W/2 + Math.cos(star.angle) * d;
+              const sy = H/2 + Math.sin(star.angle) * d;
+
+              // tail length grows with speed
+              const tailLen = eased * eased * 380 + 2;
+              const tx = W/2 + Math.cos(star.angle) * (d - tailLen);
+              const ty = H/2 + Math.sin(star.angle) * (d - tailLen);
+
+              // alpha: full bright during jump, fade at very end
+              const alpha = progress > 0.92
+                ? (1 - progress) / 0.08
+                : 0.85 + eased * 0.15;
+
+              const gradient = ctx.createLinearGradient(tx, ty, sx, sy);
+              gradient.addColorStop(0,   `rgba(255,255,255,0)`);
+              gradient.addColorStop(0.25, `rgba(180,210,255,${alpha * 0.4})`);
+              gradient.addColorStop(0.7,  `rgba(220,235,255,${alpha * 0.85})`);
+              gradient.addColorStop(1,    `rgba(255,255,255,${alpha})`);
+
+              ctx.beginPath();
+              ctx.moveTo(tx, ty);
+              ctx.lineTo(sx, sy);
+              ctx.lineWidth = star.size * (1.5 + eased * 3);
+              ctx.strokeStyle = gradient;
+              ctx.stroke();
+
+              // extra bright core dot at head
+              ctx.beginPath();
+              ctx.arc(sx, sy, star.size * (0.8 + eased * 1.5), 0, Math.PI * 2);
+              ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+              ctx.fill();
+            });
+
+            if (progress >= 1) {
+              hyperspaceActive = false;
+              // re-scatter stars after jump
+              initStars();
+            }
+          } else {
+            // Normal twinkle
+            stars.forEach(star => {
+              const twinkle = 0.3 + 0.7 * (0.5 + 0.5 * Math.sin(t * star.twinkleSpeed + star.twinkleOffset));
+              ctx.beginPath();
+              ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+              ctx.fillStyle = `rgba(255,255,255,${star.opacity * twinkle})`;
+              ctx.fill();
+            });
+          }
+
+          requestAnimationFrame(draw);
+        }
+
+        // expose hyperspace trigger globally
+        window._hyperspaceJump = function() {
+          if (hyperspaceActive) return;
+          hyperspaceActive = true;
+          hyperStart = performance.now();
+          lastT = hyperStart / 1000;
+        };
+
+        resize();
+        ctx = canvas.getContext("2d");
+        initStars();
+        requestAnimationFrame(draw);
+      })();
 
       function shuffle(a) {
         const b = [...a];
@@ -1337,8 +1376,6 @@
 
       const S = {
         mode: "ez",
-        timerOn: false,
-        timerMax: 60,
         gcf: true,
         dos: true,
         tri1: true,
@@ -1496,9 +1533,7 @@
         hintEl = $("hint-text"),
         feedbackEl = $("feedback-banner"),
         comboPopEl = $("combo-popup");
-      const comboBarEl = $("combo-bar"),
-        timerBarEl = $("timer-bar"),
-        timerNumEl = $("timer-num");
+      const comboBarEl = $("combo-bar");
       const factoredArea = $("factored-area"),
         choicesEl = $("choices"),
         submitWrap = $("submit-wrap"),
@@ -1538,17 +1573,12 @@
           pill.classList.toggle("on", S[key]);
         });
       }
-      makePill("opt-timer", "timerOn");
       makePill("opt-gcf", "gcf");
       makePill("opt-dos", "dos");
       makePill("opt-tri1", "tri1");
       makePill("opt-trip", "trip");
       makePill("opt-tric", "tric");
       makePill("opt-grp", "grp");
-      $("timer-slider").addEventListener("input", function () {
-        S.timerMax = +this.value;
-        $("timer-val").textContent = this.value + "s";
-      });
       $("options-btn").addEventListener("click", () =>
         $("options-panel").classList.add("show"),
       );
@@ -1561,8 +1591,6 @@
         lives,
         combo,
         comboMax,
-        timeLeft,
-        timerInterval,
         level,
         streak,
         problems,
@@ -1710,41 +1738,11 @@
         submitWrap.style.display = useDrums ? "block" : "none";
         if (useDrums) buildDrums(currentP);
         else buildChoices(currentP);
-        startTimer();
       }
 
-      function startTimer() {
-        clearInterval(timerInterval);
-        if (!S.timerOn) {
-          timerBarEl.style.width = "100%";
-          timerBarEl.style.background = "#333";
-          timerNumEl.textContent = "∞";
-          timerNumEl.style.color = "#555";
-          return;
-        }
-        timeLeft = S.timerMax;
-        updateTimer();
-        timerInterval = setInterval(() => {
-          timeLeft--;
-          updateTimer();
-          if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            timeUp();
-          }
-        }, 1000);
-      }
-      function updateTimer() {
-        const pct = (timeLeft / S.timerMax) * 100;
-        timerBarEl.style.width = pct + "%";
-        timerBarEl.style.background =
-          timeLeft <= 8 ? "#f00" : timeLeft <= 15 ? "#fa0" : "#ff0";
-        timerNumEl.textContent = timeLeft;
-        timerNumEl.style.color = timeLeft <= 8 ? "#f55" : "#fff";
-      }
 
       function onCorrect(pts) {
         locked = true;
-        clearInterval(timerInterval);
         combo++;
         streak++;
         if (combo > comboMax) comboMax = combo;
@@ -1783,8 +1781,7 @@
         feedbackEl.textContent = "✗ INCORRECT";
         feedbackEl.style.color = "#f55";
         if (lives <= 0) {
-          clearInterval(timerInterval);
-          setTimeout(endGame, 700);
+            setTimeout(endGame, 700);
         }
       }
 
@@ -1884,7 +1881,7 @@
         if (btn._answer === p.correct) {
           btn.classList.add("correct");
           startSpark(btn);
-          onCorrect(S.timerOn ? 100 + timeLeft * 4 : 150);
+          onCorrect(150);
         } else {
           btn.classList.add("wrong");
           addEmoji(btn, "🥺");
@@ -1990,7 +1987,7 @@
           submitBtn.textContent = "";
           startSpark(submitBtn);
           animateFireCorrect(submitBtn);
-          onCorrect(S.timerOn ? 150 + timeLeft * 5 : 200);
+          onCorrect(200);
         } else {
           submitBtn.classList.add("wrong-shake");
           setTimeout(() => submitBtn.classList.remove("wrong-shake"), 350);
@@ -2068,7 +2065,7 @@
         }
       }
       function updateLevelBar() {
-        const threshold = (typeof LEVEL_THRESHOLDS !== "undefined" && LEVEL_THRESHOLDS[level]) || 10;
+        const threshold = (typeof LEVEL_THRESHOLDS !== "undefined" && LEVEL_THRESHOLDS[level]) || 7;
         const pct = Math.min((problems / threshold) * 100, 100);
         comboBarEl.style.width = pct + "%";
         // colour shifts as you get close: blue → cyan → green
@@ -2374,20 +2371,24 @@
       }
 
       // Correct answers needed to complete each level (index = level number)
-      const LEVEL_THRESHOLDS = [0, 5, 7, 10, 10, 10, 10]; // levels 1-6
+      const LEVEL_THRESHOLDS = [0, 5, 7, 7, 7, 7, 7]; // levels 1-6
       const MAX_LEVEL = 6;
+
+      function hyperspace() {
+        if (window._hyperspaceJump) window._hyperspaceJump();
+      }
 
       function checkLevelUp() {
         problems++;
-        const threshold = LEVEL_THRESHOLDS[level] || 10;
+        const threshold = LEVEL_THRESHOLDS[level] || 7;
         if (problems >= threshold) {
           problems = 0;
           level++;
           lives++;             // bonus heart for completing a level!
           updateLives();
           locked = true;
-          clearInterval(timerInterval);
-          if (level > MAX_LEVEL) {
+          hyperspace();
+            if (level > MAX_LEVEL) {
             // Completed all levels — play victory scene then show end screen
             playVictory(() => {
               startGame();
@@ -2420,7 +2421,6 @@
         nextQuestion();
       }
       function endGame() {
-        clearInterval(timerInterval);
         overlay.classList.add("show");
         overlayTitle.innerHTML = "GAME<br>OVER";
         overlaySub.innerHTML =
