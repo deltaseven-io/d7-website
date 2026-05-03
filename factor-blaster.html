@@ -220,12 +220,14 @@
       }
       #expression {
         font-family: "Press Start 2P", monospace;
-        font-size: clamp(13px, 4.2vw, 20px);
+        font-size: clamp(16px, 7vw, 30px);
         text-align: center;
         letter-spacing: 0.06em;
         line-height: 1.6;
         margin-bottom: 3px;
-        min-height: 30px;
+        min-height: 34px;
+        width: 90%;
+        white-space: nowrap;
       }
       #topic-tag {
         font-size: 7px;
@@ -334,14 +336,15 @@
       }
       #continue-btn {
         width: 100%;
-        padding: 16px;
-        font-family: "Press Start 2P", monospace;
-        font-size: 10px;
-        letter-spacing: 0.1em;
+        padding: 18px 16px;
+        min-height: 72px;
+        font-family: "Share Tech Mono", monospace;
+        font-size: clamp(16px, 4.5vw, 22px);
+        letter-spacing: 0.03em;
         background: #0055cc;
         color: #fff;
-        border: none;
-        border-radius: 10px;
+        border: 2px solid #3377ff;
+        border-radius: 12px;
         cursor: pointer;
         transition: transform 0.08s, background 0.1s;
       }
@@ -799,7 +802,7 @@
         <button class="choice-btn"></button>
       </div>
 
-      <div id="continue-wrap" style="display:none;padding:0 12px 8px;position:relative;z-index:2">
+      <div id="continue-wrap" style="display:none;padding:0 12px 8px;position:relative;z-index:2;flex-shrink:0">
         <button id="continue-btn">CONTINUE →</button>
       </div>
 
@@ -874,7 +877,7 @@
               >e.g. 2x² + 7x + 3</span
             ></span
           >
-          <div class="s-pill on" id="opt-trip"><div class="s-knob"></div></div>
+          <div class="s-pill" id="opt-trip"><div class="s-knob"></div></div>
         </div>
         <div class="opt-row">
           <span class="opt-label"
@@ -941,34 +944,28 @@
         return `(${aStr}x ${b > 0 ? "+ " : "– "}${Math.abs(b)})`;
       }
 
+      function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while(b){const t=b;b=a%b;a=t;} return a; }
+
       function genGCF() {
-        const gcf = pick([2, 3, 4, 5, 6]);
-        const a = pick([1, 2, 3, 4, 5]);
-        const b = pick([-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]);
-        const A = gcf * a,
-          B = gcf * b;
-        const bStr = B === 0 ? "" : B > 0 ? ` + ${B}x` : ` – ${Math.abs(B)}x`;
-        const expr = `${A}x²${bStr}`;
-        const innerA = a === 1 ? "x" : `${a}x`;
-        const factored = `${gcf}x(${innerA} ${b > 0 ? "+ " : "– "}${Math.abs(b)})`;
-        const aW = a + 1;
-        const innerAW = aW === 1 ? "x" : `${aW}x`;
-        const wrongs = shuffle(
-          [
-            `${gcf}(${A === 1 ? "" : A}x² ${b > 0 ? "+ " : "– "}${Math.abs(B)}x)`,
-            `x(${A === 1 ? "" : A}x ${b > 0 ? "+ " : "– "}${Math.abs(B)})`,
-            `${gcf}x(${innerAW} ${b > 0 ? "+ " : "– "}${Math.abs(b)})`,
-            `${gcf}x²(${a} ${b > 0 ? "+ " : "– "}${Math.abs(b)})`,
-          ].filter((w) => w !== factored),
-        ).slice(0, 3);
-        return {
-          expr,
-          correct: factored,
-          wrongs,
-          topic: "gcf",
-          r1: null,
-          r2: null,
-        };
+        // gcf·x(x ± b) — always integers, always fully factored
+        const gcf = pick([2, 3, 4, 5, 6, 7, 8, 9, 10, 12]);
+        let b;
+        do { b = pick([-9,-8,-7,-6,-5,-4,-3,-2,-1,1,2,3,4,5,6,7,8,9]); }
+        while (gcd(gcf, Math.abs(b)) > 1);
+        const B = gcf * b;
+        const bStr = B > 0 ? ` + ${B}x` : ` – ${Math.abs(B)}x`;
+        const expr = `${gcf}x²${bStr}`;
+        const factored = `${gcf}x(x ${b > 0 ? "+ " : "– "}${Math.abs(b)})`;
+        const bAbs = Math.abs(b);
+        const bFlip = b > 0 ? "– " : "+ ";
+        const bKeep = b > 0 ? "+ " : "– ";
+        const wrongs = shuffle([
+          `${gcf}(x² ${bKeep}${bAbs}x)`,           // forgot the x outside
+          `${gcf}x(x ${bFlip}${bAbs})`,             // wrong sign on b
+          `${gcf}x(x ${bKeep}${bAbs + 1})`,         // b off by 1
+          `x(${gcf}x ${bKeep}${gcf * bAbs})`,       // didn't pull gcf out fully
+        ].filter(w => w !== factored)).slice(0, 3);
+        return { expr, correct: factored, wrongs, topic: "gcf", r1: null, r2: null };
       }
 
       function genDOS() {
@@ -1137,9 +1134,38 @@
         if (S.grp) pool.push(genGrouping);
         if (!pool.length) pool.push(genTri1);
         const p = pick(pool)();
-        // Strip any wrong answer that is mathematically the same as the correct answer
+
+        // Remove any wrong that is mathematically the same as the correct answer
         const normCorrect = normFactored(p.correct);
-        p.wrongs = p.wrongs.filter(w => normFactored(w) !== normCorrect);
+        let cleaned = p.wrongs.filter(w =>
+          w && w.trim() !== "" && normFactored(w) !== normCorrect
+        );
+
+        // Deduplicate wrong answers (both exact and order-invariant)
+        const seen = new Set();
+        cleaned = cleaned.filter(w => {
+          const k = normFactored(w);
+          if (seen.has(k)) return false;
+          seen.add(k);
+          return true;
+        });
+
+        // Pad with safe generic fallbacks if we still don't have 3 wrongs
+        const fallbacks = [
+          "(x + 1)(x + 1)", "(x – 1)(x + 1)", "(x + 2)(x – 2)",
+          "(x + 3)(x + 3)", "(x – 5)(x + 2)", "(x + 4)(x – 3)",
+          "(x – 6)(x + 1)", "(x + 7)(x – 2)", "(x – 8)(x + 3)",
+        ];
+        for (const fb of fallbacks) {
+          if (cleaned.length >= 3) break;
+          const k = normFactored(fb);
+          if (k !== normCorrect && !seen.has(k)) {
+            seen.add(k);
+            cleaned.push(fb);
+          }
+        }
+
+        p.wrongs = cleaned.slice(0, 3);
         return p;
       }
 
@@ -1150,7 +1176,7 @@
         gcf: true,
         dos: true,
         tri1: true,
-        trip: true,
+        trip: false,
         tric: false,
         grp: false,
       };
@@ -1413,6 +1439,20 @@
         submitBtn.style.color = "#000";
       }
 
+      function autoSizeExpression() {
+        // Reset to max then shrink until it fits within 90% of game width
+        const maxPx = 30;
+        const minPx = 12;
+        const container = expressionEl.parentElement;
+        const maxWidth = (document.getElementById("game").offsetWidth || 420) * 0.90;
+        expressionEl.style.fontSize = maxPx + "px";
+        let fs = maxPx;
+        while (expressionEl.scrollWidth > maxWidth && fs > minPx) {
+          fs -= 0.5;
+          expressionEl.style.fontSize = fs + "px";
+        }
+      }
+
       function nextQuestion() {
         locked = false;
         stopSpark();
@@ -1423,6 +1463,7 @@
         comboPopEl.textContent = "";
         currentP = generateProblem(S);
         expressionEl.textContent = currentP.expr;
+        autoSizeExpression();
         topicTagEl.textContent = TOPIC_LABELS[currentP.topic] || "";
         const useDrums = S.mode === "challenge" && currentP.r1 !== null;
         choicesEl.style.display = useDrums ? "none" : "flex";
@@ -1500,7 +1541,7 @@
         streakDisplay.textContent = "";
         updateLives();
         updateComboBar();
-        feedbackEl.textContent = "✗ WRONG";
+        feedbackEl.textContent = "✗ INCORRECT";
         feedbackEl.style.color = "#f55";
         if (lives <= 0) {
           clearInterval(timerInterval);
@@ -1638,7 +1679,7 @@
         } else {
           submitBtn.classList.add("wrong-shake");
           setTimeout(() => submitBtn.classList.remove("wrong-shake"), 350);
-          feedbackEl.textContent = "✗ TRY AGAIN";
+          feedbackEl.textContent = "✗ INCORRECT";
           feedbackEl.style.color = "#f55";
           onWrong();
         }
