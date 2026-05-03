@@ -1,0 +1,1583 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Factor Blaster | DeltaSeven</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body {
+        background: #000;
+        color: #fff;
+        font-family: "Share Tech Mono", monospace;
+        min-height: 100vh;
+        overflow: hidden;
+        user-select: none;
+      }
+      #game {
+        width: 100%;
+        max-width: 420px;
+        margin: 0 auto;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+      }
+      #stars {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .star {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background: #fff;
+        border-radius: 50%;
+        animation: twinkle 3s infinite;
+      }
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.1;
+        }
+        50% {
+          opacity: 0.9;
+        }
+      }
+
+      /* HUD */
+      #hud {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px 6px;
+        border-bottom: 1px solid #222;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 2;
+      }
+      #hud-left {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+      #score-label {
+        font-family: "Press Start 2P", monospace;
+        font-size: 6px;
+        color: #555;
+        letter-spacing: 0.1em;
+      }
+      #score {
+        font-family: "Press Start 2P", monospace;
+        font-size: 16px;
+        color: #fff;
+        transition: transform 0.1s;
+        letter-spacing: 0.04em;
+      }
+      #score.bump {
+        transform: scale(1.25);
+      }
+      #hud-center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+      }
+      #streak-display {
+        font-family: "Press Start 2P", monospace;
+        font-size: 8px;
+        color: #ff0;
+        letter-spacing: 0.04em;
+        min-height: 12px;
+      }
+      #best-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .best-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1px;
+      }
+      .best-label {
+        font-family: "Press Start 2P", monospace;
+        font-size: 5px;
+        color: #444;
+        letter-spacing: 0.08em;
+      }
+      .best-val {
+        font-family: "Press Start 2P", monospace;
+        font-size: 8px;
+        color: #666;
+      }
+      #hud-right {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      #lives-area {
+        display: flex;
+        gap: 3px;
+        align-items: center;
+      }
+      #lives-label {
+        font-family: "Press Start 2P", monospace;
+        font-size: 6px;
+        color: #555;
+        margin-right: 2px;
+        letter-spacing: 0.06em;
+      }
+      .heart {
+        font-size: 14px;
+        line-height: 1;
+      }
+      #options-btn {
+        font-size: 20px;
+        background: none;
+        border: none;
+        color: #888;
+        padding: 4px 6px;
+        cursor: pointer;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #options-btn:active {
+        color: #fff;
+      }
+
+      /* combo bar */
+      #combo-bar-wrap {
+        height: 3px;
+        background: #111;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 2;
+      }
+      #combo-bar {
+        height: 3px;
+        background: #ff0;
+        width: 0%;
+        transition: width 0.15s linear;
+      }
+
+      /* QUESTION AREA */
+      #question-area {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px 14px 4px;
+        position: relative;
+        z-index: 2;
+      }
+      #timer-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        width: 100%;
+      }
+      #timer-bar-wrap {
+        flex: 1;
+        height: 5px;
+        background: #1a1a1a;
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      #timer-bar {
+        height: 5px;
+        width: 100%;
+        border-radius: 3px;
+        transition:
+          width 0.1s linear,
+          background 0.3s;
+      }
+      #timer-num {
+        font-family: "Press Start 2P", monospace;
+        font-size: 10px;
+        min-width: 26px;
+        text-align: right;
+      }
+      #expression {
+        font-family: "Press Start 2P", monospace;
+        font-size: clamp(13px, 4.2vw, 20px);
+        text-align: center;
+        letter-spacing: 0.06em;
+        line-height: 1.6;
+        margin-bottom: 3px;
+        min-height: 30px;
+      }
+      #topic-tag {
+        font-size: 7px;
+        color: #333;
+        letter-spacing: 0.08em;
+        text-align: center;
+        height: 13px;
+        margin-bottom: 2px;
+        font-family: "Press Start 2P", monospace;
+      }
+      #hint-text {
+        font-size: 10px;
+        text-align: center;
+        height: 15px;
+        letter-spacing: 0.05em;
+      }
+      #feedback-banner {
+        font-family: "Press Start 2P", monospace;
+        font-size: 10px;
+        text-align: center;
+        height: 18px;
+        letter-spacing: 0.06em;
+      }
+      #combo-popup {
+        font-family: "Press Start 2P", monospace;
+        font-size: 8px;
+        color: #ff0;
+        text-align: center;
+        height: 13px;
+        letter-spacing: 0.05em;
+      }
+
+      /* EZ choices */
+      #choices {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+        padding: 5px 12px 8px;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 2;
+      }
+      .choice-btn {
+        font-family: "Share Tech Mono", monospace;
+        font-size: clamp(10px, 2.8vw, 13px);
+        padding: 13px 5px;
+        background: #080808;
+        border: 1.5px solid #2a2a2a;
+        color: #ccc;
+        border-radius: 10px;
+        cursor: pointer;
+        letter-spacing: 0.03em;
+        text-align: center;
+        line-height: 1.4;
+        transition:
+          background 0.1s,
+          border-color 0.1s,
+          transform 0.08s;
+        touch-action: manipulation;
+      }
+      .choice-btn:active {
+        transform: scale(0.96);
+      }
+      .choice-btn.correct {
+        border-color: #0f0;
+        background: #001600;
+        color: #0f0;
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+      }
+      .choice-btn.wrong {
+        border-color: #f00;
+        background: #160000;
+        color: #f00;
+      }
+      .choice-btn.reveal {
+        border-color: #0f0;
+        background: #001600;
+        color: #0f0;
+      }
+
+      /* Challenge drums */
+      #factored-area {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px 6px 3px;
+        position: relative;
+        z-index: 2;
+        gap: 2px;
+      }
+      .factor-group {
+        display: flex;
+        align-items: center;
+      }
+      .f-paren {
+        font-family: "Press Start 2P", monospace;
+        font-size: 28px;
+        display: flex;
+        align-items: center;
+        height: 96px;
+        color: #fff;
+        padding: 0 2px;
+        line-height: 1;
+      }
+      .f-x {
+        font-family: "Press Start 2P", monospace;
+        font-size: 17px;
+        display: flex;
+        align-items: center;
+        height: 96px;
+        padding: 0 3px 0 4px;
+        line-height: 1;
+      }
+      .drum-wrap {
+        display: flex;
+        align-items: center;
+        height: 96px;
+      }
+      .drum {
+        width: 82px;
+        height: 96px;
+        overflow: hidden;
+        position: relative;
+        border: 1.5px solid #333;
+        border-radius: 10px;
+        background: #060606;
+        cursor: grab;
+        touch-action: none;
+      }
+      .drum:active {
+        cursor: grabbing;
+      }
+      .drum-inner {
+        position: absolute;
+        width: 100%;
+        will-change: transform;
+      }
+      .drum-item {
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+      }
+      .drum-item .sign {
+        font-family: "Press Start 2P", monospace;
+        font-size: 9px;
+        color: #1e1e1e;
+        width: 18px;
+        text-align: right;
+        line-height: 1;
+      }
+      .drum-item .num {
+        font-family: "Press Start 2P", monospace;
+        font-size: 12px;
+        color: #1e1e1e;
+        width: 20px;
+        text-align: left;
+        margin-left: 22px;
+        line-height: 1;
+      }
+      .drum-item.near .sign {
+        color: #444;
+        font-size: 10px;
+      }
+      .drum-item.near .num {
+        color: #444;
+        font-size: 14px;
+        margin-left: 22px;
+      }
+      .drum-item.center .sign {
+        color: #bbb;
+        font-size: 16px;
+        width: 20px;
+      }
+      .drum-item.center .num {
+        color: #fff;
+        font-size: 19px;
+        width: 24px;
+        margin-left: 22px;
+      }
+      .drum-shade-top {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 32px;
+        background: linear-gradient(to bottom, #060606 15%, transparent);
+        pointer-events: none;
+        z-index: 2;
+        border-radius: 10px 10px 0 0;
+      }
+      .drum-shade-bot {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 32px;
+        background: linear-gradient(to top, #060606 15%, transparent);
+        pointer-events: none;
+        z-index: 2;
+        border-radius: 0 0 10px 10px;
+      }
+      .drum-highlight {
+        position: absolute;
+        top: 32px;
+        left: 0;
+        right: 0;
+        height: 32px;
+        border-top: 1.5px solid #ff0;
+        border-bottom: 1.5px solid #ff0;
+        pointer-events: none;
+        z-index: 3;
+      }
+
+      /* submit */
+      #submit-wrap {
+        flex: 0 0 auto;
+        padding: 5px 14px 8px;
+        position: relative;
+        z-index: 2;
+      }
+      #submit-btn {
+        width: 100%;
+        padding: 14px;
+        font-family: "Press Start 2P", monospace;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        background: #ff0;
+        color: #000;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition:
+          transform 0.08s,
+          background 0.1s;
+      }
+      #submit-btn:active {
+        transform: scale(0.97);
+      }
+      #submit-btn:disabled {
+        background: #222;
+        color: #555;
+        cursor: default;
+      }
+      #submit-btn.wrong-shake {
+        animation: shake 0.3s;
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20% {
+          transform: translateX(-7px);
+        }
+        40% {
+          transform: translateX(7px);
+        }
+        60% {
+          transform: translateX(-4px);
+        }
+        80% {
+          transform: translateX(4px);
+        }
+      }
+
+      /* OPTIONS PANEL */
+      #options-panel {
+        position: absolute;
+        inset: 0;
+        background: #000;
+        z-index: 30;
+        display: none;
+        flex-direction: column;
+        overflow-y: auto;
+        padding: 18px 18px 30px;
+      }
+      #options-panel.show {
+        display: flex;
+      }
+      #opt-title {
+        font-family: "Press Start 2P", monospace;
+        font-size: 12px;
+        text-align: center;
+        margin-bottom: 16px;
+        color: #ff0;
+        letter-spacing: 0.08em;
+      }
+      .opt-section {
+        font-family: "Press Start 2P", monospace;
+        font-size: 6px;
+        color: #444;
+        letter-spacing: 0.12em;
+        margin: 14px 0 7px;
+        border-bottom: 1px solid #1a1a1a;
+        padding-bottom: 4px;
+      }
+      .opt-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+        gap: 12px;
+      }
+      .opt-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 13px;
+        color: #ccc;
+        flex: 1;
+        line-height: 1.3;
+      }
+      .opt-sub {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 10px;
+        color: #444;
+        display: block;
+        margin-top: 3px;
+        line-height: 1.4;
+      }
+      .s-pill {
+        width: 42px;
+        height: 23px;
+        background: #111;
+        border: 1.5px solid #333;
+        border-radius: 12px;
+        position: relative;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition:
+          background 0.2s,
+          border-color 0.2s;
+        margin-top: 2px;
+      }
+      .s-pill.on {
+        background: #1c1c00;
+        border-color: #ff0;
+      }
+      .s-knob {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 15px;
+        height: 15px;
+        background: #333;
+        border-radius: 50%;
+        transition:
+          transform 0.2s,
+          background 0.2s;
+      }
+      .s-pill.on .s-knob {
+        transform: translateX(19px);
+        background: #ff0;
+      }
+      #timer-slider-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        margin-top: 4px;
+      }
+      #timer-slider {
+        flex: 1;
+        accent-color: #ff0;
+        cursor: pointer;
+        height: 4px;
+      }
+      #timer-val {
+        font-family: "Press Start 2P", monospace;
+        font-size: 8px;
+        color: #ff0;
+        min-width: 36px;
+        text-align: right;
+      }
+      #opt-close {
+        margin-top: 18px;
+        font-family: "Press Start 2P", monospace;
+        font-size: 9px;
+        padding: 13px;
+        background: #ff0;
+        color: #000;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 100%;
+        letter-spacing: 0.08em;
+      }
+      #opt-close:active {
+        transform: scale(0.97);
+      }
+      #back-link {
+        display: block;
+        text-align: center;
+        margin-top: 14px;
+        font-family: "Press Start 2P", monospace;
+        font-size: 7px;
+        color: #444;
+        text-decoration: none;
+        letter-spacing: 0.08em;
+      }
+      #back-link:hover {
+        color: #fff;
+      }
+
+      /* OVERLAY */
+      #screen-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.95);
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 13px;
+        z-index: 20;
+        padding: 28px;
+      }
+      #screen-overlay.show {
+        display: flex;
+      }
+      #overlay-title {
+        font-family: "Press Start 2P", monospace;
+        font-size: 22px;
+        text-align: center;
+        line-height: 1.6;
+        letter-spacing: 0.04em;
+      }
+      #overlay-sub {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        color: #666;
+        text-align: center;
+        line-height: 1.9;
+      }
+      #overlay-score {
+        font-family: "Press Start 2P", monospace;
+        font-size: 11px;
+        color: #ff0;
+        text-align: center;
+        line-height: 1.8;
+      }
+      #overlay-btn {
+        font-family: "Press Start 2P", monospace;
+        font-size: 9px;
+        padding: 13px 26px;
+        background: #fff;
+        color: #000;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        letter-spacing: 0.08em;
+      }
+      #overlay-btn:active {
+        transform: scale(0.97);
+      }
+      #overlay-home {
+        font-family: "Press Start 2P", monospace;
+        font-size: 7px;
+        color: #444;
+        text-decoration: none;
+        letter-spacing: 0.06em;
+        margin-top: 4px;
+      }
+      #overlay-home:hover {
+        color: #fff;
+      }
+      #streak-flash {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0;
+        z-index: 50;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(255, 255, 0, 0.15) 0%,
+          transparent 70%
+        );
+        transition: opacity 0.15s;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game">
+      <div id="stars"></div>
+      <div id="hud">
+        <div id="hud-left">
+          <div id="score-label">SCORE</div>
+          <div id="score">0</div>
+        </div>
+        <div id="hud-center">
+          <div id="streak-display"></div>
+          <div id="best-row">
+            <div class="best-item">
+              <div class="best-label">BEST</div>
+              <div class="best-val" id="best-score">0</div>
+            </div>
+            <div class="best-item">
+              <div class="best-label">STREAK</div>
+              <div class="best-val" id="best-streak">0</div>
+            </div>
+          </div>
+        </div>
+        <div id="hud-right">
+          <div id="lives-area"><span id="lives-label">LIVES</span></div>
+          <button id="options-btn">⚙️</button>
+        </div>
+      </div>
+      <div id="combo-bar-wrap"><div id="combo-bar"></div></div>
+
+      <div id="question-area">
+        <div id="timer-row">
+          <div id="timer-bar-wrap"><div id="timer-bar"></div></div>
+          <div id="timer-num">60</div>
+        </div>
+        <div id="expression"></div>
+        <div id="topic-tag"></div>
+        <div id="hint-text"></div>
+        <div id="feedback-banner"></div>
+        <div id="combo-popup"></div>
+      </div>
+
+      <div id="choices" style="display: none">
+        <button class="choice-btn"></button>
+        <button class="choice-btn"></button>
+        <button class="choice-btn"></button>
+        <button class="choice-btn"></button>
+      </div>
+
+      <div id="factored-area" style="display: none"></div>
+      <div id="submit-wrap" style="display: none">
+        <button id="submit-btn" disabled>FACTOR IT</button>
+      </div>
+
+      <!-- OPTIONS -->
+      <div id="options-panel">
+        <div id="opt-title">⚙ OPTIONS</div>
+
+        <div class="opt-section">GAME MODE</div>
+        <div class="opt-row">
+          <span class="opt-label" id="mode-label-text"
+            >EZ Mode<span class="opt-sub" id="mode-sub"
+              >Now on EZ Mode — multiple choice answers</span
+            ></span
+          >
+          <div class="s-pill on" id="opt-mode"><div class="s-knob"></div></div>
+        </div>
+
+        <div class="opt-section">TIMER</div>
+        <div class="opt-row">
+          <span class="opt-label">Enable Timer</span>
+          <div class="s-pill on" id="opt-timer"><div class="s-knob"></div></div>
+        </div>
+        <div
+          class="opt-row"
+          style="flex-direction: column; align-items: flex-start; gap: 5px"
+        >
+          <span class="opt-label">Time Limit</span>
+          <div id="timer-slider-wrap">
+            <input
+              type="range"
+              id="timer-slider"
+              min="10"
+              max="120"
+              step="5"
+              value="60"
+            />
+            <span id="timer-val">60s</span>
+          </div>
+        </div>
+
+        <div class="opt-section">QUESTION TYPES</div>
+        <div class="opt-row">
+          <span class="opt-label"
+            >GCF Factoring<span class="opt-sub">e.g. 6x² + 9x</span></span
+          >
+          <div class="s-pill on" id="opt-gcf"><div class="s-knob"></div></div>
+        </div>
+        <div class="opt-row">
+          <span class="opt-label"
+            >Difference of Squares<span class="opt-sub"
+              >e.g. x² – 25</span
+            ></span
+          >
+          <div class="s-pill on" id="opt-dos"><div class="s-knob"></div></div>
+        </div>
+        <div class="opt-row">
+          <span class="opt-label"
+            >Trinomials (a = 1)<span class="opt-sub"
+              >e.g. x² + 5x + 6</span
+            ></span
+          >
+          <div class="s-pill on" id="opt-tri1"><div class="s-knob"></div></div>
+        </div>
+        <div class="opt-row">
+          <span class="opt-label"
+            >Trinomials (prime a)<span class="opt-sub"
+              >e.g. 2x² + 7x + 3</span
+            ></span
+          >
+          <div class="s-pill on" id="opt-trip"><div class="s-knob"></div></div>
+        </div>
+        <div class="opt-row">
+          <span class="opt-label"
+            >Trinomials (composite a)<span class="opt-sub"
+              >e.g. 4x² + 8x + 3</span
+            ></span
+          >
+          <div class="s-pill on" id="opt-tric"><div class="s-knob"></div></div>
+        </div>
+        <div class="opt-row">
+          <span class="opt-label"
+            >Factor By Grouping<span class="opt-sub"
+              >e.g. x³ + 2x² + 3x + 6</span
+            ></span
+          >
+          <div class="s-pill" id="opt-grp"><div class="s-knob"></div></div>
+        </div>
+
+        <button id="opt-close">SAVE & PLAY</button>
+        <a href="index.html" id="back-link">← BACK TO DELTASEVEN.IO</a>
+      </div>
+
+      <!-- START OVERLAY -->
+      <div id="screen-overlay" class="show">
+        <div id="overlay-title">FACTOR<br />BLASTER</div>
+        <div id="overlay-sub">
+          Tap the right answer.<br />Build combos. Beat the clock.<br />Don't
+          lose your streak.
+        </div>
+        <div id="overlay-score"></div>
+        <button id="overlay-btn">PLAY</button>
+        <a href="index.html" id="overlay-home">← back to deltaseven.io</a>
+      </div>
+    </div>
+    <div id="streak-flash"></div>
+
+    <script>
+      for (let i = 0; i < 40; i++) {
+        const s = document.createElement("div");
+        s.className = "star";
+        s.style.left = Math.random() * 100 + "%";
+        s.style.top = Math.random() * 100 + "%";
+        s.style.animationDelay = Math.random() * 3 + "s";
+        document.getElementById("stars").appendChild(s);
+      }
+
+      function shuffle(a) {
+        const b = [...a];
+        for (let i = b.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [b[i], b[j]] = [b[j], b[i]];
+        }
+        return b;
+      }
+      function rnd(a, b) {
+        return Math.floor(Math.random() * (b - a + 1)) + a;
+      }
+      function pick(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+
+      function factorStr(a, b) {
+        const aStr = a === 1 ? "" : a + "";
+        return `(${aStr}x ${b > 0 ? "+ " : "– "}${Math.abs(b)})`;
+      }
+
+      function genGCF() {
+        const gcf = pick([2, 3, 4, 5, 6]);
+        const a = pick([1, 2, 3, 4, 5]);
+        const b = pick([-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]);
+        const A = gcf * a,
+          B = gcf * b;
+        const bStr = B === 0 ? "" : B > 0 ? ` + ${B}x` : ` – ${Math.abs(B)}x`;
+        const expr = `${A}x²${bStr}`;
+        const innerA = a === 1 ? "x" : `${a}x`;
+        const factored = `${gcf}x(${innerA} ${b > 0 ? "+ " : "– "}${Math.abs(b)})`;
+        const aW = a + 1;
+        const innerAW = aW === 1 ? "x" : `${aW}x`;
+        const wrongs = shuffle(
+          [
+            `${gcf}(${A === 1 ? "" : A}x² ${b > 0 ? "+ " : "– "}${Math.abs(B)}x)`,
+            `x(${A === 1 ? "" : A}x ${b > 0 ? "+ " : "– "}${Math.abs(B)})`,
+            `${gcf}x(${innerAW} ${b > 0 ? "+ " : "– "}${Math.abs(b)})`,
+            `${gcf}x²(${a} ${b > 0 ? "+ " : "– "}${Math.abs(b)})`,
+          ].filter((w) => w !== factored),
+        ).slice(0, 3);
+        return {
+          expr,
+          correct: factored,
+          wrongs,
+          topic: "gcf",
+          r1: null,
+          r2: null,
+        };
+      }
+
+      function genDOS() {
+        if (Math.random() < 0.28) {
+          const n = pick([1, 2, 3, 4, 5, 6, 7, 9]);
+          const expr = `x² + ${n * n}`;
+          return {
+            expr,
+            correct: "PRIME — cannot be factored",
+            wrongs: shuffle([
+              `(x + ${n})(x + ${n})`,
+              `(x + ${n})(x – ${n})`,
+              `(x – ${n})²`,
+            ]),
+            topic: "dos",
+            r1: null,
+            r2: null,
+          };
+        }
+        const n = rnd(1, 12);
+        const expr = `x² – ${n * n}`;
+        const correct = `(x – ${n})(x + ${n})`;
+        const wrongs = shuffle(
+          [
+            `(x – ${n})²`,
+            `(x + ${n})²`,
+            `(x – ${n * n})(x + 1)`,
+            `(x – ${n + 1})(x + ${n - 1})`,
+          ].filter((w) => w !== correct),
+        ).slice(0, 3);
+        return { expr, correct, wrongs, topic: "dos", r1: -n, r2: n };
+      }
+
+      function genTri1() {
+        let r1,
+          r2,
+          tries = 0;
+        do {
+          r1 = rnd(-10, 10);
+          r2 = rnd(-10, 10);
+          tries++;
+        } while ((r1 === 0 || r2 === 0) && tries < 20);
+        const b = r1 + r2,
+          c = r1 * r2;
+        const bStr = b === 0 ? "" : b > 0 ? ` + ${b}x` : ` – ${Math.abs(b)}x`;
+        const cStr = c === 0 ? "" : c > 0 ? ` + ${c}` : ` – ${Math.abs(c)}`;
+        const expr = `x²${bStr}${cStr}`;
+        const correct = `(x ${r1 > 0 ? "+ " : "– "}${Math.abs(r1)})(x ${r2 > 0 ? "+ " : "– "}${Math.abs(r2)})`;
+        const wrongs = shuffle(
+          [
+            `(x ${r1 > 0 ? "– " : "+ "}${Math.abs(r1)})(x ${r2 > 0 ? "– " : "+ "}${Math.abs(r2)})`,
+            `(x ${r1 > 0 ? "+ " : "– "}${Math.abs(r1) + 1})(x ${r2 > 0 ? "+ " : "– "}${Math.abs(r2) + 1})`,
+            `(x ${r2 > 0 ? "+ " : "– "}${Math.abs(r2)})(x ${r1 > 0 ? "– " : "+ "}${Math.abs(r1)})`,
+          ].filter((w) => w !== correct),
+        ).slice(0, 3);
+        return { expr, correct, wrongs, topic: "tri1", r1, r2 };
+      }
+
+      function genTriPrime() {
+        const a = pick([2, 3, 5, 7]);
+        let p,
+          q,
+          tries = 0;
+        do {
+          p = rnd(-8, 8);
+          q = rnd(-8, 8);
+          tries++;
+        } while ((p === 0 || q === 0) && tries < 20);
+        const B = a * q + p,
+          C = p * q;
+        const Bstr = B === 0 ? "" : B > 0 ? ` + ${B}x` : ` – ${Math.abs(B)}x`;
+        const Cstr = C === 0 ? "" : C > 0 ? ` + ${C}` : ` – ${Math.abs(C)}`;
+        const expr = `${a}x²${Bstr}${Cstr}`;
+        const correct = `${factorStr(a, p)}(x ${q > 0 ? "+ " : "– "}${Math.abs(q)})`;
+        const wrongs = shuffle(
+          [
+            `${factorStr(a, -p)}(x ${q > 0 ? "– " : "+ "}${Math.abs(q)})`,
+            `${factorStr(a, q)}(x ${p > 0 ? "+ " : "– "}${Math.abs(p)})`,
+            `(x ${p > 0 ? "+ " : "– "}${Math.abs(p)})(x ${q > 0 ? "+ " : "– "}${Math.abs(q)})`,
+          ].filter((w) => w !== correct),
+        ).slice(0, 3);
+        return {
+          expr,
+          correct,
+          wrongs,
+          topic: "trip",
+          f1: a,
+          f2: 1,
+          r1: p,
+          r2: q,
+        };
+      }
+
+      function genTriComp() {
+        const composites = [4, 6, 8, 9, 10, 12];
+        const a = pick(composites);
+        const pairs = [];
+        for (let f = 1; f <= a; f++)
+          if (a % f === 0 && f <= a / f) pairs.push([f, a / f]);
+        const [f1, f2] = pick(pairs);
+        let p,
+          q,
+          tries = 0;
+        do {
+          p = rnd(-7, 7);
+          q = rnd(-7, 7);
+          tries++;
+        } while ((p === 0 || q === 0) && tries < 20);
+        const B = f1 * q + f2 * p,
+          C = p * q;
+        const Bstr = B === 0 ? "" : B > 0 ? ` + ${B}x` : ` – ${Math.abs(B)}x`;
+        const Cstr = C === 0 ? "" : C > 0 ? ` + ${C}` : ` – ${Math.abs(C)}`;
+        const expr = `${a}x²${Bstr}${Cstr}`;
+        const correct = `${factorStr(f1, p)}${factorStr(f2, q)}`;
+        const wrongs = shuffle(
+          [
+            `${factorStr(f1, -p)}${factorStr(f2, -q)}`,
+            `${factorStr(f2, q)}${factorStr(f1, p)}`,
+            `${factorStr(a, p)}(x ${q > 0 ? "+ " : "– "}${Math.abs(q)})`,
+          ].filter((w) => w !== correct),
+        ).slice(0, 3);
+        return { expr, correct, wrongs, topic: "tric", f1, f2, r1: p, r2: q };
+      }
+
+      function genGrouping() {
+        const a = rnd(1, 4),
+          b = rnd(1, 5),
+          c = rnd(1, 4),
+          d = rnd(1, 5);
+        const expr = `${a * c}x³ + ${a * d}x² + ${b * c}x + ${b * d}`;
+        const correct = `${factorStr(a, b)}(${c === 1 ? "" : c}x² + ${d})`;
+        const wrongs = shuffle([
+          `${factorStr(a, d)}(${c === 1 ? "" : c}x² + ${b})`,
+          `${factorStr(a + 1, b)}(${c === 1 ? "" : c}x² + ${d})`,
+          `${factorStr(a, -b)}(${c === 1 ? "" : c}x² + ${d})`,
+        ]).slice(0, 3);
+        return { expr, correct, wrongs, topic: "grp", r1: null, r2: null };
+      }
+
+      const TOPIC_LABELS = {
+        gcf: "GCF",
+        dos: "DIFF OF SQUARES",
+        tri1: "TRINOMIAL (a=1)",
+        trip: "TRINOMIAL (prime a)",
+        tric: "TRINOMIAL (comp. a)",
+        grp: "FACTOR BY GROUPING",
+      };
+
+      function generateProblem(S) {
+        const pool = [];
+        if (S.gcf) pool.push(genGCF);
+        if (S.dos) pool.push(genDOS);
+        if (S.tri1) pool.push(genTri1);
+        if (S.trip) pool.push(genTriPrime);
+        if (S.tric) pool.push(genTriComp);
+        if (S.grp) pool.push(genGrouping);
+        if (!pool.length) pool.push(genTri1);
+        return pick(pool)();
+      }
+
+      const S = {
+        mode: "ez",
+        timerOn: true,
+        timerMax: 60,
+        gcf: true,
+        dos: true,
+        tri1: true,
+        trip: true,
+        tric: true,
+        grp: false,
+      };
+
+      const RANGE = [];
+      for (let i = -12; i <= 12; i++) if (i !== 0) RANGE.push(i);
+      const ITEM_H = 32,
+        DRUM_H = 96;
+
+      function makeWheel() {
+        const wrap = document.createElement("div");
+        wrap.className = "drum-wrap";
+        const drum = document.createElement("div");
+        drum.className = "drum";
+        const inner = document.createElement("div");
+        inner.className = "drum-inner";
+        RANGE.forEach((v) => {
+          const row = document.createElement("div");
+          row.className = "drum-item";
+          const sign = document.createElement("span");
+          sign.className = "sign";
+          sign.textContent = v > 0 ? "+" : "–";
+          const num = document.createElement("span");
+          num.className = "num";
+          num.textContent = Math.abs(v);
+          row.appendChild(sign);
+          row.appendChild(num);
+          inner.appendChild(row);
+        });
+        drum.appendChild(inner);
+        ["drum-shade-top", "drum-shade-bot", "drum-highlight"].forEach((c) => {
+          const d = document.createElement("div");
+          d.className = c;
+          drum.appendChild(d);
+        });
+        wrap.appendChild(drum);
+        const cy = DRUM_H / 2;
+        function off(i) {
+          return cy - i * ITEM_H - ITEM_H / 2;
+        }
+        function idx(o) {
+          return Math.round((cy - ITEM_H / 2 - o) / ITEM_H);
+        }
+        function clamp(i) {
+          return Math.max(0, Math.min(RANGE.length - 1, i));
+        }
+        let ci = RANGE.indexOf(1);
+        let dragging = false,
+          sY = 0,
+          sOff = 0,
+          vel = 0,
+          lY = 0,
+          lT = 0,
+          raf = null;
+        function paint(o, anim) {
+          inner.style.transition = anim
+            ? "transform .2s cubic-bezier(.25,.8,.25,1)"
+            : "none";
+          inner.style.transform = "translateY(" + o + "px)";
+          const ci2 = clamp(idx(o));
+          inner.querySelectorAll(".drum-item").forEach((el, i) => {
+            el.classList.toggle("center", i === ci2);
+            el.classList.toggle("near", Math.abs(i - ci2) === 1);
+          });
+        }
+        function snapTo(i) {
+          ci = clamp(i);
+          paint(off(ci), true);
+        }
+        function getOff() {
+          return new DOMMatrix(getComputedStyle(inner).transform).m42;
+        }
+        function onStart(y) {
+          if (raf) cancelAnimationFrame(raf);
+          dragging = true;
+          vel = 0;
+          sY = y;
+          lY = y;
+          lT = Date.now();
+          sOff = getOff();
+          inner.style.transition = "none";
+        }
+        function onMove(y) {
+          if (!dragging) return;
+          const now = Date.now();
+          vel = ((y - lY) / Math.max(now - lT, 1)) * 16;
+          lY = y;
+          lT = now;
+          paint(
+            Math.max(
+              off(RANGE.length - 1) - 24,
+              Math.min(off(0) + 24, sOff + (y - sY)),
+            ),
+            false,
+          );
+        }
+        function onEnd() {
+          if (!dragging) return;
+          dragging = false;
+          let o = getOff();
+          function dc() {
+            vel *= 0.85;
+            o += vel;
+            o = Math.max(off(RANGE.length - 1) - 6, Math.min(off(0) + 6, o));
+            paint(o, false);
+            if (Math.abs(vel) > 0.5) raf = requestAnimationFrame(dc);
+            else snapTo(clamp(idx(o)));
+          }
+          raf = requestAnimationFrame(dc);
+        }
+        drum.addEventListener("mousedown", (e) => {
+          onStart(e.clientY);
+          e.preventDefault();
+        });
+        window.addEventListener("mousemove", (e) => {
+          if (dragging) onMove(e.clientY);
+        });
+        window.addEventListener("mouseup", onEnd);
+        drum.addEventListener(
+          "touchstart",
+          (e) => onStart(e.touches[0].clientY),
+          { passive: true },
+        );
+        drum.addEventListener(
+          "touchmove",
+          (e) => {
+            onMove(e.touches[0].clientY);
+            e.preventDefault();
+          },
+          { passive: false },
+        );
+        drum.addEventListener("touchend", onEnd);
+        snapTo(ci);
+        return { wrap, getValue: () => RANGE[ci] };
+      }
+
+      const $ = (id) => document.getElementById(id);
+      const scoreEl = $("score"),
+        livesEl = $("lives-area"),
+        expressionEl = $("expression");
+      const topicTagEl = $("topic-tag"),
+        hintEl = $("hint-text"),
+        feedbackEl = $("feedback-banner"),
+        comboPopEl = $("combo-popup");
+      const comboBarEl = $("combo-bar"),
+        timerBarEl = $("timer-bar"),
+        timerNumEl = $("timer-num");
+      const factoredArea = $("factored-area"),
+        choicesEl = $("choices"),
+        submitWrap = $("submit-wrap"),
+        submitBtn = $("submit-btn");
+      const overlay = $("screen-overlay"),
+        overlayTitle = $("overlay-title"),
+        overlaySub = $("overlay-sub");
+      const overlayScore = $("overlay-score"),
+        overlayBtn = $("overlay-btn");
+      const streakFlash = $("streak-flash");
+      const choiceBtns = document.querySelectorAll(".choice-btn");
+      const streakDisplay = $("streak-display"),
+        bestScoreEl = $("best-score"),
+        bestStreakEl = $("best-streak");
+
+      let bestScore = 0,
+        bestStreak = 0;
+
+      function updateModeToggleText() {
+        const isEz = S.mode === "ez";
+        $("mode-label-text").innerHTML =
+          `${isEz ? "EZ Mode" : "Challenge Mode"}<span class="opt-sub">Now on ${isEz ? "EZ Mode — multiple choice answers" : "Challenge Mode — spin the number drums"}</span>`;
+      }
+
+      const modePill = $("opt-mode");
+      modePill.addEventListener("click", () => {
+        S.mode = S.mode === "ez" ? "challenge" : "ez";
+        modePill.classList.toggle("on", S.mode === "ez");
+        updateModeToggleText();
+      });
+      updateModeToggleText();
+
+      function makePill(id, key) {
+        const pill = $(id);
+        pill.classList.toggle("on", S[key]);
+        pill.addEventListener("click", () => {
+          S[key] = !S[key];
+          pill.classList.toggle("on", S[key]);
+        });
+      }
+      makePill("opt-timer", "timerOn");
+      makePill("opt-gcf", "gcf");
+      makePill("opt-dos", "dos");
+      makePill("opt-tri1", "tri1");
+      makePill("opt-trip", "trip");
+      makePill("opt-tric", "tric");
+      makePill("opt-grp", "grp");
+      $("timer-slider").addEventListener("input", function () {
+        S.timerMax = +this.value;
+        $("timer-val").textContent = this.value + "s";
+      });
+      $("options-btn").addEventListener("click", () =>
+        $("options-panel").classList.add("show"),
+      );
+      $("opt-close").addEventListener("click", () => {
+        $("options-panel").classList.remove("show");
+        if (typeof score !== "undefined") nextQuestion();
+      });
+
+      let score,
+        lives,
+        combo,
+        comboMax,
+        timeLeft,
+        timerInterval,
+        level,
+        streak,
+        problems,
+        locked,
+        currentP,
+        wheels;
+
+      function buildChoices(p) {
+        const opts = shuffle([p.correct, ...p.wrongs.slice(0, 3)]);
+        choiceBtns.forEach((b, i) => {
+          b.textContent = opts[i] || "";
+          b.className = "choice-btn";
+          b.disabled = false;
+          b.onclick = () => answerEZ(b, p);
+        });
+      }
+
+      function buildDrums(p) {
+        factoredArea.innerHTML = "";
+        wheels = [];
+        const hasCoeff = p.f1 && p.f1 !== 1;
+        function makeGroup(coeff) {
+          const g = document.createElement("div");
+          g.className = "factor-group";
+          const w = makeWheel();
+          wheels.push(w);
+          const pL = document.createElement("div");
+          pL.className = "f-paren";
+          pL.textContent = "(";
+          const xEl = document.createElement("div");
+          xEl.className = "f-x";
+          xEl.textContent = (coeff && coeff !== 1 ? coeff : "") + "x";
+          const pR = document.createElement("div");
+          pR.className = "f-paren";
+          pR.textContent = ")";
+          g.appendChild(pL);
+          g.appendChild(xEl);
+          g.appendChild(w.wrap);
+          g.appendChild(pR);
+          return g;
+        }
+        factoredArea.appendChild(makeGroup(hasCoeff ? p.f1 : null));
+        factoredArea.appendChild(makeGroup(hasCoeff ? p.f2 : null));
+        submitBtn.disabled = false;
+        submitBtn.textContent = "FACTOR IT";
+        submitBtn.style.background = "#ff0";
+        submitBtn.style.color = "#000";
+      }
+
+      function nextQuestion() {
+        locked = false;
+        hintEl.textContent = "";
+        hintEl.style.color = "#888";
+        feedbackEl.textContent = "";
+        comboPopEl.textContent = "";
+        currentP = generateProblem(S);
+        expressionEl.textContent = currentP.expr;
+        topicTagEl.textContent = TOPIC_LABELS[currentP.topic] || "";
+        const useDrums = S.mode === "challenge" && currentP.r1 !== null;
+        choicesEl.style.display = useDrums ? "none" : "grid";
+        factoredArea.style.display = useDrums ? "flex" : "none";
+        submitWrap.style.display = useDrums ? "block" : "none";
+        if (useDrums) buildDrums(currentP);
+        else buildChoices(currentP);
+        startTimer();
+      }
+
+      function startTimer() {
+        clearInterval(timerInterval);
+        if (!S.timerOn) {
+          timerBarEl.style.width = "100%";
+          timerBarEl.style.background = "#333";
+          timerNumEl.textContent = "∞";
+          timerNumEl.style.color = "#555";
+          return;
+        }
+        timeLeft = S.timerMax;
+        updateTimer();
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          updateTimer();
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            timeUp();
+          }
+        }, 1000);
+      }
+      function updateTimer() {
+        const pct = (timeLeft / S.timerMax) * 100;
+        timerBarEl.style.width = pct + "%";
+        timerBarEl.style.background =
+          timeLeft <= 8 ? "#f00" : timeLeft <= 15 ? "#fa0" : "#ff0";
+        timerNumEl.textContent = timeLeft;
+        timerNumEl.style.color = timeLeft <= 8 ? "#f55" : "#fff";
+      }
+
+      function onCorrect(pts) {
+        locked = true;
+        clearInterval(timerInterval);
+        combo++;
+        streak++;
+        if (combo > comboMax) comboMax = combo;
+        if (streak > bestStreak) {
+          bestStreak = streak;
+          bestStreakEl.textContent = bestStreak;
+        }
+        const total = pts + (combo > 1 ? combo * 25 : 0);
+        score += total;
+        if (score > bestScore) {
+          bestScore = score;
+          bestScoreEl.textContent = bestScore;
+        }
+        updateScore();
+        updateComboBar();
+        if (combo > 1) showCombo(combo);
+        streakDisplay.textContent =
+          streak >= 3 ? "🔥 " + streak + " STREAK" : "";
+        if (streak >= 3) {
+          streakFlash.style.opacity = "1";
+          setTimeout(() => (streakFlash.style.opacity = "0"), 200);
+        }
+        feedbackEl.textContent = "✓ +" + total;
+        feedbackEl.style.color = "#0f0";
+        checkLevelUp();
+        setTimeout(nextQuestion, 900);
+      }
+
+      function onWrong() {
+        lives--;
+        combo = 0;
+        streak = 0;
+        streakDisplay.textContent = "";
+        updateLives();
+        updateComboBar();
+        feedbackEl.textContent = "✗ WRONG";
+        feedbackEl.style.color = "#f55";
+        if (lives <= 0) {
+          clearInterval(timerInterval);
+          setTimeout(endGame, 700);
+        }
+      }
+
+      function answerEZ(btn, p) {
+        if (locked) return;
+        choiceBtns.forEach((b) => (b.disabled = true));
+        if (btn.textContent === p.correct) {
+          btn.classList.add("correct");
+          onCorrect(S.timerOn ? 100 + timeLeft * 4 : 150);
+        } else {
+          btn.classList.add("wrong");
+          choiceBtns.forEach((b) => {
+            if (b.textContent === p.correct) b.classList.add("reveal");
+          });
+          onWrong();
+          if (lives > 0) setTimeout(nextQuestion, 1200);
+        }
+      }
+
+      submitBtn.addEventListener("click", () => {
+        if (locked || !wheels || !wheels.length) return;
+        const v1 = wheels[0].getValue(),
+          v2 = wheels[1].getValue();
+        const r1 = currentP.r1,
+          r2 = currentP.r2;
+        if ((v1 === r1 && v2 === r2) || (v1 === r2 && v2 === r1)) {
+          submitBtn.textContent = "✓";
+          submitBtn.style.background = "#0f0";
+          submitBtn.disabled = true;
+          onCorrect(S.timerOn ? 150 + timeLeft * 5 : 200);
+        } else {
+          submitBtn.classList.add("wrong-shake");
+          setTimeout(() => submitBtn.classList.remove("wrong-shake"), 350);
+          feedbackEl.textContent = "✗ TRY AGAIN";
+          feedbackEl.style.color = "#f55";
+          onWrong();
+        }
+      });
+
+      function timeUp() {
+        if (locked) return;
+        locked = true;
+        lives--;
+        combo = 0;
+        streak = 0;
+        streakDisplay.textContent = "";
+        updateLives();
+        updateComboBar();
+        feedbackEl.textContent = "⏱ TIME'S UP!";
+        feedbackEl.style.color = "#f55";
+        hintEl.style.color = "#ff0";
+        hintEl.textContent = currentP.correct;
+        if (S.mode === "challenge") submitBtn.disabled = true;
+        else choiceBtns.forEach((b) => (b.disabled = true));
+        if (lives <= 0) {
+          setTimeout(endGame, 1200);
+          return;
+        }
+        setTimeout(nextQuestion, 2200);
+      }
+
+      function showCombo(n) {
+        const L = [
+          "",
+          "",
+          "DOUBLE!",
+          "TRIPLE!",
+          "QUAD!",
+          "PENTA!",
+          "MEGA!",
+          "ULTRA!",
+        ];
+        comboPopEl.textContent = L[Math.min(n, 7)] || n + "x!";
+        setTimeout(() => (comboPopEl.textContent = ""), 900);
+      }
+      function updateScore() {
+        scoreEl.textContent = score;
+        scoreEl.classList.add("bump");
+        setTimeout(() => scoreEl.classList.remove("bump"), 150);
+      }
+      function updateLives() {
+        livesEl.innerHTML = '<span id="lives-label">LIVES</span>';
+        for (let i = 0; i < 3; i++) {
+          const h = document.createElement("div");
+          h.className = "heart";
+          h.textContent = i < lives ? "♥" : "♡";
+          h.style.color = i < lives ? "#f55" : "#333";
+          livesEl.appendChild(h);
+        }
+      }
+      function updateComboBar() {
+        const pct = Math.min((combo / 8) * 100, 100);
+        comboBarEl.style.width = pct + "%";
+        comboBarEl.style.background =
+          combo >= 6 ? "#f55" : combo >= 3 ? "#fa0" : "#ff0";
+      }
+      function checkLevelUp() {
+        problems++;
+        if (problems % 6 === 0) {
+          level++;
+          const b = document.createElement("div");
+          b.style.cssText =
+            'position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);font-family:"Press Start 2P",monospace;font-size:13px;color:#ff0;z-index:15;pointer-events:none;white-space:nowrap';
+          b.textContent = "LEVEL " + level + "!";
+          $("question-area").appendChild(b);
+          setTimeout(() => b.remove(), 900);
+        }
+      }
+      function startGame() {
+        score = 0;
+        lives = 3;
+        combo = 0;
+        comboMax = 0;
+        level = 1;
+        streak = 0;
+        problems = 0;
+        locked = false;
+        streakDisplay.textContent = "";
+        overlay.classList.remove("show");
+        updateScore();
+        updateLives();
+        updateComboBar();
+        nextQuestion();
+      }
+      function endGame() {
+        clearInterval(timerInterval);
+        overlay.classList.add("show");
+        overlayTitle.innerHTML = "GAME<br>OVER";
+        overlaySub.innerHTML =
+          "Best score: " +
+          bestScore +
+          "<br>Longest streak: " +
+          bestStreak +
+          "x";
+        overlayScore.textContent = "THIS GAME: " + score;
+        overlayBtn.textContent = "RETRY";
+      }
+      overlayBtn.addEventListener("click", startGame);
+    </script>
+  </body>
+</html>
