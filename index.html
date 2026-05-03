@@ -3,14 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- SEO -->
     <meta
       name="description"
       content="1-on-1 math tutoring in Schaumburg, Hoffman Estates, Barrington, and surrounding areas. 14 years experience. Flexible scheduling. 50% off your first lesson."
     />
-
-    <!-- Open Graph / Social -->
     <meta
       property="og:title"
       content="Math Tutoring | Phillip Krzankowski | Schaumburg, IL"
@@ -22,7 +18,14 @@
     <meta property="og:image" content="https://deltaseven.io/D7-bg-white.png" />
     <meta property="og:url" content="https://deltaseven.io" />
     <meta property="og:type" content="website" />
-
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag("js", new Date());
+      gtag("config", "G-XXXXXXXXXX");
+    </script>
     <title>Math Tutor | Phillip Krzankowski | Schaumburg</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <link
@@ -42,7 +45,6 @@
       rel="stylesheet"
     />
 
-    <!-- LocalBusiness Structured Data -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -63,10 +65,7 @@
           "Dundee",
           "Elgin"
         ],
-        "founder": {
-          "@type": "Person",
-          "name": "Phillip Krzankowski"
-        },
+        "founder": { "@type": "Person", "name": "Phillip Krzankowski" },
         "hasOfferCatalog": {
           "@type": "OfferCatalog",
           "name": "Math Tutoring Services",
@@ -107,18 +106,15 @@
         font-family: "Pixelmania";
         src: url("Pixelmania.e76516a5b526eef3.ttf") format("truetype");
       }
-
       * {
         box-sizing: border-box;
       }
-
       html,
       body {
         max-width: 420px;
         margin: 0 auto;
         overflow-x: hidden;
       }
-
       body {
         margin: 0;
         font-family:
@@ -131,12 +127,10 @@
           background 0.3s,
           color 0.3s;
       }
-
       body.inverted {
         background: #fff;
         color: #000;
       }
-
       body.inverted .section,
       body.inverted .contact,
       body.inverted header,
@@ -152,7 +146,6 @@
         background: #000000;
         border-bottom: 1.5px solid #fff;
       }
-
       .logo {
         width: 100%;
         max-width: 420px;
@@ -170,11 +163,9 @@
         overflow: hidden;
         position: relative;
       }
-
       .swiper-wrapper {
         height: 180px;
       }
-
       .swiper-slide img {
         width: calc(100% - 1rem);
         height: 100%;
@@ -183,13 +174,11 @@
         border-radius: 12px;
         margin: 0 auto;
       }
-
       .swiper-slide.video-slide {
         display: flex;
         align-items: center;
         justify-content: center;
       }
-
       .video-slide iframe {
         width: 100%;
         height: 100%;
@@ -198,14 +187,13 @@
         margin: 0 auto;
       }
 
-      /* ── TESTIMONIALS ── */
+      /* TESTIMONIALS */
       .testimonials-wrapper {
         width: 100%;
         max-width: 420px;
         margin: 1.2rem auto 0.5rem;
         padding: 0 0.6rem;
       }
-
       .testimonials-label {
         font-family: "Pixelmania", sans-serif;
         font-size: clamp(0.2rem, 3.5vw, 0.7rem);
@@ -216,21 +204,17 @@
         opacity: 1;
         white-space: nowrap;
       }
-
       body.inverted .testimonials-label {
         color: #000;
       }
-
       .testimonials-swiper {
         width: 100%;
         border-radius: 12px;
         overflow: hidden;
       }
-
       .testimonials-swiper .swiper-wrapper {
         height: 160px;
       }
-
       .testimonial-slide {
         background: #111;
         border: 1.5px solid #333;
@@ -244,17 +228,14 @@
         transition: border-color 0.3s;
         overflow: hidden;
       }
-
       body.inverted .testimonial-slide {
         background: #f5f5f5;
         border-color: #ccc;
         color: #000;
       }
-
       .testimonial-slide.overflowing {
         cursor: pointer;
       }
-
       .testimonial-slide.overflowing::after {
         content: "";
         position: absolute;
@@ -265,11 +246,9 @@
         background: linear-gradient(transparent, #111);
         pointer-events: none;
       }
-
       body.inverted .testimonial-slide.overflowing::after {
         background: linear-gradient(transparent, #f5f5f5);
       }
-
       .testimonial-text {
         font-size: 0.95rem;
         line-height: 1.6;
@@ -279,7 +258,6 @@
         font-weight: 400;
         letter-spacing: 0.01em;
       }
-
       .testimonial-author {
         position: absolute;
         bottom: 0;
@@ -293,11 +271,9 @@
         text-align: right;
         background: #111;
       }
-
       body.inverted .testimonial-author {
         background: #f5f5f5;
       }
-
       .tap-hint {
         position: absolute;
         bottom: 0.75rem;
@@ -309,12 +285,9 @@
         font-style: normal;
         display: none;
       }
-
       .testimonial-slide.overflowing .tap-hint {
         display: block;
       }
-
-      /* ── TESTIMONIAL NAV ── */
       .testimonials-nav {
         display: flex;
         justify-content: center;
@@ -322,7 +295,6 @@
         gap: 1rem;
         margin-top: 0.6rem;
       }
-
       .testimonials-prev,
       .testimonials-next {
         background: none;
@@ -335,12 +307,10 @@
         line-height: 1;
         transition: opacity 0.2s;
       }
-
       .testimonials-prev:hover,
       .testimonials-next:hover {
         opacity: 1;
       }
-
       .testimonials-count {
         font-family: "Share Tech Mono", monospace;
         font-size: 0.7rem;
@@ -348,7 +318,7 @@
         letter-spacing: 0.1em;
       }
 
-      /* ── TESTIMONIAL POPUP ── */
+      /* TESTIMONIAL POPUP */
       .testimonial-popup {
         position: fixed;
         top: 0;
@@ -362,11 +332,9 @@
         z-index: 9999;
         padding: 1.5rem;
       }
-
       .testimonial-popup.open {
         display: flex;
       }
-
       .testimonial-popup-card {
         background: #1a1a1a;
         border: 1.5px solid #444;
@@ -376,13 +344,11 @@
         width: 100%;
         position: relative;
       }
-
       body.inverted .testimonial-popup-card {
         background: #fff;
         border-color: #ccc;
         color: #000;
       }
-
       .testimonial-popup-text {
         font-size: 0.95rem;
         line-height: 1.65;
@@ -392,7 +358,6 @@
         letter-spacing: 0.01em;
         margin-bottom: 1rem;
       }
-
       .testimonial-popup-author {
         font-family: "Karla", sans-serif;
         font-size: 0.78rem;
@@ -401,7 +366,6 @@
         opacity: 0.7;
         text-align: right;
       }
-
       .testimonial-popup-close {
         position: absolute;
         top: 0.6rem;
@@ -414,12 +378,11 @@
         color: inherit;
         line-height: 1;
       }
-
       .testimonial-popup-close:hover {
         opacity: 1;
       }
 
-      /* ── SECTIONS ── */
+      /* SECTIONS */
       .section {
         max-width: 600px;
         margin: 1rem auto;
@@ -433,18 +396,15 @@
           opacity 0.6s ease,
           transform 0.6s ease;
       }
-
       .section p {
         margin-left: 1rem;
         margin-right: 0.75rem;
         margin-bottom: 1rem;
       }
-
       .section.visible {
         opacity: 1;
         transform: none;
       }
-
       .section h2 {
         color: inherit;
         border-bottom: 2px solid currentColor;
@@ -453,12 +413,10 @@
         font-family: "Pixelmania", sans-serif;
         font-size: 0.9rem;
       }
-
       .section ul {
         list-style: square;
         padding: 0.2;
       }
-
       .section ul li::before {
         color: inherit;
         font-weight: bold;
@@ -466,9 +424,87 @@
         width: 1rem;
         margin-left: -1rem;
       }
-
       .section ul li {
         list-style: square;
+      }
+
+      /* GAMES SECTION */
+      .games-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.25rem 1rem 0.75rem;
+      }
+      .game-card {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 0.75rem 1rem;
+        border: 1.5px solid #333;
+        border-radius: 10px;
+        text-decoration: none;
+        color: inherit;
+        background: #080808;
+        transition:
+          border-color 0.2s,
+          background 0.2s,
+          transform 0.15s;
+      }
+      .game-card:active {
+        transform: scale(0.98);
+      }
+      .game-card:hover {
+        border-color: #fff;
+        background: #111;
+      }
+      body.inverted .game-card {
+        background: #f0f0f0;
+        border-color: #bbb;
+      }
+      body.inverted .game-card:hover {
+        border-color: #000;
+        background: #e4e4e4;
+      }
+      .game-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+      }
+      .game-icon.c4 {
+        background: #1a0000;
+        border: 1.5px solid #ff3333;
+      }
+      .game-icon.fb {
+        background: #1a1a00;
+        border: 1.5px solid #ffff00;
+      }
+      .game-info {
+        flex: 1;
+      }
+      .game-title {
+        font-family: "Pixelmania", sans-serif;
+        font-size: 0.65rem;
+        letter-spacing: 0.08em;
+        margin-bottom: 0.25rem;
+      }
+      .game-desc {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.6rem;
+        color: #777;
+        line-height: 1.4;
+      }
+      body.inverted .game-desc {
+        color: #888;
+      }
+      .game-arrow {
+        font-size: 1rem;
+        opacity: 0.4;
+        flex-shrink: 0;
       }
 
       footer {
@@ -479,7 +515,6 @@
         margin-top: 3rem;
         border-top: 1px solid #fff;
       }
-
       .invert-button {
         display: block;
         max-width: 90%;
@@ -498,7 +533,6 @@
         text-align: center;
         word-break: break-word;
       }
-
       .invert-button:hover {
         background: #000;
         color: #fff;
@@ -506,52 +540,6 @@
       body.inverted .invert-button:hover {
         background: #fff;
         color: #000;
-      }
-
-      /* ── CONNECT 4 BUTTON ── */
-      .connect4-link {
-        display: block;
-        width: fit-content;
-        margin: 0 auto 1.5rem;
-        padding: 0.35rem 0.7rem;
-        font-family: "Press Start 2P", monospace;
-        font-size: 0.45rem;
-        letter-spacing: 0.08em;
-        text-decoration: none;
-        color: #888;
-        border: 1px solid #444;
-        border-radius: 6px;
-        transition:
-          color 0.2s,
-          border-color 0.2s;
-      }
-
-      .connect4-link:hover {
-        color: #fff;
-        border-color: #fff;
-      }
-
-      body.inverted .connect4-link {
-        color: #999;
-        border-color: #bbb;
-      }
-
-      body.inverted .connect4-link:hover {
-        color: #000;
-        border-color: #000;
-      }
-
-      .connect4-link .c4-dots {
-        display: inline-flex;
-        gap: 3px;
-        margin-right: 5px;
-        vertical-align: middle;
-      }
-
-      .connect4-link .c4-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
       }
 
       .lightbox {
@@ -566,7 +554,6 @@
         background-color: rgba(0, 0, 0, 0.85);
         z-index: 9998;
       }
-
       .lightbox img {
         max-width: 90%;
         max-height: 90%;
@@ -575,7 +562,6 @@
         transition: transform 0.2s;
         cursor: zoom-out;
       }
-
       .promo-banner {
         text-align: center;
         background: #ff0;
@@ -597,7 +583,6 @@
         user-select: none;
         position: relative;
       }
-
       .collapsible::after {
         content: "\25B8";
         position: absolute;
@@ -605,22 +590,19 @@
         font-size: 0.8rem;
         transition: transform 0.3s ease;
       }
-
       .collapsible.active::after {
         transform: rotate(90deg);
       }
-
       .collapsible-content {
         overflow: hidden;
         max-height: 0;
         transition: max-height 0.4s ease;
       }
-
       .collapsible-content ul {
         margin-top: 0;
       }
       .collapsible-content.open {
-        max-height: 500px;
+        max-height: 600px;
       }
 
       @media (max-width: 600px) {
@@ -647,7 +629,6 @@
   </head>
 
   <body class="inverted">
-    <!-- Hidden H1 for SEO -->
     <h1 style="position: absolute; left: -9999px">
       Math Tutor in Schaumburg, IL — Phillip Krzankowski
     </h1>
@@ -664,7 +645,7 @@
       />
     </header>
 
-    <!-- IMAGE / VIDEO SLIDESHOW -->
+    <!-- SLIDESHOW -->
     <div class="swiper-container">
       <div class="swiper-wrapper">
         <div class="swiper-slide video-slide">
@@ -711,7 +692,6 @@
               <div class="tap-hint">tap to read more</div>
             </div>
           </div>
-
           <div class="swiper-slide">
             <div
               class="testimonial-slide"
@@ -729,7 +709,6 @@
               <div class="tap-hint">tap to read more</div>
             </div>
           </div>
-
           <div class="swiper-slide">
             <div
               class="testimonial-slide"
@@ -745,7 +724,6 @@
               <div class="tap-hint">tap to read more</div>
             </div>
           </div>
-
           <div class="swiper-slide">
             <div
               class="testimonial-slide"
@@ -761,7 +739,6 @@
               <div class="tap-hint">tap to read more</div>
             </div>
           </div>
-
           <div class="swiper-slide">
             <div
               class="testimonial-slide"
@@ -777,7 +754,6 @@
               <div class="tap-hint">tap to read more</div>
             </div>
           </div>
-
           <div class="swiper-slide">
             <div
               class="testimonial-slide"
@@ -811,7 +787,7 @@
       </div>
     </div>
 
-    <!-- COLLAPSIBLE SECTIONS -->
+    <!-- SECTIONS -->
     <section class="section">
       <h2 class="collapsible">MISSION</h2>
       <div class="collapsible-content">
@@ -875,7 +851,7 @@
         <ul>
           <li>1-on-1 Mentorship</li>
           <li>Test-Taking Strategies</li>
-          <li>Study Habits & Time Management</li>
+          <li>Study Habits &amp; Time Management</li>
           <li>Confidence Building</li>
           <li>Parent-School Partner</li>
           <li>Advocate For Your Family</li>
@@ -894,8 +870,7 @@
           <li>Algonquin</li>
           <li>Dundee</li>
           <li>Elgin</li>
-          <br />
-          <i>* I come to you or meet at a library.</i>
+          <br /><i>* I come to you or meet at a library.</i>
         </ul>
       </div>
     </section>
@@ -923,26 +898,46 @@
       <h2 class="collapsible">RATES</h2>
       <div class="collapsible-content">
         <ul>
-          <li>$75 for 60 minute tutoring session.</li>
-          <li>$100 for 90 minute tutoring session.</li>
-          <br />
-          <i>* Ask about our referral incentive!</i>
+          <li>$80 for 60-90 minute tutoring session.</li>
+          <li>$40 for 2nd tutoring session of the week.</li>
+          <br />* My week starts Monday, ends on Sunday.
         </ul>
+        <br />
+      </div>
+    </section>
+
+    <!-- ── GAMES SECTION ── -->
+    <section class="section">
+      <h2 class="collapsible">GAMES</h2>
+      <div class="collapsible-content">
+        <div class="games-grid">
+          <a href="factor-blaster.html" class="game-card">
+            <div class="game-icon fb">🧮</div>
+            <div class="game-info">
+              <div class="game-title">FACTOR BLASTER</div>
+              <div class="game-desc">
+                Factor polynomials against the clock. EZ &amp; Challenge modes.
+                Build combos.
+              </div>
+            </div>
+            <div class="game-arrow">▶</div>
+          </a>
+          <a href="connect4.html" class="game-card">
+            <div class="game-icon c4">🔴</div>
+            <div class="game-info">
+              <div class="game-title">CONNECT FOUR</div>
+              <div class="game-desc">
+                Classic two-player strategy game. Drop your disc, block your
+                opponent.
+              </div>
+            </div>
+            <div class="game-arrow">▶</div>
+          </a>
+        </div>
       </div>
     </section>
 
     <button class="invert-button">FLIP</button>
-
-    <!-- CONNECT 4 BUTTON -->
-    <a href="connect4.html" class="connect4-link">
-      <span class="c4-dots">
-        <span class="c4-dot" style="background: #ff3333"></span>
-        <span class="c4-dot" style="background: #ffdd00"></span>
-        <span class="c4-dot" style="background: #ff3333"></span>
-        <span class="c4-dot" style="background: #ffdd00"></span>
-      </span>
-      CONNECT 4
-    </a>
 
     <footer>
       <p>
@@ -959,7 +954,6 @@
     <script>
       const flipButton = document.querySelector(".invert-button");
       const logo = document.getElementById("banner-logo");
-
       flipButton.addEventListener("click", () => {
         document.body.classList.toggle("inverted");
         const isInverted = document.body.classList.contains("inverted");
@@ -979,7 +973,6 @@
 
       const totalSlides = 6;
       const countEl = document.getElementById("testimonialCount");
-
       const testimonialSwiper = new Swiper(".testimonials-swiper", {
         loop: true,
         navigation: {
@@ -989,8 +982,8 @@
         grabCursor: true,
         on: {
           slideChange: function () {
-            const index = (this.realIndex % totalSlides) + 1;
-            countEl.textContent = index + " / " + totalSlides;
+            countEl.textContent =
+              (this.realIndex % totalSlides) + 1 + " / " + totalSlides;
           },
         },
       });
@@ -998,9 +991,8 @@
       setTimeout(() => {
         document.querySelectorAll(".testimonial-slide").forEach((slide) => {
           const text = slide.querySelector(".testimonial-text");
-          if (text.scrollHeight > slide.clientHeight - 40) {
+          if (text.scrollHeight > slide.clientHeight - 40)
             slide.classList.add("overflowing");
-          }
         });
       }, 400);
 
@@ -1008,7 +1000,6 @@
       const popupText = document.getElementById("popupText");
       const popupAuthor = document.getElementById("popupAuthor");
       const popupClose = document.getElementById("popupClose");
-
       document.querySelectorAll(".testimonial-slide").forEach((slide) => {
         slide.addEventListener("click", () => {
           if (!slide.classList.contains("overflowing")) return;
@@ -1017,7 +1008,6 @@
           popup.classList.add("open");
         });
       });
-
       popupClose.addEventListener("click", () =>
         popup.classList.remove("open"),
       );
@@ -1031,7 +1021,6 @@
           document.getElementById("lightbox").style.display = "flex";
         });
       });
-
       document.getElementById("lightbox").addEventListener("click", () => {
         document.getElementById("lightbox").style.display = "none";
       });
@@ -1055,10 +1044,9 @@
           if (entry.isIntersecting) entry.target.classList.add("visible");
         });
       });
-
-      document.querySelectorAll(".section").forEach((section) => {
-        observer.observe(section);
-      });
+      document
+        .querySelectorAll(".section")
+        .forEach((section) => observer.observe(section));
     </script>
   </body>
 </html>
