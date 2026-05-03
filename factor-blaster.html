@@ -79,13 +79,13 @@
       }
       #score-label {
         font-family: "Press Start 2P", monospace;
-        font-size: 8px;
+        font-size: 6px;
         color: #555;
         letter-spacing: 0.1em;
       }
       #score {
         font-family: "Press Start 2P", monospace;
-        font-size: 20px;
+        font-size: 16px;
         color: #fff;
         transition: transform 0.1s;
         letter-spacing: 0.04em;
@@ -119,13 +119,13 @@
       }
       .best-label {
         font-family: "Press Start 2P", monospace;
-        font-size: 7px;
+        font-size: 5px;
         color: #444;
         letter-spacing: 0.08em;
       }
       .best-val {
         font-family: "Press Start 2P", monospace;
-        font-size: 11px;
+        font-size: 8px;
         color: #666;
       }
       #hud-right {
@@ -140,13 +140,13 @@
       }
       #lives-label {
         font-family: "Press Start 2P", monospace;
-        font-size: 8px;
+        font-size: 6px;
         color: #555;
         margin-right: 2px;
         letter-spacing: 0.06em;
       }
       .heart {
-        font-size: 18px;
+        font-size: 14px;
         line-height: 1;
       }
       #options-btn {
@@ -194,7 +194,7 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        margin-bottom: 8px;
+        margin-bottom: 16px;
         width: 100%;
       }
       #timer-bar-wrap {
@@ -220,13 +220,12 @@
       }
       #expression {
         font-family: "Press Start 2P", monospace;
-        font-size: clamp(16px, 5.5vw, 26px);
+        font-size: clamp(13px, 4.2vw, 20px);
         text-align: center;
         letter-spacing: 0.06em;
         line-height: 1.6;
         margin-bottom: 3px;
-        min-height: 34px;
-        width: 90%;
+        min-height: 30px;
       }
       #topic-tag {
         font-size: 7px;
@@ -261,9 +260,9 @@
 
       /* EZ choices */
       #choices {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 7px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
         padding: 5px 12px 8px;
         flex-shrink: 0;
         position: relative;
@@ -272,7 +271,7 @@
       .choice-btn {
         font-family: "Share Tech Mono", monospace;
         font-size: clamp(16px, 4.5vw, 22px);
-        padding: 18px 10px;
+        padding: 18px 16px;
         min-height: 72px;
         background: #080808;
         border: 2px solid #2a2a2a;
@@ -280,63 +279,75 @@
         border-radius: 12px;
         cursor: pointer;
         letter-spacing: 0.03em;
-        text-align: center;
         line-height: 1.3;
         position: relative;
         overflow: hidden;
+        display: grid;
+        grid-template-columns: 32px 1fr 32px;
+        align-items: center;
+        gap: 0;
+        touch-action: manipulation;
         transition:
           background 0.1s,
           border-color 0.1s,
           transform 0.08s;
-        touch-action: manipulation;
       }
       .choice-btn:active {
         transform: scale(0.96);
       }
       .choice-btn.correct {
-        background: #001600;
-        color: #0f0;
+        background: #080808;
+        color: #ccc;
         border-color: transparent;
-        box-shadow: 0 0 18px rgba(0,255,0,0.25);
       }
-      .choice-btn.correct::before {
-        content: "";
+      /* spark canvas injected by JS sits on top */
+      .spark-canvas {
         position: absolute;
-        inset: -3px;
-        border-radius: 14px;
-        background: conic-gradient(
-          from var(--a, 0deg),
-          #ff0000, #ff7700, #ffff00, #00ff00,
-          #00ffff, #0077ff, #ff00ff, #ff0000
-        );
-        animation: rainbow-spin 0.9s linear infinite;
-        z-index: -1;
-      }
-      .choice-btn.correct::after {
-        content: "";
-        position: absolute;
-        inset: 2px;
-        border-radius: 11px;
-        background: #001600;
-        z-index: -1;
-      }
-      @property --a {
-        syntax: "<angle>";
-        inherits: false;
-        initial-value: 0deg;
-      }
-      @keyframes rainbow-spin {
-        to { --a: 360deg; }
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
+        pointer-events: none;
+        z-index: 10;
       }
       .choice-btn.wrong {
-        border-color: #f00;
-        background: #160000;
-        color: #f00;
+        border-color: #f55;
+        border-width: 2.5px;
+        background: #080808;
+        color: #ccc;
       }
       .choice-btn.reveal {
         border-color: #0f0;
-        background: #001600;
-        color: #0f0;
+        border-width: 2.5px;
+        background: #080808;
+        color: #ccc;
+      }
+      .choice-btn .btn-emoji {
+        font-size: 22px;
+        line-height: 1;
+        text-align: center;
+        grid-column: 1;
+      }
+      .choice-btn .btn-text {
+        grid-column: 2;
+        text-align: center;
+      }
+      #continue-btn {
+        width: 100%;
+        padding: 16px;
+        font-family: "Press Start 2P", monospace;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        background: #0055cc;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: transform 0.08s, background 0.1s;
+      }
+      #continue-btn:active {
+        transform: scale(0.97);
+        background: #0044aa;
       }
 
       /* Challenge drums */
@@ -788,6 +799,10 @@
         <button class="choice-btn"></button>
       </div>
 
+      <div id="continue-wrap" style="display:none;padding:0 12px 8px;position:relative;z-index:2">
+        <button id="continue-btn">CONTINUE →</button>
+      </div>
+
       <div id="factored-area" style="display: none"></div>
       <div id="submit-wrap" style="display: none">
         <button id="submit-btn" disabled>FACTOR IT</button>
@@ -867,7 +882,7 @@
               >e.g. 4x² + 8x + 3</span
             ></span
           >
-          <div class="s-pill on" id="opt-tric"><div class="s-knob"></div></div>
+          <div class="s-pill" id="opt-tric"><div class="s-knob"></div></div>
         </div>
         <div class="opt-row">
           <span class="opt-label"
@@ -965,7 +980,7 @@
             correct: "PRIME — cannot be factored",
             wrongs: shuffle([
               `(x + ${n})(x + ${n})`,
-              `(x + ${n})(x – ${n})`,
+              `(x – ${n})(x – ${n})`,
               `(x – ${n})²`,
             ]),
             topic: "dos",
@@ -982,7 +997,8 @@
             `(x + ${n})²`,
             `(x – ${n * n})(x + 1)`,
             `(x – ${n + 1})(x + ${n - 1})`,
-          ].filter((w) => w !== correct),
+            `(x + ${n - 1})(x – ${n + 1})`,
+          ].filter((w) => w !== correct && w !== `(x + ${n})(x – ${n})`),
         ).slice(0, 3);
         return { expr, correct, wrongs, topic: "dos", r1: -n, r2: n };
       }
@@ -1002,12 +1018,14 @@
         const cStr = c === 0 ? "" : c > 0 ? ` + ${c}` : ` – ${Math.abs(c)}`;
         const expr = `x²${bStr}${cStr}`;
         const correct = `(x ${r1 > 0 ? "+ " : "– "}${Math.abs(r1)})(x ${r2 > 0 ? "+ " : "– "}${Math.abs(r2)})`;
+        const altR1 = r1 + (r1 > 0 ? 1 : -1);
+        const altR2 = r2 + (r2 > 0 ? 1 : -1);
         const wrongs = shuffle(
           [
             `(x ${r1 > 0 ? "– " : "+ "}${Math.abs(r1)})(x ${r2 > 0 ? "– " : "+ "}${Math.abs(r2)})`,
             `(x ${r1 > 0 ? "+ " : "– "}${Math.abs(r1) + 1})(x ${r2 > 0 ? "+ " : "– "}${Math.abs(r2) + 1})`,
-            `(x ${r2 > 0 ? "+ " : "– "}${Math.abs(r2)})(x ${r1 > 0 ? "– " : "+ "}${Math.abs(r1)})`,
-          ].filter((w) => w !== correct),
+            `(x ${altR1 > 0 ? "+ " : "– "}${Math.abs(altR1)})(x ${altR2 > 0 ? "+ " : "– "}${Math.abs(altR2)})`,
+          ].filter((w) => w !== correct && w !== `(x ${r2 > 0 ? "+ " : "– "}${Math.abs(r2)})(x ${r1 > 0 ? "+ " : "– "}${Math.abs(r1)})`),
         ).slice(0, 3);
         return { expr, correct, wrongs, topic: "tri1", r1, r2 };
       }
@@ -1102,6 +1120,13 @@
         grp: "FACTOR BY GROUPING",
       };
 
+      // Normalize a factored string so (A)(B) and (B)(A) compare equal
+      function normFactored(s) {
+        const m = s.match(/\([^)]+\)/g);
+        if (!m || m.length !== 2) return s;
+        return [m[0], m[1]].sort().join("");
+      }
+
       function generateProblem(S) {
         const pool = [];
         if (S.gcf) pool.push(genGCF);
@@ -1111,7 +1136,11 @@
         if (S.tric) pool.push(genTriComp);
         if (S.grp) pool.push(genGrouping);
         if (!pool.length) pool.push(genTri1);
-        return pick(pool)();
+        const p = pick(pool)();
+        // Strip any wrong answer that is mathematically the same as the correct answer
+        const normCorrect = normFactored(p.correct);
+        p.wrongs = p.wrongs.filter(w => normFactored(w) !== normCorrect);
+        return p;
       }
 
       const S = {
@@ -1122,7 +1151,7 @@
         dos: true,
         tri1: true,
         trip: true,
-        tric: true,
+        tric: false,
         grp: false,
       };
 
@@ -1344,7 +1373,8 @@
       function buildChoices(p) {
         const opts = shuffle([p.correct, ...p.wrongs.slice(0, 3)]);
         choiceBtns.forEach((b, i) => {
-          b.textContent = opts[i] || "";
+          b.innerHTML = '<span class="btn-emoji" style="visibility:hidden">✅</span><span class="btn-text">' + (opts[i] || "") + '</span><span class="btn-spacer"></span>';
+          b._answer = opts[i] || "";
           b.className = "choice-btn";
           b.disabled = false;
           b.onclick = () => answerEZ(b, p);
@@ -1385,6 +1415,8 @@
 
       function nextQuestion() {
         locked = false;
+        stopSpark();
+        document.getElementById("continue-wrap").style.display = "none";
         hintEl.textContent = "";
         hintEl.style.color = "#888";
         feedbackEl.textContent = "";
@@ -1393,7 +1425,7 @@
         expressionEl.textContent = currentP.expr;
         topicTagEl.textContent = TOPIC_LABELS[currentP.topic] || "";
         const useDrums = S.mode === "challenge" && currentP.r1 !== null;
-        choicesEl.style.display = useDrums ? "none" : "grid";
+        choicesEl.style.display = useDrums ? "none" : "flex";
         factoredArea.style.display = useDrums ? "flex" : "none";
         submitWrap.style.display = useDrums ? "block" : "none";
         if (useDrums) buildDrums(currentP);
@@ -1458,7 +1490,7 @@
         feedbackEl.textContent = "✓ +" + total;
         feedbackEl.style.color = "#0f0";
         checkLevelUp();
-        setTimeout(nextQuestion, 900);
+        setTimeout(nextQuestion, 2400);
       }
 
       function onWrong() {
@@ -1476,21 +1508,121 @@
         }
       }
 
+      // ── SPARK / ELECTRIC BORDER ANIMATION ──
+      let sparkRaf = null;
+      let sparkCanvas = null;
+
+      function stopSpark() {
+        if (sparkRaf) { cancelAnimationFrame(sparkRaf); sparkRaf = null; }
+        if (sparkCanvas) { sparkCanvas.remove(); sparkCanvas = null; }
+      }
+
+      function startSpark(btn) {
+        stopSpark();
+        const cvs = document.createElement("canvas");
+        cvs.className = "spark-canvas";
+        btn.appendChild(cvs);
+        sparkCanvas = cvs;
+
+        function resize() {
+          cvs.width  = btn.offsetWidth;
+          cvs.height = btn.offsetHeight;
+        }
+        resize();
+        const ctx = cvs.getContext("2d");
+        const R = 12;
+
+        const COLORS = [
+          "#ff0000","#ffff00","#00ff00","#ff0000","#ffffff",
+          "#00ffff","#ff7700","#ffffff","#0000ff","#ff00ff",
+          "#ffffff","#00ff00",
+        ];
+        let colorIdx = 0;
+        let colorTimer = 0;
+        const COLOR_HOLD = 7;
+
+        function roundRect(ctx, x, y, w, h, r) {
+          ctx.beginPath();
+          ctx.moveTo(x+r, y);
+          ctx.lineTo(x+w-r, y);
+          ctx.arcTo(x+w, y, x+w, y+r, r);
+          ctx.lineTo(x+w, y+h-r);
+          ctx.arcTo(x+w, y+h, x+w-r, y+h, r);
+          ctx.lineTo(x+r, y+h);
+          ctx.arcTo(x, y+h, x, y+h-r, r);
+          ctx.lineTo(x, y+r);
+          ctx.arcTo(x, y, x+r, y, r);
+          ctx.closePath();
+        }
+
+        function draw() {
+          resize();
+          ctx.clearRect(0, 0, cvs.width, cvs.height);
+          const W = cvs.width, H = cvs.height;
+
+          colorTimer++;
+          if (colorTimer >= COLOR_HOLD) { colorTimer = 0; colorIdx = (colorIdx+1) % COLORS.length; }
+          const borderCol = COLORS[colorIdx];
+
+          // wide soft glow
+          ctx.save();
+          ctx.strokeStyle = borderCol;
+          ctx.lineWidth = 8;
+          ctx.globalAlpha = 0.18;
+          roundRect(ctx, 1, 1, W-2, H-2, R);
+          ctx.stroke();
+          ctx.restore();
+
+          // crisp border
+          ctx.save();
+          ctx.strokeStyle = borderCol;
+          ctx.lineWidth = 3;
+          ctx.globalAlpha = 1;
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = borderCol;
+          roundRect(ctx, 1, 1, W-2, H-2, R);
+          ctx.stroke();
+          ctx.restore();
+
+          sparkRaf = requestAnimationFrame(draw);
+        }
+
+        draw();
+      }
+      // ── END SPARK ──
+
+      function addEmoji(btn, emoji) {
+        const span = btn.querySelector(".btn-emoji");
+        if (span) { span.textContent = emoji; span.style.visibility = "visible"; }
+      }
+
       function answerEZ(btn, p) {
         if (locked) return;
         choiceBtns.forEach((b) => (b.disabled = true));
-        if (btn.textContent === p.correct) {
+        if (btn._answer === p.correct) {
           btn.classList.add("correct");
+          startSpark(btn);
           onCorrect(S.timerOn ? 100 + timeLeft * 4 : 150);
         } else {
           btn.classList.add("wrong");
+          addEmoji(btn, "🥺");
           choiceBtns.forEach((b) => {
-            if (b.textContent === p.correct) b.classList.add("reveal");
+            if (b._answer === p.correct) {
+              b.classList.add("reveal");
+              addEmoji(b, "✅");
+            }
           });
           onWrong();
-          if (lives > 0) setTimeout(nextQuestion, 1200);
+          if (lives > 0) {
+            document.getElementById("continue-wrap").style.display = "block";
+          }
         }
       }
+
+      document.getElementById("continue-btn").addEventListener("click", () => {
+        document.getElementById("continue-wrap").style.display = "none";
+        nextQuestion();
+      });
 
       submitBtn.addEventListener("click", () => {
         if (locked || !wheels || !wheels.length) return;
