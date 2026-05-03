@@ -8,7 +8,7 @@
     />
     <title>Factor Blaster | DeltaSeven</title>
     <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BK4VM8YZ41"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -74,7 +74,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 8px 12px 6px;
+        padding: 8px 12px 14px;
         border-bottom: 1px solid #222;
         flex-shrink: 0;
         position: relative;
@@ -175,17 +175,41 @@
 
       /* combo bar */
       #combo-bar-wrap {
-        height: 3px;
+        height: 5px;
         background: #111;
         flex-shrink: 0;
         position: relative;
         z-index: 2;
       }
       #combo-bar {
-        height: 3px;
-        background: #ff0;
+        height: 5px;
+        background: #00aaff;
         width: 0%;
-        transition: width 0.15s linear;
+        transition: width 0.4s ease-out;
+        box-shadow: 0 0 6px #00aaff;
+      }
+      /* level indicator row */
+      #level-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 4px 14px 0;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 2;
+      }
+      #level-label {
+        font-family: "Press Start 2P", monospace;
+        font-size: 8px;
+        color: #00aaff;
+        letter-spacing: .08em;
+        text-shadow: 0 0 6px #00aaff;
+      }
+      #level-progress-text {
+        font-family: "Press Start 2P", monospace;
+        font-size: 7px;
+        color: #444;
+        letter-spacing: .06em;
       }
 
       /* QUESTION AREA */
@@ -202,7 +226,7 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        margin-bottom: 16px;
+        margin-bottom: 60px;
         width: 100%;
       }
       #timer-bar-wrap {
@@ -795,6 +819,43 @@
       #overlay-home:hover {
         color: #fff;
       }
+      /* ── LEVEL INTERMISSION ── */
+      #intermission {
+        position: absolute;
+        left: 0; right: 0;
+        bottom: 0;
+        height: 52%;
+        z-index: 25;
+        pointer-events: none;
+        overflow: hidden;
+        display: none;
+        background: linear-gradient(to top, #000 60%, transparent);
+        border-top: 2px solid #222;
+      }
+      #intermission.show { display: block; }
+      #intermission-stage {
+        position: absolute;
+        inset: 0;
+        font-size: 28px;
+        line-height: 1;
+      }
+      #intermission-title {
+        position: absolute;
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: "Press Start 2P", monospace;
+        font-size: 11px;
+        color: #ff0;
+        letter-spacing: .1em;
+        white-space: nowrap;
+        z-index: 2;
+        text-shadow: 0 0 10px #ff0;
+        background: rgba(0,0,0,0.75);
+        padding: 5px 12px;
+        border-radius: 6px;
+        border: 1px solid rgba(255,255,0,0.25);
+      }
       #streak-flash {
         position: fixed;
         inset: 0;
@@ -837,6 +898,10 @@
         </div>
       </div>
       <div id="combo-bar-wrap"><div id="combo-bar"></div></div>
+      <div id="level-row">
+        <div id="level-label">LEVEL 1</div>
+        <div id="level-progress-text">0 / 5</div>
+      </div>
 
       <div id="question-area">
         <div id="timer-row">
@@ -883,7 +948,7 @@
         <div class="opt-section">TIMER</div>
         <div class="opt-row">
           <span class="opt-label">Enable Timer</span>
-          <div class="s-pill on" id="opt-timer"><div class="s-knob"></div></div>
+          <div class="s-pill" id="opt-timer"><div class="s-knob"></div></div>
         </div>
         <div
           class="opt-row"
@@ -967,7 +1032,11 @@
         <a href="index.html" id="overlay-home">← back to deltaseven.io</a>
       </div>
     </div>
-    <div id="streak-flash"></div>
+    <div id="intermission">
+    <div id="intermission-title"></div>
+    <div id="intermission-stage"></div>
+  </div>
+  <div id="streak-flash"></div>
 
     <script>
       for (let i = 0; i < 40; i++) {
@@ -1268,7 +1337,7 @@
 
       const S = {
         mode: "ez",
-        timerOn: true,
+        timerOn: false,
         timerMax: 60,
         gcf: true,
         dos: true,
@@ -1628,6 +1697,7 @@
         feedbackEl.textContent = "";
         comboPopEl.textContent = "";
         wrongStreak = 0;
+        updateLevelBar();
         currentP = S.mode === "challenge"
           ? generateChallengeProblem(S)
           : generateProblem(S);
@@ -1699,8 +1769,8 @@
         }
         feedbackEl.textContent = "✓ +" + total;
         feedbackEl.style.color = "#0f0";
-        checkLevelUp();
-        setTimeout(nextQuestion, 2400);
+        const leveledUp = checkLevelUp();
+        if (!leveledUp) setTimeout(nextQuestion, 2400);
       }
 
       function onWrong() {
@@ -1997,23 +2067,340 @@
           livesEl.appendChild(h);
         }
       }
-      function updateComboBar() {
-        const pct = Math.min((combo / 8) * 100, 100);
+      function updateLevelBar() {
+        const threshold = (typeof LEVEL_THRESHOLDS !== "undefined" && LEVEL_THRESHOLDS[level]) || 10;
+        const pct = Math.min((problems / threshold) * 100, 100);
         comboBarEl.style.width = pct + "%";
-        comboBarEl.style.background =
-          combo >= 6 ? "#f55" : combo >= 3 ? "#fa0" : "#ff0";
+        // colour shifts as you get close: blue → cyan → green
+        comboBarEl.style.background = pct >= 80 ? "#00ff88" : pct >= 50 ? "#00ddcc" : "#00aaff";
+        comboBarEl.style.boxShadow = pct >= 80 ? "0 0 8px #00ff88" : pct >= 50 ? "0 0 6px #00ddcc" : "0 0 6px #00aaff";
+        // level label
+        const levelLabelEl = document.getElementById("level-label");
+        const levelProgEl  = document.getElementById("level-progress-text");
+        if (levelLabelEl) levelLabelEl.textContent = "LEVEL " + level;
+        if (levelProgEl)  levelProgEl.textContent  = problems + " / " + threshold;
       }
+      function updateComboBar() { updateLevelBar(); }
+      // ── INTERMISSION SCENES — one per level transition (entering level 2-6) ──
+      // SCENES[i] plays when entering level i+2 (so SCENES[0] = entering level 2)
+      const SCENES = [
+        // Entering level 2
+        [
+          { ship:"🚀", enemies:["👾","👾","👾"], dir:"ltr", label:"WAVE 1 CLEAR!" },
+          { ship:"🚀", enemies:["💥","💥"],       dir:"rtl", label:"BOOM!" },
+        ],
+        // Entering level 3
+        [
+          { ship:"🛸", enemies:["☄️","☄️"],       dir:"ltr", label:"ASTEROID BELT!" },
+          { ship:"🛸", enemies:["⭐","🌟","✨"],   dir:"rtl", label:"STAR FIELD!" },
+        ],
+        // Entering level 4
+        [
+          { ship:"🚀", enemies:["🤖","🤖","🤖"], dir:"ltr", label:"ROBOT ATTACK!" },
+          { ship:"💥", enemies:["🚀","🚀"],       dir:"rtl", label:"DIRECT HIT!" },
+        ],
+        // Entering level 5
+        [
+          { ship:"🛸", enemies:["👽","👽","👽"],  dir:"ltr", label:"ALIEN INVASION!" },
+          { ship:"🚀", enemies:["💥","⭐","💥"],  dir:"rtl", label:"FIGHT BACK!" },
+        ],
+        // Entering level 6
+        [
+          { ship:"🚀", enemies:["🌑","🌑","🌑"], dir:"ltr", label:"DARK SIDE!" },
+          { ship:"🛸", enemies:["☀️","✨","☀️"],  dir:"rtl", label:"SOLAR ESCAPE!" },
+        ],
+      ];
+
+      let intermissionActive = false;
+
+      function playIntermission(lvl, onDone) {
+        const inter = $("intermission");
+        const stage = $("intermission-stage");
+        const title = $("intermission-title");
+        inter.classList.add("show");
+        intermissionActive = true;
+        stage.innerHTML = "";
+
+        const scene = SCENES[Math.min(lvl - 2, SCENES.length - 1)];
+        const STAGE_W = inter.offsetWidth || 380;
+        const STAGE_H = inter.offsetHeight || 240;
+        const ACT_DUR = 2400; // ms per act
+        const TOTAL = scene.length * ACT_DUR + 400;
+
+        let actIdx = 0;
+
+        function runAct() {
+          if (actIdx >= scene.length) return;
+          stage.innerHTML = "";
+          const act = scene[actIdx];
+          title.textContent = act.label;
+
+          const fromLeft = act.dir === "ltr";
+          const startX = fromLeft ? -80 : STAGE_W + 80;
+          const endX   = fromLeft ? STAGE_W + 80 : -80;
+          const y = 60 + Math.random() * (STAGE_H - 120);
+
+          // Ship
+          const shipEl = document.createElement("div");
+          shipEl.style.cssText = `
+            position:absolute;
+            font-size:36px;
+            top:${y}px;
+            left:${startX}px;
+            transition: left ${ACT_DUR * 0.9}ms linear;
+            transform: scaleX(${fromLeft ? 1 : -1});
+            filter: drop-shadow(0 0 8px #0ff);
+          `;
+          shipEl.textContent = act.ship;
+          stage.appendChild(shipEl);
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            shipEl.style.left = endX + "px";
+          }));
+
+          // Enemies/effects scattered along the path
+          act.enemies.forEach((em, i) => {
+            const delay = (i + 1) * (ACT_DUR * 0.7 / (act.enemies.length + 1));
+            const ex = fromLeft
+              ? (STAGE_W * 0.25) + i * (STAGE_W * 0.22)
+              : (STAGE_W * 0.75) - i * (STAGE_W * 0.22);
+            const ey = y + (Math.random() * 60 - 30);
+
+            setTimeout(() => {
+              const el = document.createElement("div");
+              el.style.cssText = `
+                position:absolute;
+                font-size:${28 + Math.random()*12}px;
+                left:${ex}px;
+                top:${ey}px;
+                opacity:0;
+                transition: opacity 0.15s, transform 0.4s;
+                transform: scale(0.3);
+              `;
+              el.textContent = em;
+              stage.appendChild(el);
+              requestAnimationFrame(() => requestAnimationFrame(() => {
+                el.style.opacity = "1";
+                el.style.transform = "scale(1)";
+              }));
+              // Fade out
+              setTimeout(() => {
+                el.style.opacity = "0";
+                el.style.transform = "scale(0.1)";
+              }, ACT_DUR * 0.5);
+            }, delay);
+          });
+
+          actIdx++;
+          if (actIdx < scene.length) {
+            setTimeout(runAct, ACT_DUR);
+          }
+        }
+
+        runAct();
+
+        // Wrap up
+        setTimeout(() => {
+          // Flash LEVEL UP banner
+          title.textContent = "LEVEL " + lvl + "!";
+          title.style.fontSize = "18px";
+          title.style.color = "#fff";
+          title.style.textShadow = "0 0 20px #ff0, 0 0 40px #f80";
+          // Scatter stars
+          for (let i = 0; i < 12; i++) {
+            setTimeout(() => {
+              const s = document.createElement("div");
+              s.style.cssText = `
+                position:absolute;
+                font-size:${16+Math.random()*20}px;
+                left:${Math.random()*90}%;
+                top:${Math.random()*80}%;
+                opacity:1;
+                animation: starPop 0.6s ease-out forwards;
+              `;
+              s.textContent = pick(["⭐","🌟","✨","💫"]);
+              stage.appendChild(s);
+            }, i * 80);
+          }
+        }, TOTAL - 900);
+
+        setTimeout(() => {
+          inter.classList.remove("show");
+          title.style.fontSize = "";
+          title.style.color = "";
+          title.style.textShadow = "";
+          intermissionActive = false;
+          onDone();
+        }, TOTAL + 1200);
+      }
+
+      // Inject starPop keyframe
+      (function(){
+        const st = document.createElement("style");
+        st.textContent = `@keyframes starPop {
+          0%   { transform: scale(0) rotate(0deg);   opacity:1; }
+          60%  { transform: scale(1.4) rotate(20deg); opacity:1; }
+          100% { transform: scale(0.8) rotate(-10deg); opacity:0; }
+        }`;
+        document.head.appendChild(st);
+      })();
+
+      // ── VICTORY / FINAL SCENE ──
+      function playVictory(onDone) {
+        const inter = $("intermission");
+        const stage = $("intermission-stage");
+        const title = $("intermission-title");
+        inter.classList.add("show");
+        inter.style.pointerEvents = "auto"; // allow button tap
+        stage.innerHTML = "";
+        title.textContent = "";
+
+        const W = inter.offsetWidth || 380;
+        const H = inter.offsetHeight || 240;
+
+        // Act 1 — MISSION COMPLETE + ships march in
+        title.textContent = "MISSION COMPLETE!";
+        title.style.fontSize = "11px";
+        title.style.color = "#ff0";
+        title.style.textShadow = "0 0 12px #ff0";
+
+        const heroes = ["🚀","🛸","🚀","🛸","🚀"];
+        heroes.forEach((h, i) => {
+          setTimeout(() => {
+            const el = document.createElement("div");
+            const y = H * 0.28 + Math.sin(i * 0.9) * 22;
+            el.style.cssText = `position:absolute;font-size:34px;top:${y}px;left:-60px;transition:left 2.8s cubic-bezier(.2,.8,.4,1);line-height:1`;
+            el.textContent = h;
+            stage.appendChild(el);
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              el.style.left = (W * 0.08 + i * (W * 0.18)) + "px";
+            }));
+          }, i * 300);
+        });
+
+        // Act 2 — medals drop (2s after ships land)
+        setTimeout(() => {
+          ["🥇","🏆","🎖️"].forEach((medal, i) => {
+            const el = document.createElement("div");
+            el.style.cssText = `position:absolute;font-size:${30+i*5}px;left:${W*0.22+i*(W*0.25)}px;top:-70px;transition:top 1s cubic-bezier(.15,1.5,.4,1);line-height:1`;
+            el.textContent = medal;
+            stage.appendChild(el);
+            setTimeout(() => { el.style.top = (H * 0.58) + "px"; }, i * 220 + 60);
+          });
+        }, 2200);
+
+        // Act 3 — confetti burst
+        setTimeout(() => {
+          const confetti = ["⭐","🌟","✨","💫","🎉","🎊","❤️","💛","💚","💙"];
+          for (let i = 0; i < 24; i++) {
+            setTimeout(() => {
+              const c = document.createElement("div");
+              c.style.cssText = `position:absolute;font-size:${12+Math.random()*16}px;left:${Math.random()*92}%;top:${Math.random()*85}%;opacity:1;animation:starPop 0.9s ease-out forwards;line-height:1`;
+              c.textContent = confetti[Math.floor(Math.random()*confetti.length)];
+              stage.appendChild(c);
+            }, i * 110);
+          }
+        }, 3400);
+
+        // Act 4 — YOU WIN flash
+        setTimeout(() => {
+          title.textContent = "🏆 YOU WIN! 🏆";
+          title.style.fontSize = "16px";
+          title.style.color = "#fff";
+          title.style.textShadow = "0 0 20px #ff0, 0 0 40px #f80, 0 0 60px #f00";
+          title.style.background = "rgba(0,0,0,0.85)";
+          title.style.border = "1px solid #ff0";
+        }, 4800);
+
+        // Act 5 — credits scroll up (Star Wars style)
+        setTimeout(() => {
+          stage.innerHTML = "";
+          title.textContent = "";
+          const credits = [
+            {t:"🎖️  HERO OF MATH  🎖️", c:"#ff0", s:"13px"},
+            {t:"ALL 6 LEVELS CLEARED", c:"#fff", s:"9px"},
+            {t:"🏆  🥇  🏆  🥇  🏆",  c:"#fa0", s:"18px"},
+            {t:"SCORE: " + score,       c:"#0ff", s:"11px"},
+            {t:"STREAK: " + bestStreak + "x", c:"#0f0", s:"9px"},
+          ];
+          credits.forEach((cr, i) => {
+            const el = document.createElement("div");
+            el.style.cssText = `position:absolute;width:100%;text-align:center;font-family:'Press Start 2P',monospace;font-size:${cr.s};color:${cr.c};top:${H+30}px;transition:top 1.6s ease-out;letter-spacing:.08em;line-height:2;text-shadow:0 0 10px ${cr.c}`;
+            el.textContent = cr.t;
+            stage.appendChild(el);
+            setTimeout(() => { el.style.top = (H * 0.06 + i * (H * 0.19)) + "px"; }, i * 320 + 80);
+          });
+        }, 6200);
+
+        // Act 6 — PLAY AGAIN button appears on top of the scene (no overlay)
+        setTimeout(() => {
+          const btn = document.createElement("button");
+          btn.textContent = "PLAY AGAIN";
+          btn.style.cssText = `
+            position:absolute;
+            bottom:18px;
+            left:50%;
+            transform:translateX(-50%);
+            font-family:'Press Start 2P',monospace;
+            font-size:10px;
+            letter-spacing:.1em;
+            padding:13px 28px;
+            background:#fff;
+            color:#000;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+            z-index:10;
+            box-shadow:0 0 20px rgba(255,255,255,0.4);
+          `;
+          btn.id = "victory-play-btn";
+          btn.addEventListener("click", () => {
+            inter.classList.remove("show");
+            inter.style.pointerEvents = "";
+            title.style.fontSize = "";
+            title.style.color = "";
+            title.style.textShadow = "";
+            title.style.background = "";
+            title.style.border = "";
+            intermissionActive = false;
+            onDone();
+          });
+          stage.appendChild(btn);
+        }, 8800);
+      }
+
+      function showVictoryScreen() {
+        // Victory is shown inline on the intermission stage — no overlay needed
+        // onDone() from playVictory calls startGame directly
+      }
+
+      // Correct answers needed to complete each level (index = level number)
+      const LEVEL_THRESHOLDS = [0, 5, 7, 10, 10, 10, 10]; // levels 1-6
+      const MAX_LEVEL = 6;
+
       function checkLevelUp() {
         problems++;
-        if (problems % 6 === 0) {
+        const threshold = LEVEL_THRESHOLDS[level] || 10;
+        if (problems >= threshold) {
+          problems = 0;
           level++;
-          const b = document.createElement("div");
-          b.style.cssText =
-            'position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);font-family:"Press Start 2P",monospace;font-size:13px;color:#ff0;z-index:15;pointer-events:none;white-space:nowrap';
-          b.textContent = "LEVEL " + level + "!";
-          $("question-area").appendChild(b);
-          setTimeout(() => b.remove(), 900);
+          lives++;             // bonus heart for completing a level!
+          updateLives();
+          locked = true;
+          clearInterval(timerInterval);
+          if (level > MAX_LEVEL) {
+            // Completed all levels — play victory scene then show end screen
+            playVictory(() => {
+              startGame();
+            });
+          } else {
+            playIntermission(level, () => {
+              locked = false;
+              nextQuestion();
+            });
+          }
+          return true;
         }
+        return false;
       }
       function startGame() {
         score = 0;
@@ -2029,7 +2416,7 @@
         overlay.classList.remove("show");
         updateScore();
         updateLives();
-        updateComboBar();
+        updateLevelBar();
         nextQuestion();
       }
       function endGame() {
