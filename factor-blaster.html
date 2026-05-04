@@ -413,7 +413,7 @@
         text-align: center;
       }
       .drum {
-        width: 72px;
+        width: 90px;
         height: 120px;
         overflow: hidden;
         position: relative;
@@ -450,9 +450,9 @@
         font-family: "Press Start 2P", monospace;
         font-size: 12px;
         color: #1e1e1e;
-        width: 18px;
+        width: 26px;
         text-align: left;
-        margin-left: 16px;
+        margin-left: 14px;
         line-height: 1;
       }
       .drum-item.near .sign {
@@ -462,7 +462,7 @@
       .drum-item.near .num {
         color: #444;
         font-size: 15px;
-        margin-left: 16px;
+        margin-left: 14px;
       }
       .drum-item.center .sign {
         color: #bbb;
@@ -472,8 +472,8 @@
       .drum-item.center .num {
         color: #fff;
         font-size: 20px;
-        width: 22px;
-        margin-left: 16px;
+        width: 30px;
+        margin-left: 14px;
       }
       .drum-shade-top {
         position: absolute;
@@ -531,7 +531,7 @@
       /* submit */
       #submit-wrap {
         flex: 0 0 auto;
-        padding: 5px 14px 8px;
+        padding: 24px 14px 8px;
         position: relative;
         z-index: 2;
       }
@@ -1291,7 +1291,7 @@
         const pool = [];
         if (S.gcf) pool.push(genGCF);
         if (S.dos) pool.push(genDOS);
-        if (S.tri1) pool.push(genTri1);
+        if (S.tri1) pool.push(genTri1, genTri1, genTri1);
         if (S.trip) pool.push(genTriPrime);
         if (S.tric) pool.push(genTriComp);
         if (S.grp) pool.push(genGrouping);
@@ -1337,7 +1337,7 @@
         // DOS (r1/r2 exist) and Trinomials (a=1, prime, composite)
         const pool = [];
         if (S.dos)  pool.push(genDOS);
-        if (S.tri1) pool.push(genTri1);
+        if (S.tri1) pool.push(genTri1, genTri1, genTri1);
         if (S.trip) pool.push(genTriPrime);
         if (S.tric) pool.push(genTriComp);
         // If none are enabled, fall back to trinomials a=1
