@@ -8,10 +8,15 @@
     />
     <title>Factor Blaster | DeltaSeven</title>
     <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BK4VM8YZ41"></script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-BK4VM8YZ41"
+    ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
+      function gtag() {
+        dataLayer.push(arguments);
+      }
       gtag("js", new Date());
       gtag("config", "G-BK4VM8YZ41");
     </script>
@@ -63,103 +68,53 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 8px 12px 14px;
+        padding: 8px 10px 12px;
         border-bottom: 1px solid #222;
         flex-shrink: 0;
         position: relative;
         z-index: 2;
+        gap: 4px;
       }
-      #hud-left {
+
+      .hud-block {
+        flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 1px;
+        align-items: center;
+        gap: 3px;
       }
-      #score-label {
+      .hud-lbl {
         font-family: "Press Start 2P", monospace;
-        font-size: 6px;
+        font-size: 7px;
         color: #555;
-        letter-spacing: 0.1em;
+        letter-spacing: 0.08em;
       }
-      #score {
+      .hud-val {
         font-family: "Press Start 2P", monospace;
-        font-size: 16px;
+        font-size: 14px;
         color: #fff;
-        transition: transform 0.1s;
         letter-spacing: 0.04em;
       }
       #score.bump {
         transform: scale(1.25);
-      }
-      #hud-center {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 3px;
+        transition: transform 0.1s;
       }
       #streak-display {
         font-family: "Press Start 2P", monospace;
-        font-size: 8px;
-        color: #ff0;
+        font-size: 14px;
+        color: #fff;
         letter-spacing: 0.04em;
-        min-height: 12px;
       }
-      #best-row {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
-      .best-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1px;
-      }
-      .best-label {
-        font-family: "Press Start 2P", monospace;
-        font-size: 5px;
-        color: #444;
-        letter-spacing: 0.08em;
-      }
-      .best-val {
-        font-family: "Press Start 2P", monospace;
-        font-size: 8px;
-        color: #666;
-      }
-      #hud-right {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-      #lives-area {
-        display: flex;
-        gap: 3px;
-        align-items: center;
-      }
-      #lives-label {
-        font-family: "Press Start 2P", monospace;
-        font-size: 6px;
-        color: #555;
-        margin-right: 2px;
-        letter-spacing: 0.06em;
+      #streak-display.hot {
+        color: #ff0;
       }
       .heart {
-        font-size: 14px;
+        font-size: 15px;
         line-height: 1;
+        color: #ff0000;
       }
-      #options-btn {
-        font-size: 20px;
-        background: none;
-        border: none;
-        color: #888;
-        padding: 4px 6px;
-        cursor: pointer;
-        line-height: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      #options-btn:active {
-        color: #fff;
+      .heart.empty {
+        color: #333;
       }
 
       /* combo bar */
@@ -172,10 +127,10 @@
       }
       #combo-bar {
         height: 5px;
-        background: #00aaff;
+        background: #00ff00;
         width: 0%;
         transition: width 0.4s ease-out;
-        box-shadow: 0 0 6px #00aaff;
+        box-shadow: 0 0 6px #00ff00;
       }
       /* level indicator row */
       #level-row {
@@ -190,15 +145,15 @@
       #level-label {
         font-family: "Press Start 2P", monospace;
         font-size: 8px;
-        color: #00aaff;
-        letter-spacing: .08em;
-        text-shadow: 0 0 6px #00aaff;
+        color: #00ff00;
+        letter-spacing: 0.08em;
+        text-shadow: 0 0 6px #00ff00;
       }
       #level-progress-text {
         font-family: "Press Start 2P", monospace;
         font-size: 7px;
-        color: #444;
-        letter-spacing: .06em;
+        color: #00ff00;
+        letter-spacing: 0.06em;
       }
 
       /* QUESTION AREA */
@@ -224,7 +179,7 @@
       }
       #topic-tag {
         font-size: 7px;
-        color: #333;
+        color: #0000ff;
         letter-spacing: 0.08em;
         text-align: center;
         height: 13px;
@@ -334,16 +289,18 @@
         font-family: "Share Tech Mono", monospace;
         font-size: clamp(16px, 4.5vw, 22px);
         letter-spacing: 0.03em;
-        background: #0055cc;
+        background: #0000ff;
         color: #fff;
         border: 2px solid #3377ff;
         border-radius: 12px;
         cursor: pointer;
-        transition: transform 0.08s, background 0.1s;
+        transition:
+          transform 0.08s,
+          background 0.1s;
       }
       #continue-btn:active {
         transform: scale(0.97);
-        background: #0044aa;
+        background: #0000cc;
       }
 
       /* Challenge drums */
@@ -528,6 +485,37 @@
         z-index: 3;
       }
 
+      /* reset / quit */
+      #reset-quit-row {
+        display: flex;
+      }
+      #reset-btn,
+      #quit-btn {
+        font-family: "Press Start 2P", monospace;
+        font-size: 8px;
+        padding: 7px 16px;
+        border-radius: 7px;
+        cursor: pointer;
+        letter-spacing: 0.06em;
+      }
+      #reset-btn {
+        background: #000;
+        border: 1px solid #333;
+        color: #555;
+      }
+      #reset-btn:hover {
+        border-color: #555;
+        color: #888;
+      }
+      #quit-btn {
+        background: #000;
+        border: 1px solid #ff0000;
+        color: #ff0000;
+      }
+      #quit-btn:hover {
+        background: #0a0000;
+      }
+
       /* submit */
       #submit-wrap {
         flex: 0 0 auto;
@@ -541,7 +529,7 @@
         font-family: "Press Start 2P", monospace;
         font-size: 10px;
         letter-spacing: 0.1em;
-        background: #0055cc;
+        background: #0000ff;
         color: #fff;
         border: none;
         border-radius: 10px;
@@ -552,7 +540,7 @@
       }
       #submit-btn:active {
         transform: scale(0.97);
-        background: #0044aa;
+        background: #0000cc;
       }
       #submit-btn:disabled {
         background: #222;
@@ -706,6 +694,101 @@
       }
 
       /* OVERLAY */
+      .screen-title {
+        font-family: "Press Start 2P", monospace;
+        font-size: 18px;
+        color: #fff;
+        text-align: center;
+        letter-spacing: 0.08em;
+        margin-bottom: 16px;
+        line-height: 1.5;
+      }
+      .mode-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        background: #111;
+        border: 2px solid #333;
+        border-radius: 10px;
+        padding: 14px 20px;
+        font-family: "Press Start 2P", monospace;
+        font-size: 13px;
+        color: #fff;
+        cursor: pointer;
+        letter-spacing: 0.08em;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+      .mode-btn:hover {
+        border-color: #666;
+      }
+      .mode-sub {
+        font-size: 9px;
+        color: #555;
+        font-family: "Share Tech Mono", monospace;
+        letter-spacing: 0.04em;
+      }
+      .back-btn {
+        background: none;
+        border: none;
+        font-family: "Press Start 2P", monospace;
+        font-size: 9px;
+        color: #555;
+        cursor: pointer;
+        margin-top: 8px;
+        letter-spacing: 0.06em;
+      }
+      .back-btn:hover {
+        color: #888;
+      }
+      #topic-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        margin-bottom: 14px;
+      }
+      .topic-btn {
+        width: 100%;
+        background: #0a0a0a;
+        border: 1.5px solid #222;
+        border-radius: 8px;
+        padding: 11px 16px;
+        font-family: "Press Start 2P", monospace;
+        font-size: 9px;
+        color: #444;
+        cursor: pointer;
+        text-align: left;
+        letter-spacing: 0.06em;
+        transition:
+          border-color 0.05s,
+          color 0.05s;
+      }
+      .topic-btn.on {
+        border-color: #ff0;
+        color: #ff0;
+      }
+      #topic-start {
+        width: 100%;
+        padding: 13px;
+        font-family: "Press Start 2P", monospace;
+        font-size: 11px;
+        background: #fff;
+        color: #000;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        letter-spacing: 0.1em;
+        margin-bottom: 4px;
+      }
+      #start-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        width: 100%;
+      }
       #screen-overlay {
         position: absolute;
         inset: 0;
@@ -744,14 +827,15 @@
       }
       #overlay-btn {
         font-family: "Press Start 2P", monospace;
-        font-size: 9px;
-        padding: 13px 26px;
+        font-size: 11px;
+        letter-spacing: 0.1em;
         background: #fff;
         color: #000;
         border: none;
         border-radius: 8px;
+        padding: 14px 36px;
         cursor: pointer;
-        letter-spacing: 0.08em;
+        margin-top: 8px;
       }
       #overlay-btn:active {
         transform: scale(0.97);
@@ -770,7 +854,8 @@
       /* ── LEVEL INTERMISSION ── */
       #intermission {
         position: absolute;
-        left: 0; right: 0;
+        left: 0;
+        right: 0;
         bottom: 0;
         height: 52%;
         z-index: 25;
@@ -780,7 +865,9 @@
         background: linear-gradient(to top, #000 60%, transparent);
         border-top: 2px solid #222;
       }
-      #intermission.show { display: block; }
+      #intermission.show {
+        display: block;
+      }
       #intermission-stage {
         position: absolute;
         inset: 0;
@@ -795,14 +882,14 @@
         font-family: "Press Start 2P", monospace;
         font-size: 11px;
         color: #ff0;
-        letter-spacing: .1em;
+        letter-spacing: 0.1em;
         white-space: nowrap;
         z-index: 2;
         text-shadow: 0 0 10px #ff0;
-        background: rgba(0,0,0,0.75);
+        background: rgba(0, 0, 0, 0.75);
         padding: 5px 12px;
         border-radius: 6px;
-        border: 1px solid rgba(255,255,0,0.25);
+        border: 1px solid rgba(255, 255, 0, 0.25);
       }
       #streak-flash {
         position: fixed;
@@ -823,26 +910,31 @@
     <div id="game">
       <div id="stars"><canvas id="star-canvas"></canvas></div>
       <div id="hud">
-        <div id="hud-left">
-          <div id="score-label">SCORE</div>
-          <div id="score">0</div>
+        <div class="hud-block">
+          <div class="hud-lbl">SCORE</div>
+          <div class="hud-val" id="score">0</div>
         </div>
-        <div id="hud-center">
-          <div id="streak-display"></div>
-          <div id="best-row">
-            <div class="best-item">
-              <div class="best-label">BEST</div>
-              <div class="best-val" id="best-score">0</div>
-            </div>
-            <div class="best-item">
-              <div class="best-label">STREAK</div>
-              <div class="best-val" id="best-streak">0</div>
-            </div>
-          </div>
+        <div class="hud-block">
+          <div class="hud-lbl">BEST</div>
+          <div class="hud-val" id="best-score">0</div>
         </div>
-        <div id="hud-right">
-          <div id="lives-area"><span id="lives-label">LIVES</span></div>
-          <button id="options-btn">⚙️</button>
+        <div class="hud-block">
+          <div class="hud-lbl">STREAK</div>
+          <div class="hud-val" id="streak-display">–</div>
+          <div style="display: none" id="best-streak">0</div>
+        </div>
+        <div class="hud-block">
+          <div class="hud-lbl">LIVES</div>
+          <div
+            id="lives-area"
+            style="
+              display: flex;
+              gap: 3px;
+              align-items: center;
+              justify-content: center;
+              margin-top: 2px;
+            "
+          ></div>
         </div>
       </div>
       <div id="combo-bar-wrap"><div id="combo-bar"></div></div>
@@ -852,8 +944,8 @@
       </div>
 
       <div id="question-area">
-        <div id="expression"></div>
         <div id="topic-tag"></div>
+        <div id="expression"></div>
         <div id="hint-text"></div>
         <div id="feedback-banner"></div>
         <div id="combo-popup"></div>
@@ -866,13 +958,34 @@
         <button class="choice-btn"></button>
       </div>
 
-      <div id="continue-wrap" style="display:none;padding:0 12px 8px;position:relative;z-index:2;flex-shrink:0">
+      <div
+        id="continue-wrap"
+        style="
+          display: none;
+          padding: 0 12px 8px;
+          position: relative;
+          z-index: 2;
+          flex-shrink: 0;
+        "
+      >
         <button id="continue-btn">CONTINUE →</button>
       </div>
 
       <div id="factored-area" style="display: none"></div>
       <div id="submit-wrap" style="display: none">
         <button id="submit-btn" disabled>FACTOR IT</button>
+        <div
+          id="reset-quit-row"
+          style="
+            display: none;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 8px;
+          "
+        >
+          <button id="reset-btn">↺ RESET</button>
+          <button id="quit-btn">QUIT</button>
+        </div>
       </div>
 
       <!-- OPTIONS -->
@@ -888,7 +1001,6 @@
           >
           <div class="s-pill on" id="opt-mode"><div class="s-knob"></div></div>
         </div>
-      
 
         <div class="opt-section">QUESTION TYPES</div>
         <div class="opt-row">
@@ -915,7 +1027,7 @@
         </div>
         <div class="opt-row">
           <span class="opt-label"
-            >Trinomials (prime a)<span class="opt-sub"
+            >ax²+bx+c, a=prime<span class="opt-sub"
               >e.g. 2x² + 7x + 3</span
             ></span
           >
@@ -944,28 +1056,51 @@
 
       <!-- START OVERLAY -->
       <div id="screen-overlay" class="show">
-        <div id="overlay-title">FACTOR<br />BLASTER</div>
-        <div id="overlay-sub">
-          Tap the right answer.<br />Build combos. Beat the clock.<br />Don't
-          lose your streak.
+        <div id="start-screen">
+          <div class="screen-title" style="font-size: 22px">
+            FACTOR<br />BLASTER
+          </div>
+          <div id="overlay-sub">
+            Tap the right answer.<br />Build combos.<br />Don't lose your
+            streak.
+          </div>
+          <button id="overlay-btn">PLAY</button>
         </div>
-        <div id="overlay-score"></div>
-        <button id="overlay-btn">PLAY</button>
-        <a href="index.html" id="overlay-home">← back to deltaseven.io</a>
+        <div id="mode-screen" style="display: none">
+          <div class="screen-title">SELECT MODE</div>
+          <button class="mode-btn" id="mode-ez">
+            EZ MODE<span class="mode-sub">Multiple choice answers</span>
+          </button>
+          <button class="mode-btn" id="mode-challenge">
+            CHALLENGE<span class="mode-sub">Spin the number drums</span>
+          </button>
+          <button class="back-btn" id="mode-back">← BACK</button>
+        </div>
+        <div id="topic-screen" style="display: none">
+          <div class="screen-title">WHAT TO STUDY?</div>
+          <div id="topic-list"></div>
+          <button id="topic-start">START!</button>
+          <button class="back-btn" id="topic-back">← BACK</button>
+        </div>
       </div>
     </div>
     <div id="intermission">
-    <div id="intermission-title"></div>
-    <div id="intermission-stage"></div>
-  </div>
-  <div id="streak-flash"></div>
+      <div id="intermission-title"></div>
+      <div id="intermission-stage"></div>
+    </div>
+    <div id="streak-flash"></div>
 
     <script>
       // ── STAR FIELD (canvas-based, supports hyperspace) ──
-      (function() {
+      (function () {
         const canvas = document.getElementById("star-canvas");
         const gameEl = document.getElementById("game");
-        let W, H, ctx, stars, hyperspaceActive = false, hyperspaceT = 0;
+        let W,
+          H,
+          ctx,
+          stars,
+          hyperspaceActive = false,
+          hyperspaceT = 0;
         const STAR_COUNT = 280;
         const HYPER_DURATION = 3200; // ms
 
@@ -979,13 +1114,13 @@
         function makeStar() {
           // polar coords from center
           const angle = Math.random() * Math.PI * 2;
-          const dist  = Math.random() * Math.max(W, H) * 0.72;
+          const dist = Math.random() * Math.max(W, H) * 0.72;
           return {
             angle,
             dist,
             baseDist: dist,
-            x: W/2 + Math.cos(angle) * dist,
-            y: H/2 + Math.sin(angle) * dist,
+            x: W / 2 + Math.cos(angle) * dist,
+            y: H / 2 + Math.sin(angle) * dist,
             size: Math.random() * 2.0 + 0.6,
             opacity: Math.random() * 0.8 + 0.25,
             twinkleOffset: Math.random() * Math.PI * 2,
@@ -994,7 +1129,7 @@
         }
 
         function initStars() {
-          stars = Array.from({length: STAR_COUNT}, makeStar);
+          stars = Array.from({ length: STAR_COUNT }, makeStar);
         }
 
         let lastT = 0;
@@ -1013,32 +1148,32 @@
             const elapsed = ts - hyperStart;
             const progress = Math.min(elapsed / HYPER_DURATION, 1);
             // ease-in curve — slow start, explosive end
-            const eased = progress < 0.5
-              ? 2 * progress * progress
-              : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+            const eased =
+              progress < 0.5
+                ? 2 * progress * progress
+                : 1 - Math.pow(-2 * progress + 2, 2) / 2;
 
-            stars.forEach(star => {
+            stars.forEach((star) => {
               // stretch distance from center
               const stretchFactor = 1 + eased * eased * 55;
               const d = star.baseDist * stretchFactor;
-              const sx = W/2 + Math.cos(star.angle) * d;
-              const sy = H/2 + Math.sin(star.angle) * d;
+              const sx = W / 2 + Math.cos(star.angle) * d;
+              const sy = H / 2 + Math.sin(star.angle) * d;
 
               // tail length grows with speed
               const tailLen = eased * eased * 380 + 2;
-              const tx = W/2 + Math.cos(star.angle) * (d - tailLen);
-              const ty = H/2 + Math.sin(star.angle) * (d - tailLen);
+              const tx = W / 2 + Math.cos(star.angle) * (d - tailLen);
+              const ty = H / 2 + Math.sin(star.angle) * (d - tailLen);
 
               // alpha: full bright during jump, fade at very end
-              const alpha = progress > 0.92
-                ? (1 - progress) / 0.08
-                : 0.85 + eased * 0.15;
+              const alpha =
+                progress > 0.92 ? (1 - progress) / 0.08 : 0.85 + eased * 0.15;
 
               const gradient = ctx.createLinearGradient(tx, ty, sx, sy);
-              gradient.addColorStop(0,   `rgba(255,255,255,0)`);
+              gradient.addColorStop(0, `rgba(255,255,255,0)`);
               gradient.addColorStop(0.25, `rgba(180,210,255,${alpha * 0.4})`);
-              gradient.addColorStop(0.7,  `rgba(220,235,255,${alpha * 0.85})`);
-              gradient.addColorStop(1,    `rgba(255,255,255,${alpha})`);
+              gradient.addColorStop(0.7, `rgba(220,235,255,${alpha * 0.85})`);
+              gradient.addColorStop(1, `rgba(255,255,255,${alpha})`);
 
               ctx.beginPath();
               ctx.moveTo(tx, ty);
@@ -1061,8 +1196,12 @@
             }
           } else {
             // Normal twinkle
-            stars.forEach(star => {
-              const twinkle = 0.3 + 0.7 * (0.5 + 0.5 * Math.sin(t * star.twinkleSpeed + star.twinkleOffset));
+            stars.forEach((star) => {
+              const twinkle =
+                0.3 +
+                0.7 *
+                  (0.5 +
+                    0.5 * Math.sin(t * star.twinkleSpeed + star.twinkleOffset));
               ctx.beginPath();
               ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
               ctx.fillStyle = `rgba(255,255,255,${star.opacity * twinkle})`;
@@ -1074,7 +1213,7 @@
         }
 
         // expose hyperspace trigger globally
-        window._hyperspaceJump = function() {
+        window._hyperspaceJump = function () {
           if (hyperspaceActive) return;
           hyperspaceActive = true;
           hyperStart = performance.now();
@@ -1107,14 +1246,26 @@
         return `(${aStr}x ${b > 0 ? "+ " : "– "}${Math.abs(b)})`;
       }
 
-      function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while(b){const t=b;b=a%b;a=t;} return a; }
+      function gcd(a, b) {
+        a = Math.abs(a);
+        b = Math.abs(b);
+        while (b) {
+          const t = b;
+          b = a % b;
+          a = t;
+        }
+        return a;
+      }
 
       function genGCF() {
         // gcf·x(x ± b) — always integers, always fully factored
         const gcf = pick([2, 3, 4, 5, 6, 7, 8, 9, 10, 12]);
         let b;
-        do { b = pick([-9,-8,-7,-6,-5,-4,-3,-2,-1,1,2,3,4,5,6,7,8,9]); }
-        while (gcd(gcf, Math.abs(b)) > 1);
+        do {
+          b = pick([
+            -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+          ]);
+        } while (gcd(gcf, Math.abs(b)) > 1);
         const B = gcf * b;
         const bStr = B > 0 ? ` + ${B}x` : ` – ${Math.abs(B)}x`;
         const expr = `${gcf}x²${bStr}`;
@@ -1122,13 +1273,22 @@
         const bAbs = Math.abs(b);
         const bFlip = b > 0 ? "– " : "+ ";
         const bKeep = b > 0 ? "+ " : "– ";
-        const wrongs = shuffle([
-          `${gcf}(x² ${bKeep}${bAbs}x)`,           // forgot the x outside
-          `${gcf}x(x ${bFlip}${bAbs})`,             // wrong sign on b
-          `${gcf}x(x ${bKeep}${bAbs + 1})`,         // b off by 1
-          `x(${gcf}x ${bKeep}${gcf * bAbs})`,       // didn't pull gcf out fully
-        ].filter(w => w !== factored)).slice(0, 3);
-        return { expr, correct: factored, wrongs, topic: "gcf", r1: null, r2: null };
+        const wrongs = shuffle(
+          [
+            `${gcf}(x² ${bKeep}${bAbs}x)`, // forgot the x outside
+            `${gcf}x(x ${bFlip}${bAbs})`, // wrong sign on b
+            `${gcf}x(x ${bKeep}${bAbs + 1})`, // b off by 1
+            `x(${gcf}x ${bKeep}${gcf * bAbs})`, // didn't pull gcf out fully
+          ].filter((w) => w !== factored),
+        ).slice(0, 3);
+        return {
+          expr,
+          correct: factored,
+          wrongs,
+          topic: "gcf",
+          r1: null,
+          r2: null,
+        };
       }
 
       function genDOS() {
@@ -1185,7 +1345,12 @@
             `(x ${r1 > 0 ? "– " : "+ "}${Math.abs(r1)})(x ${r2 > 0 ? "– " : "+ "}${Math.abs(r2)})`,
             `(x ${r1 > 0 ? "+ " : "– "}${Math.abs(r1) + 1})(x ${r2 > 0 ? "+ " : "– "}${Math.abs(r2) + 1})`,
             `(x ${altR1 > 0 ? "+ " : "– "}${Math.abs(altR1)})(x ${altR2 > 0 ? "+ " : "– "}${Math.abs(altR2)})`,
-          ].filter((w) => w !== correct && w !== `(x ${r2 > 0 ? "+ " : "– "}${Math.abs(r2)})(x ${r1 > 0 ? "+ " : "– "}${Math.abs(r1)})`),
+          ].filter(
+            (w) =>
+              w !== correct &&
+              w !==
+                `(x ${r2 > 0 ? "+ " : "– "}${Math.abs(r2)})(x ${r1 > 0 ? "+ " : "– "}${Math.abs(r1)})`,
+          ),
         ).slice(0, 3);
         return { expr, correct, wrongs, topic: "tri1", r1, r2 };
       }
@@ -1273,10 +1438,10 @@
 
       const TOPIC_LABELS = {
         gcf: "GCF",
-        dos: "DIFF OF SQUARES",
-        tri1: "TRINOMIAL (a=1)",
-        trip: "TRINOMIAL (prime a)",
-        tric: "TRINOMIAL (comp. a)",
+        dos: "DIFFERENCE OF SQUARES",
+        tri1: "TRINOMIAL  ax²+bx+c, a=1",
+        trip: "TRINOMIAL  ax²+bx+c, a=prime",
+        tric: "TRINOMIAL  ax²+bx+c, a=composite",
         grp: "FACTOR BY GROUPING",
       };
 
@@ -1300,13 +1465,13 @@
 
         // Remove any wrong that is mathematically the same as the correct answer
         const normCorrect = normFactored(p.correct);
-        let cleaned = p.wrongs.filter(w =>
-          w && w.trim() !== "" && normFactored(w) !== normCorrect
+        let cleaned = p.wrongs.filter(
+          (w) => w && w.trim() !== "" && normFactored(w) !== normCorrect,
         );
 
         // Deduplicate wrong answers (both exact and order-invariant)
         const seen = new Set();
-        cleaned = cleaned.filter(w => {
+        cleaned = cleaned.filter((w) => {
           const k = normFactored(w);
           if (seen.has(k)) return false;
           seen.add(k);
@@ -1315,9 +1480,15 @@
 
         // Pad with safe generic fallbacks if we still don't have 3 wrongs
         const fallbacks = [
-          "(x + 1)(x + 1)", "(x – 1)(x + 1)", "(x + 2)(x – 2)",
-          "(x + 3)(x + 3)", "(x – 5)(x + 2)", "(x + 4)(x – 3)",
-          "(x – 6)(x + 1)", "(x + 7)(x – 2)", "(x – 8)(x + 3)",
+          "(x + 1)(x + 1)",
+          "(x – 1)(x + 1)",
+          "(x + 2)(x – 2)",
+          "(x + 3)(x + 3)",
+          "(x – 5)(x + 2)",
+          "(x + 4)(x – 3)",
+          "(x – 6)(x + 1)",
+          "(x + 7)(x – 2)",
+          "(x – 8)(x + 3)",
         ];
         for (const fb of fallbacks) {
           if (cleaned.length >= 3) break;
@@ -1336,13 +1507,14 @@
         // Challenge mode only uses problem types that work with the drums:
         // DOS (r1/r2 exist) and Trinomials (a=1, prime, composite)
         const pool = [];
-        if (S.dos)  pool.push(genDOS);
+        if (S.dos) pool.push(genDOS);
         if (S.tri1) pool.push(genTri1, genTri1, genTri1);
         if (S.trip) pool.push(genTriPrime);
         if (S.tric) pool.push(genTriComp);
         // If none are enabled, fall back to trinomials a=1
         if (!pool.length) pool.push(genTri1);
-        let p, attempts = 0;
+        let p,
+          attempts = 0;
         do {
           p = pick(pool)();
           attempts++;
@@ -1351,24 +1523,31 @@
         if (p.r1 === null) p = genTri1();
         // Apply same dedup/cleanup as generateProblem
         const normCorrect = normFactored(p.correct);
-        let cleaned = p.wrongs.filter(w =>
-          w && w.trim() !== "" && normFactored(w) !== normCorrect
+        let cleaned = p.wrongs.filter(
+          (w) => w && w.trim() !== "" && normFactored(w) !== normCorrect,
         );
         const seen = new Set();
-        cleaned = cleaned.filter(w => {
+        cleaned = cleaned.filter((w) => {
           const k = normFactored(w);
           if (seen.has(k)) return false;
           seen.add(k);
           return true;
         });
         const fallbacks = [
-          "(x + 1)(x + 1)", "(x – 1)(x + 1)", "(x + 2)(x – 2)",
-          "(x + 3)(x + 3)", "(x – 5)(x + 2)", "(x + 4)(x – 3)",
+          "(x + 1)(x + 1)",
+          "(x – 1)(x + 1)",
+          "(x + 2)(x – 2)",
+          "(x + 3)(x + 3)",
+          "(x – 5)(x + 2)",
+          "(x + 4)(x – 3)",
         ];
         for (const fb of fallbacks) {
           if (cleaned.length >= 3) break;
           const k = normFactored(fb);
-          if (k !== normCorrect && !seen.has(k)) { seen.add(k); cleaned.push(fb); }
+          if (k !== normCorrect && !seen.has(k)) {
+            seen.add(k);
+            cleaned.push(fb);
+          }
         }
         p.wrongs = cleaned.slice(0, 3);
         return p;
@@ -1385,7 +1564,7 @@
       };
 
       const RANGE = [];
-      for (let i = -12; i <= 12; i++) if (i !== 0) RANGE.push(i);
+      for (let i = -50; i <= 50; i++) if (i !== 0) RANGE.push(i);
       const ITEM_H = 36,
         DRUM_H = 120;
 
@@ -1522,7 +1701,14 @@
         );
         drum.addEventListener("touchend", onEnd);
         snapTo(ci);
-        return { wrap, getValue: () => values[ci], setValue: (v) => { const i = values.indexOf(v); if (i >= 0) snapTo(i); } };
+        return {
+          wrap,
+          getValue: () => values[ci],
+          setValue: (v) => {
+            const i = values.indexOf(v);
+            if (i >= 0) snapTo(i);
+          },
+        };
       }
 
       const $ = (id) => document.getElementById(id);
@@ -1538,11 +1724,11 @@
         choicesEl = $("choices"),
         submitWrap = $("submit-wrap"),
         submitBtn = $("submit-btn");
-      const overlay = $("screen-overlay"),
-        overlayTitle = $("overlay-title"),
-        overlaySub = $("overlay-sub");
-      const overlayScore = $("overlay-score"),
-        overlayBtn = $("overlay-btn");
+      const overlay = $("screen-overlay");
+      const overlayBtn = $("overlay-btn");
+      const overlayTitle = { innerHTML: "" }; // legacy compat
+      const overlaySub = { textContent: "" }; // legacy compat
+      const overlayScore = { textContent: "" }; // legacy compat
       const streakFlash = $("streak-flash");
       const choiceBtns = document.querySelectorAll(".choice-btn");
       const streakDisplay = $("streak-display"),
@@ -1554,10 +1740,15 @@
 
       function updateModeToggleText() {
         const isEz = S.mode === "ez";
-        $("mode-label-text").innerHTML = `${isEz ? "EZ Mode" : "Challenge Mode"}<span class="opt-sub">Now on ${isEz ? "EZ Mode — multiple choice answers" : "Challenge Mode — spin the number drums"}</span>`;
+        if ($("mode-label-text"))
+          $("mode-label-text").innerHTML =
+            `${isEz ? "EZ Mode" : "Challenge Mode"}`;
       }
 
-      const modePill = $("opt-mode");
+      const modePill = $("opt-mode") || {
+        classList: { toggle: () => {}, add: () => {}, remove: () => {} },
+        className: "",
+      };
       modePill.addEventListener("click", () => {
         S.mode = S.mode === "ez" ? "challenge" : "ez";
         modePill.classList.toggle("on", S.mode === "ez");
@@ -1579,13 +1770,10 @@
       makePill("opt-trip", "trip");
       makePill("opt-tric", "tric");
       makePill("opt-grp", "grp");
-      $("options-btn").addEventListener("click", () =>
-        $("options-panel").classList.add("show"),
-      );
-      $("opt-close").addEventListener("click", () => {
-        $("options-panel").classList.remove("show");
-        if (typeof score !== "undefined") nextQuestion();
-      });
+      if ($("opt-close"))
+        $("opt-close").addEventListener("click", () => {
+          if (typeof score !== "undefined") nextQuestion();
+        });
 
       let score,
         lives,
@@ -1602,7 +1790,10 @@
       function buildChoices(p) {
         const opts = shuffle([p.correct, ...p.wrongs.slice(0, 3)]);
         choiceBtns.forEach((b, i) => {
-          b.innerHTML = '<span class="btn-emoji" style="visibility:hidden">✅</span><span class="btn-text">' + (opts[i] || "") + '</span><span class="btn-spacer"></span>';
+          b.innerHTML =
+            '<span class="btn-emoji" style="visibility:hidden">✅</span><span class="btn-text">' +
+            (opts[i] || "") +
+            '</span><span class="btn-spacer"></span>';
           b._answer = opts[i] || "";
           b.className = "choice-btn";
           b.disabled = false;
@@ -1645,28 +1836,34 @@
           // Constant wheels
           const constWheel1 = makeWheel();
           const constWheel2 = makeWheel();
-          wheels.push(constWheel1);  // wheels[1] = r1
-          wheels.push(constWheel2);  // wheels[2] = r2
+          wheels.push(constWheel1); // wheels[1] = r1
+          wheels.push(constWheel2); // wheels[2] = r2
 
           // Layout: (coeffWheel·x  constWheel1)(badge2  constWheel2)
           function mkParen(ch) {
             const d = document.createElement("div");
-            d.className = "f-paren"; d.textContent = ch; return d;
+            d.className = "f-paren";
+            d.textContent = ch;
+            return d;
           }
           function mkX() {
             const d = document.createElement("div");
-            d.className = "f-x"; d.textContent = "x"; return d;
+            d.className = "f-x";
+            d.textContent = "x";
+            return d;
           }
 
           // Group 1: (  [coeffWheel shows "Nx"]  [constWheel1]  )
-          const g1 = document.createElement("div"); g1.className = "factor-group";
+          const g1 = document.createElement("div");
+          g1.className = "factor-group";
           g1.appendChild(mkParen("("));
           g1.appendChild(coeffWheel.wrap);
           g1.appendChild(constWheel1.wrap);
           g1.appendChild(mkParen(")"));
 
           // Group 2: (  [badge2 auto]  [constWheel2]  )
-          const g2 = document.createElement("div"); g2.className = "factor-group";
+          const g2 = document.createElement("div");
+          g2.className = "factor-group";
           g2.appendChild(mkParen("("));
           g2.appendChild(badge2);
           g2.appendChild(constWheel2.wrap);
@@ -1674,18 +1871,27 @@
 
           factoredArea.appendChild(g1);
           factoredArea.appendChild(g2);
-
         } else {
           // Non-composite: plain (x + W)(x + W) or (fx + W)(x + W) for prime
           const isPrime = p.f1 && p.f1 !== 1 && p.topic === "trip";
           function makeGroup(coeff) {
-            const g = document.createElement("div"); g.className = "factor-group";
-            const w = makeWheel(); wheels.push(w);
-            const pL = document.createElement("div"); pL.className = "f-paren"; pL.textContent = "(";
-            const xEl = document.createElement("div"); xEl.className = "f-x";
+            const g = document.createElement("div");
+            g.className = "factor-group";
+            const w = makeWheel();
+            wheels.push(w);
+            const pL = document.createElement("div");
+            pL.className = "f-paren";
+            pL.textContent = "(";
+            const xEl = document.createElement("div");
+            xEl.className = "f-x";
             xEl.textContent = (coeff && coeff !== 1 ? coeff : "") + "x";
-            const pR = document.createElement("div"); pR.className = "f-paren"; pR.textContent = ")";
-            g.appendChild(pL); g.appendChild(xEl); g.appendChild(w.wrap); g.appendChild(pR);
+            const pR = document.createElement("div");
+            pR.className = "f-paren";
+            pR.textContent = ")";
+            g.appendChild(pL);
+            g.appendChild(xEl);
+            g.appendChild(w.wrap);
+            g.appendChild(pR);
             return g;
           }
           factoredArea.appendChild(makeGroup(isPrime ? p.f1 : null));
@@ -1694,12 +1900,63 @@
 
         submitBtn.disabled = false;
         submitBtn.textContent = "FACTOR IT";
-        submitBtn.style.background = "#0055cc";
+        submitBtn.style.background = "#0000ff";
+        document.getElementById("reset-quit-row").style.display = "flex";
         submitBtn.style.color = "#fff";
         submitBtn.style.fontSize = "";
         submitBtn.style.fontFamily = "";
         submitBtn.style.letterSpacing = "";
-        submitBtn.querySelectorAll("span").forEach(s => s.remove());
+        submitBtn.querySelectorAll("span").forEach((s) => s.remove());
+        // Clean up flip containers from previous question
+        document.querySelectorAll(".flip-container").forEach((f) => f.remove());
+
+        // Add flip buttons centered under each constant drum
+        setTimeout(() => {
+          // Remove any previous flip containers
+          factoredArea.parentNode
+            .querySelectorAll(".flip-container")
+            .forEach((f) => f.remove());
+          // Find the two constant drums (last 2 wheels)
+          const drumWraps = factoredArea.querySelectorAll(".drum-wrap");
+          if (drumWraps.length < 2) return;
+          const d1 = drumWraps[drumWraps.length - 2];
+          const d2 = drumWraps[drumWraps.length - 1];
+          // Position each button to align under its drum using offsets
+          function makeFlipBtn(drumEl, wheelIdx) {
+            const slot = document.createElement("div");
+            slot.style.cssText = "position:absolute;";
+            const btn = document.createElement("button");
+            btn.textContent = "(╯'□')╯";
+            btn.style.cssText =
+              "font-family:'Share Tech Mono',monospace;font-size:13px;color:#555;background:#000;border:1px solid #222;border-radius:6px;padding:4px 10px;cursor:pointer;transform:translateX(-50%);";
+            btn.addEventListener("click", () => {
+              const w = wheels[wheelIdx];
+              if (w) {
+                const v = w.getValue();
+                if (v !== null) w.setValue(-v);
+              }
+            });
+            // Get drum center position
+            const rect = drumEl.getBoundingClientRect();
+            const parentRect = factoredArea.parentNode.getBoundingClientRect();
+            const centerX = rect.left - parentRect.left + rect.width / 2;
+            slot.style.left = centerX + "px";
+            slot.appendChild(btn);
+            return slot;
+          }
+          const container = document.createElement("div");
+          container.className = "flip-container";
+          container.style.cssText =
+            "position:relative;width:100%;height:38px;margin-top:4px;";
+          const constIdx1 = wheels.length - 2;
+          const constIdx2 = wheels.length - 1;
+          container.appendChild(makeFlipBtn(d1, constIdx1));
+          container.appendChild(makeFlipBtn(d2, constIdx2));
+          factoredArea.parentNode.insertBefore(
+            container,
+            factoredArea.nextSibling,
+          );
+        }, 80);
       }
 
       function autoSizeExpression() {
@@ -1707,7 +1964,8 @@
         const maxPx = 30;
         const minPx = 12;
         const container = expressionEl.parentElement;
-        const maxWidth = (document.getElementById("game").offsetWidth || 420) * 0.90;
+        const maxWidth =
+          (document.getElementById("game").offsetWidth || 420) * 0.9;
         expressionEl.style.fontSize = maxPx + "px";
         let fs = maxPx;
         while (expressionEl.scrollWidth > maxWidth && fs > minPx) {
@@ -1726,9 +1984,10 @@
         comboPopEl.textContent = "";
         wrongStreak = 0;
         updateLevelBar();
-        currentP = S.mode === "challenge"
-          ? generateChallengeProblem(S)
-          : generateProblem(S);
+        currentP =
+          S.mode === "challenge"
+            ? generateChallengeProblem(S)
+            : generateProblem(S);
         expressionEl.textContent = currentP.expr;
         autoSizeExpression();
         topicTagEl.textContent = TOPIC_LABELS[currentP.topic] || "";
@@ -1739,7 +1998,6 @@
         if (useDrums) buildDrums(currentP);
         else buildChoices(currentP);
       }
-
 
       function onCorrect(pts) {
         locked = true;
@@ -1760,7 +2018,7 @@
         updateComboBar();
         if (combo > 1) showCombo(combo);
         streakDisplay.textContent =
-          streak >= 3 ? "🔥 " + streak + " STREAK" : "";
+          streak >= 3 ? "🔥" + streak : streak > 0 ? streak + "x" : "–";
         if (streak >= 3) {
           streakFlash.style.opacity = "1";
           setTimeout(() => (streakFlash.style.opacity = "0"), 200);
@@ -1775,13 +2033,13 @@
         lives--;
         combo = 0;
         streak = 0;
-        streakDisplay.textContent = "";
+        streakDisplay.textContent = "–";
         updateLives();
         updateComboBar();
         feedbackEl.textContent = "✗ INCORRECT";
         feedbackEl.style.color = "#f55";
         if (lives <= 0) {
-            setTimeout(endGame, 700);
+          setTimeout(endGame, 700);
         }
       }
 
@@ -1790,10 +2048,22 @@
       let sparkCanvas = null;
 
       function stopSpark() {
-        if (sparkRaf) { cancelAnimationFrame(sparkRaf); sparkRaf = null; }
-        if (sparkCanvas) { sparkCanvas.remove(); sparkCanvas = null; }
+        if (sparkRaf) {
+          cancelAnimationFrame(sparkRaf);
+          sparkRaf = null;
+        }
+        if (sparkCanvas) {
+          sparkCanvas.remove();
+          sparkCanvas = null;
+        }
         // clear any coeff-badge polling intervals
-        if (wheels) wheels.forEach(w => { if (w._badgeInterval) { clearInterval(w._badgeInterval); w._badgeInterval = null; } });
+        if (wheels)
+          wheels.forEach((w) => {
+            if (w._badgeInterval) {
+              clearInterval(w._badgeInterval);
+              w._badgeInterval = null;
+            }
+          });
       }
 
       function startSpark(btn) {
@@ -1804,7 +2074,7 @@
         sparkCanvas = cvs;
 
         function resize() {
-          cvs.width  = btn.offsetWidth;
+          cvs.width = btn.offsetWidth;
           cvs.height = btn.offsetHeight;
         }
         resize();
@@ -1812,9 +2082,18 @@
         const R = 12;
 
         const COLORS = [
-          "#ff0000","#ffff00","#00ff00","#ff0000","#ffffff",
-          "#00ffff","#ff7700","#ffffff","#0000ff","#ff00ff",
-          "#ffffff","#00ff00",
+          "#ff0000",
+          "#ffff00",
+          "#00ff00",
+          "#ff0000",
+          "#ffffff",
+          "#00ffff",
+          "#ff7700",
+          "#ffffff",
+          "#0000ff",
+          "#ff00ff",
+          "#ffffff",
+          "#00ff00",
         ];
         let colorIdx = 0;
         let colorTimer = 0;
@@ -1822,25 +2101,29 @@
 
         function roundRect(ctx, x, y, w, h, r) {
           ctx.beginPath();
-          ctx.moveTo(x+r, y);
-          ctx.lineTo(x+w-r, y);
-          ctx.arcTo(x+w, y, x+w, y+r, r);
-          ctx.lineTo(x+w, y+h-r);
-          ctx.arcTo(x+w, y+h, x+w-r, y+h, r);
-          ctx.lineTo(x+r, y+h);
-          ctx.arcTo(x, y+h, x, y+h-r, r);
-          ctx.lineTo(x, y+r);
-          ctx.arcTo(x, y, x+r, y, r);
+          ctx.moveTo(x + r, y);
+          ctx.lineTo(x + w - r, y);
+          ctx.arcTo(x + w, y, x + w, y + r, r);
+          ctx.lineTo(x + w, y + h - r);
+          ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+          ctx.lineTo(x + r, y + h);
+          ctx.arcTo(x, y + h, x, y + h - r, r);
+          ctx.lineTo(x, y + r);
+          ctx.arcTo(x, y, x + r, y, r);
           ctx.closePath();
         }
 
         function draw() {
           resize();
           ctx.clearRect(0, 0, cvs.width, cvs.height);
-          const W = cvs.width, H = cvs.height;
+          const W = cvs.width,
+            H = cvs.height;
 
           colorTimer++;
-          if (colorTimer >= COLOR_HOLD) { colorTimer = 0; colorIdx = (colorIdx+1) % COLORS.length; }
+          if (colorTimer >= COLOR_HOLD) {
+            colorTimer = 0;
+            colorIdx = (colorIdx + 1) % COLORS.length;
+          }
           const borderCol = COLORS[colorIdx];
 
           // wide soft glow
@@ -1848,7 +2131,7 @@
           ctx.strokeStyle = borderCol;
           ctx.lineWidth = 8;
           ctx.globalAlpha = 0.18;
-          roundRect(ctx, 1, 1, W-2, H-2, R);
+          roundRect(ctx, 1, 1, W - 2, H - 2, R);
           ctx.stroke();
           ctx.restore();
 
@@ -1859,7 +2142,7 @@
           ctx.globalAlpha = 1;
           ctx.shadowBlur = 10;
           ctx.shadowColor = borderCol;
-          roundRect(ctx, 1, 1, W-2, H-2, R);
+          roundRect(ctx, 1, 1, W - 2, H - 2, R);
           ctx.stroke();
           ctx.restore();
 
@@ -1872,7 +2155,10 @@
 
       function addEmoji(btn, emoji) {
         const span = btn.querySelector(".btn-emoji");
-        if (span) { span.textContent = emoji; span.style.visibility = "visible"; }
+        if (span) {
+          span.textContent = emoji;
+          span.style.visibility = "visible";
+        }
       }
 
       function answerEZ(btn, p) {
@@ -1927,7 +2213,9 @@
           `;
           btn.appendChild(el);
           emojis.push(el);
-          setTimeout(() => { if (el.parentNode) el.remove(); }, 900);
+          setTimeout(() => {
+            if (el.parentNode) el.remove();
+          }, 900);
         }
 
         // Inject keyframe if not already there
@@ -1949,7 +2237,7 @@
         setTimeout(() => {
           clearInterval(spawnTimer);
           // Remove any lingering fire spans
-          btn.querySelectorAll("span").forEach(s => s.remove());
+          btn.querySelectorAll("span").forEach((s) => s.remove());
           // Final state
           btn.style.fontFamily = "'Press Start 2P', monospace";
           btn.style.fontSize = "11px";
@@ -1957,6 +2245,25 @@
           btn.textContent = "🔥 CORRECT 🔥";
         }, DURATION);
       }
+
+      // Reset drums
+      document.getElementById("reset-btn").addEventListener("click", () => {
+        if (wheels && wheels.length >= 2) {
+          wheels[wheels.length - 2].setValue(1);
+          wheels[wheels.length - 1].setValue(1);
+          if (wheels.length > 2) wheels[0].setValue(1); // coeff drum
+        }
+      });
+
+      // Quit with confirm
+      document.getElementById("quit-btn").addEventListener("click", () => {
+        if (confirm("Are you sure you want to quit?")) {
+          overlay.classList.add("show");
+          document.getElementById("start-screen").style.display = "";
+          document.getElementById("mode-screen").style.display = "none";
+          document.getElementById("topic-screen").style.display = "none";
+        }
+      });
 
       submitBtn.addEventListener("click", () => {
         if (locked || !wheels || !wheels.length) return;
@@ -1966,16 +2273,33 @@
           const c1 = wheels[0].getValue();
           const a = currentP.f1 * currentP.f2;
           const c2 = a / c1;
-          const rv1 = wheels[1].getValue(), rv2 = wheels[2].getValue();
-          const r1 = currentP.r1, r2 = currentP.r2;
+          const rv1 = wheels[1].getValue(),
+            rv2 = wheels[2].getValue();
+          const r1 = currentP.r1,
+            r2 = currentP.r2;
           // accept either order: (c1x+r1)(c2x+r2) or (c1x+r2)(c2x+r1) etc.
-          correct = (c1 === currentP.f1 && c2 === currentP.f2 && rv1 === r1 && rv2 === r2) ||
-                    (c1 === currentP.f1 && c2 === currentP.f2 && rv1 === r2 && rv2 === r1) ||
-                    (c1 === currentP.f2 && c2 === currentP.f1 && rv1 === r2 && rv2 === r1) ||
-                    (c1 === currentP.f2 && c2 === currentP.f1 && rv1 === r1 && rv2 === r2);
+          correct =
+            (c1 === currentP.f1 &&
+              c2 === currentP.f2 &&
+              rv1 === r1 &&
+              rv2 === r2) ||
+            (c1 === currentP.f1 &&
+              c2 === currentP.f2 &&
+              rv1 === r2 &&
+              rv2 === r1) ||
+            (c1 === currentP.f2 &&
+              c2 === currentP.f1 &&
+              rv1 === r2 &&
+              rv2 === r1) ||
+            (c1 === currentP.f2 &&
+              c2 === currentP.f1 &&
+              rv1 === r1 &&
+              rv2 === r2);
         } else {
-          const v1 = wheels[0].getValue(), v2 = wheels[1].getValue();
-          const r1 = currentP.r1, r2 = currentP.r2;
+          const v1 = wheels[0].getValue(),
+            v2 = wheels[1].getValue();
+          const r1 = currentP.r1,
+            r2 = currentP.r2;
           correct = (v1 === r1 && v2 === r2) || (v1 === r2 && v2 === r1);
         }
         if (correct) {
@@ -2007,7 +2331,7 @@
             // no heart lost — just show attempt count
             combo = 0;
             streak = 0;
-            streakDisplay.textContent = "";
+            streakDisplay.textContent = "–";
             updateComboBar();
           }
         }
@@ -2019,7 +2343,7 @@
         lives--;
         combo = 0;
         streak = 0;
-        streakDisplay.textContent = "";
+        streakDisplay.textContent = "–";
         updateLives();
         updateComboBar();
         feedbackEl.textContent = "⏱ TIME'S UP!";
@@ -2055,7 +2379,7 @@
         setTimeout(() => scoreEl.classList.remove("bump"), 150);
       }
       function updateLives() {
-        livesEl.innerHTML = '<span id="lives-label">LIVES</span>';
+        livesEl.innerHTML = "";
         for (let i = 0; i < 3; i++) {
           const h = document.createElement("div");
           h.className = "heart";
@@ -2065,46 +2389,107 @@
         }
       }
       function updateLevelBar() {
-        const threshold = (typeof LEVEL_THRESHOLDS !== "undefined" && LEVEL_THRESHOLDS[level]) || 7;
+        const threshold =
+          (typeof LEVEL_THRESHOLDS !== "undefined" &&
+            LEVEL_THRESHOLDS[level]) ||
+          7;
         const pct = Math.min((problems / threshold) * 100, 100);
         comboBarEl.style.width = pct + "%";
         // colour shifts as you get close: blue → cyan → green
-        comboBarEl.style.background = pct >= 80 ? "#00ff88" : pct >= 50 ? "#00ddcc" : "#00aaff";
-        comboBarEl.style.boxShadow = pct >= 80 ? "0 0 8px #00ff88" : pct >= 50 ? "0 0 6px #00ddcc" : "0 0 6px #00aaff";
+        comboBarEl.style.background =
+          pct >= 80 ? "#00ff88" : pct >= 50 ? "#00ddcc" : "#00aaff";
+        comboBarEl.style.boxShadow =
+          pct >= 80
+            ? "0 0 8px #00ff88"
+            : pct >= 50
+              ? "0 0 6px #00ddcc"
+              : "0 0 6px #00aaff";
         // level label
         const levelLabelEl = document.getElementById("level-label");
-        const levelProgEl  = document.getElementById("level-progress-text");
+        const levelProgEl = document.getElementById("level-progress-text");
         if (levelLabelEl) levelLabelEl.textContent = "LEVEL " + level;
-        if (levelProgEl)  levelProgEl.textContent  = problems + " / " + threshold;
+        if (levelProgEl) levelProgEl.textContent = problems + " / " + threshold;
       }
-      function updateComboBar() { updateLevelBar(); }
+      function updateComboBar() {
+        updateLevelBar();
+      }
       // ── INTERMISSION SCENES — one per level transition (entering level 2-6) ──
       // SCENES[i] plays when entering level i+2 (so SCENES[0] = entering level 2)
       const SCENES = [
-        // Entering level 2
+        // Level 1→2: The mission begins
         [
-          { ship:"🚀", enemies:["👾","👾","👾"], dir:"ltr", label:"WAVE 1 CLEAR!" },
-          { ship:"🚀", enemies:["💥","💥"],       dir:"rtl", label:"BOOM!" },
+          {
+            ship: "🚀",
+            enemies: ["🌍", "🌙"],
+            dir: "ltr",
+            label: "DEPARTING EARTH...",
+          },
+          {
+            ship: "🚀",
+            enemies: ["⭐", "✨", "⭐"],
+            dir: "rtl",
+            label: "ENTERING DEEP SPACE",
+          },
         ],
-        // Entering level 3
+        // Level 2→3: First contact
         [
-          { ship:"🛸", enemies:["☄️","☄️"],       dir:"ltr", label:"ASTEROID BELT!" },
-          { ship:"🛸", enemies:["⭐","🌟","✨"],   dir:"rtl", label:"STAR FIELD!" },
+          {
+            ship: "🛸",
+            enemies: ["👾", "👾", "👾"],
+            dir: "ltr",
+            label: "ALIEN SCOUTS DETECTED!",
+          },
+          {
+            ship: "🚀",
+            enemies: ["💥", "💥", "💥"],
+            dir: "rtl",
+            label: "SHIELDS HOLDING!",
+          },
         ],
-        // Entering level 4
+        // Level 3→4: Into the danger zone
         [
-          { ship:"🚀", enemies:["🤖","🤖","🤖"], dir:"ltr", label:"ROBOT ATTACK!" },
-          { ship:"💥", enemies:["🚀","🚀"],       dir:"rtl", label:"DIRECT HIT!" },
+          {
+            ship: "🚀",
+            enemies: ["☄️", "🌑", "☄️"],
+            dir: "ltr",
+            label: "ASTEROID FIELD AHEAD!",
+          },
+          {
+            ship: "🛸",
+            enemies: ["🤖", "🤖", "🤖"],
+            dir: "rtl",
+            label: "ROBOT FLEET INCOMING!",
+          },
         ],
-        // Entering level 5
+        // Level 4→5: The heart of the empire
         [
-          { ship:"🛸", enemies:["👽","👽","👽"],  dir:"ltr", label:"ALIEN INVASION!" },
-          { ship:"🚀", enemies:["💥","⭐","💥"],  dir:"rtl", label:"FIGHT BACK!" },
+          {
+            ship: "🚀",
+            enemies: ["👽", "👽", "👽"],
+            dir: "ltr",
+            label: "ENEMY HOMEWORLD!",
+          },
+          {
+            ship: "💥",
+            enemies: ["🛸", "💫", "🛸"],
+            dir: "rtl",
+            label: "DIRECT HIT! KEEP GOING!",
+          },
         ],
-        // Entering level 6
+        // Level 5→6: Final push
         [
-          { ship:"🚀", enemies:["🌑","🌑","🌑"], dir:"ltr", label:"DARK SIDE!" },
-          { ship:"🛸", enemies:["☀️","✨","☀️"],  dir:"rtl", label:"SOLAR ESCAPE!" },
+          {
+            ship: "🚀",
+            enemies: ["🌑", "🌑", "🌑"],
+            dir: "ltr",
+            label: "ENTERING THE DARK ZONE",
+          },
+          {
+            ship: "🛸",
+            enemies: ["⚡", "💥", "⚡"],
+            dir: "rtl",
+            label: "ALMOST THERE!",
+          },
         ],
       ];
 
@@ -2134,7 +2519,7 @@
 
           const fromLeft = act.dir === "ltr";
           const startX = fromLeft ? -80 : STAGE_W + 80;
-          const endX   = fromLeft ? STAGE_W + 80 : -80;
+          const endX = fromLeft ? STAGE_W + 80 : -80;
           const y = 60 + Math.random() * (STAGE_H - 120);
 
           // Ship
@@ -2150,23 +2535,26 @@
           `;
           shipEl.textContent = act.ship;
           stage.appendChild(shipEl);
-          requestAnimationFrame(() => requestAnimationFrame(() => {
-            shipEl.style.left = endX + "px";
-          }));
+          requestAnimationFrame(() =>
+            requestAnimationFrame(() => {
+              shipEl.style.left = endX + "px";
+            }),
+          );
 
           // Enemies/effects scattered along the path
           act.enemies.forEach((em, i) => {
-            const delay = (i + 1) * (ACT_DUR * 0.7 / (act.enemies.length + 1));
+            const delay =
+              (i + 1) * ((ACT_DUR * 0.7) / (act.enemies.length + 1));
             const ex = fromLeft
-              ? (STAGE_W * 0.25) + i * (STAGE_W * 0.22)
-              : (STAGE_W * 0.75) - i * (STAGE_W * 0.22);
+              ? STAGE_W * 0.25 + i * (STAGE_W * 0.22)
+              : STAGE_W * 0.75 - i * (STAGE_W * 0.22);
             const ey = y + (Math.random() * 60 - 30);
 
             setTimeout(() => {
               const el = document.createElement("div");
               el.style.cssText = `
                 position:absolute;
-                font-size:${28 + Math.random()*12}px;
+                font-size:${28 + Math.random() * 12}px;
                 left:${ex}px;
                 top:${ey}px;
                 opacity:0;
@@ -2175,10 +2563,12 @@
               `;
               el.textContent = em;
               stage.appendChild(el);
-              requestAnimationFrame(() => requestAnimationFrame(() => {
-                el.style.opacity = "1";
-                el.style.transform = "scale(1)";
-              }));
+              requestAnimationFrame(() =>
+                requestAnimationFrame(() => {
+                  el.style.opacity = "1";
+                  el.style.transform = "scale(1)";
+                }),
+              );
               // Fade out
               setTimeout(() => {
                 el.style.opacity = "0";
@@ -2208,13 +2598,13 @@
               const s = document.createElement("div");
               s.style.cssText = `
                 position:absolute;
-                font-size:${16+Math.random()*20}px;
-                left:${Math.random()*90}%;
-                top:${Math.random()*80}%;
+                font-size:${16 + Math.random() * 20}px;
+                left:${Math.random() * 90}%;
+                top:${Math.random() * 80}%;
                 opacity:1;
                 animation: starPop 0.6s ease-out forwards;
               `;
-              s.textContent = pick(["⭐","🌟","✨","💫"]);
+              s.textContent = pick(["⭐", "🌟", "✨", "💫"]);
               stage.appendChild(s);
             }, i * 80);
           }
@@ -2231,7 +2621,7 @@
       }
 
       // Inject starPop keyframe
-      (function(){
+      (function () {
         const st = document.createElement("style");
         st.textContent = `@keyframes starPop {
           0%   { transform: scale(0) rotate(0deg);   opacity:1; }
@@ -2260,7 +2650,7 @@
         title.style.color = "#ff0";
         title.style.textShadow = "0 0 12px #ff0";
 
-        const heroes = ["🚀","🛸","🚀","🛸","🚀"];
+        const heroes = ["🚀", "🛸", "🚀", "🛸", "🚀"];
         heroes.forEach((h, i) => {
           setTimeout(() => {
             const el = document.createElement("div");
@@ -2268,31 +2658,50 @@
             el.style.cssText = `position:absolute;font-size:34px;top:${y}px;left:-60px;transition:left 2.8s cubic-bezier(.2,.8,.4,1);line-height:1`;
             el.textContent = h;
             stage.appendChild(el);
-            requestAnimationFrame(() => requestAnimationFrame(() => {
-              el.style.left = (W * 0.08 + i * (W * 0.18)) + "px";
-            }));
+            requestAnimationFrame(() =>
+              requestAnimationFrame(() => {
+                el.style.left = W * 0.08 + i * (W * 0.18) + "px";
+              }),
+            );
           }, i * 300);
         });
 
         // Act 2 — medals drop (2s after ships land)
         setTimeout(() => {
-          ["🥇","🏆","🎖️"].forEach((medal, i) => {
+          ["🥇", "🏆", "🎖️"].forEach((medal, i) => {
             const el = document.createElement("div");
-            el.style.cssText = `position:absolute;font-size:${30+i*5}px;left:${W*0.22+i*(W*0.25)}px;top:-70px;transition:top 1s cubic-bezier(.15,1.5,.4,1);line-height:1`;
+            el.style.cssText = `position:absolute;font-size:${30 + i * 5}px;left:${W * 0.22 + i * (W * 0.25)}px;top:-70px;transition:top 1s cubic-bezier(.15,1.5,.4,1);line-height:1`;
             el.textContent = medal;
             stage.appendChild(el);
-            setTimeout(() => { el.style.top = (H * 0.58) + "px"; }, i * 220 + 60);
+            setTimeout(
+              () => {
+                el.style.top = H * 0.58 + "px";
+              },
+              i * 220 + 60,
+            );
           });
         }, 2200);
 
         // Act 3 — confetti burst
         setTimeout(() => {
-          const confetti = ["⭐","🌟","✨","💫","🎉","🎊","❤️","💛","💚","💙"];
+          const confetti = [
+            "⭐",
+            "🌟",
+            "✨",
+            "💫",
+            "🎉",
+            "🎊",
+            "❤️",
+            "💛",
+            "💚",
+            "💙",
+          ];
           for (let i = 0; i < 24; i++) {
             setTimeout(() => {
               const c = document.createElement("div");
-              c.style.cssText = `position:absolute;font-size:${12+Math.random()*16}px;left:${Math.random()*92}%;top:${Math.random()*85}%;opacity:1;animation:starPop 0.9s ease-out forwards;line-height:1`;
-              c.textContent = confetti[Math.floor(Math.random()*confetti.length)];
+              c.style.cssText = `position:absolute;font-size:${12 + Math.random() * 16}px;left:${Math.random() * 92}%;top:${Math.random() * 85}%;opacity:1;animation:starPop 0.9s ease-out forwards;line-height:1`;
+              c.textContent =
+                confetti[Math.floor(Math.random() * confetti.length)];
               stage.appendChild(c);
             }, i * 110);
           }
@@ -2300,10 +2709,12 @@
 
         // Act 4 — YOU WIN flash
         setTimeout(() => {
-          title.textContent = "🏆 YOU WIN! 🏆";
-          title.style.fontSize = "16px";
+          title.textContent =
+            S.mode === "challenge" ? "🏆 MASTER FACTORER 🏆" : "🏆 YOU WIN! 🏆";
+          title.style.fontSize = "14px";
           title.style.color = "#fff";
-          title.style.textShadow = "0 0 20px #ff0, 0 0 40px #f80, 0 0 60px #f00";
+          title.style.textShadow =
+            "0 0 20px #ff0, 0 0 40px #f80, 0 0 60px #f00";
           title.style.background = "rgba(0,0,0,0.85)";
           title.style.border = "1px solid #ff0";
         }, 4800);
@@ -2313,18 +2724,23 @@
           stage.innerHTML = "";
           title.textContent = "";
           const credits = [
-            {t:"🎖️  HERO OF MATH  🎖️", c:"#ff0", s:"13px"},
-            {t:"ALL 6 LEVELS CLEARED", c:"#fff", s:"9px"},
-            {t:"🏆  🥇  🏆  🥇  🏆",  c:"#fa0", s:"18px"},
-            {t:"SCORE: " + score,       c:"#0ff", s:"11px"},
-            {t:"STREAK: " + bestStreak + "x", c:"#0f0", s:"9px"},
+            { t: "🎖️  HERO OF MATH  🎖️", c: "#ff0", s: "13px" },
+            { t: "ALL 6 LEVELS CLEARED", c: "#fff", s: "9px" },
+            { t: "🏆  🥇  🏆  🥇  🏆", c: "#fa0", s: "18px" },
+            { t: "SCORE: " + score, c: "#0ff", s: "11px" },
+            { t: "STREAK: " + bestStreak + "x", c: "#0f0", s: "9px" },
           ];
           credits.forEach((cr, i) => {
             const el = document.createElement("div");
-            el.style.cssText = `position:absolute;width:100%;text-align:center;font-family:'Press Start 2P',monospace;font-size:${cr.s};color:${cr.c};top:${H+30}px;transition:top 1.6s ease-out;letter-spacing:.08em;line-height:2;text-shadow:0 0 10px ${cr.c}`;
+            el.style.cssText = `position:absolute;width:100%;text-align:center;font-family:'Press Start 2P',monospace;font-size:${cr.s};color:${cr.c};top:${H + 30}px;transition:top 1.6s ease-out;letter-spacing:.08em;line-height:2;text-shadow:0 0 10px ${cr.c}`;
             el.textContent = cr.t;
             stage.appendChild(el);
-            setTimeout(() => { el.style.top = (H * 0.06 + i * (H * 0.19)) + "px"; }, i * 320 + 80);
+            setTimeout(
+              () => {
+                el.style.top = H * 0.06 + i * (H * 0.19) + "px";
+              },
+              i * 320 + 80,
+            );
           });
         }, 6200);
 
@@ -2371,7 +2787,7 @@
       }
 
       // Correct answers needed to complete each level (index = level number)
-      const LEVEL_THRESHOLDS = [0, 5, 7, 7, 7, 7, 7]; // levels 1-6
+      const LEVEL_THRESHOLDS = [0, 4, 4, 4, 4, 4, 4]; // levels 1-6
       const MAX_LEVEL = 6;
 
       function hyperspace() {
@@ -2384,11 +2800,11 @@
         if (problems >= threshold) {
           problems = 0;
           level++;
-          lives++;             // bonus heart for completing a level!
+          lives++; // bonus heart for completing a level!
           updateLives();
           locked = true;
           hyperspace();
-            if (level > MAX_LEVEL) {
+          if (level > MAX_LEVEL) {
             // Completed all levels — play victory scene then show end screen
             playVictory(() => {
               startGame();
@@ -2404,6 +2820,22 @@
         return false;
       }
       function startGame() {
+        // Apply defaults if nothing useful selected
+        if (S.mode === "challenge") {
+          S.gcf = false;
+          if (!S.dos && !S.tri1 && !S.trip && !S.tric) {
+            S.dos = true;
+            S.tri1 = true;
+            S.trip = true;
+            S.tric = true;
+          }
+        } else {
+          if (!S.gcf && !S.dos && !S.tri1 && !S.trip && !S.tric) {
+            S.gcf = true;
+            S.dos = true;
+            S.tri1 = true;
+          }
+        }
         score = 0;
         lives = 3;
         combo = 0;
@@ -2412,7 +2844,7 @@
         streak = 0;
         problems = 0;
         locked = false;
-        streakDisplay.textContent = "";
+        streakDisplay.textContent = "–";
         wrongStreak = 0;
         overlay.classList.remove("show");
         updateScore();
@@ -2422,17 +2854,76 @@
       }
       function endGame() {
         overlay.classList.add("show");
-        overlayTitle.innerHTML = "GAME<br>OVER";
-        overlaySub.innerHTML =
-          "Best score: " +
-          bestScore +
-          "<br>Longest streak: " +
-          bestStreak +
-          "x";
-        overlayScore.textContent = "THIS GAME: " + score;
+        if (overlayTitle && overlayTitle.innerHTML !== undefined)
+          overlayTitle.innerHTML = "GAME<br>OVER";
+        if (overlaySub && overlaySub.innerHTML !== undefined)
+          overlaySub.innerHTML =
+            "Best score: " +
+            bestScore +
+            "<br>Longest streak: " +
+            bestStreak +
+            "x";
+        if (overlayScore && overlayScore.textContent !== undefined)
+          overlayScore.textContent = "THIS GAME: " + score;
         overlayBtn.textContent = "RETRY";
       }
-      overlayBtn.addEventListener("click", startGame);
+      overlayBtn.addEventListener("click", () => {
+        $("start-screen").style.display = "none";
+        $("mode-screen").style.display = "";
+      });
+
+      $("mode-ez").addEventListener("click", () => {
+        S.mode = "ez";
+        showTopicScreen();
+      });
+
+      $("mode-challenge").addEventListener("click", () => {
+        S.mode = "challenge";
+        showTopicScreen();
+      });
+
+      $("mode-back").addEventListener("click", () => {
+        $("mode-screen").style.display = "none";
+        $("start-screen").style.display = "";
+      });
+
+      $("topic-back").addEventListener("click", () => {
+        $("topic-screen").style.display = "none";
+        $("mode-screen").style.display = "";
+      });
+
+      $("topic-start").addEventListener("click", () => {
+        overlay.classList.remove("show");
+        startGame();
+      });
+
+      const TOPICS = [
+        ["gcf", "GCF Factoring"],
+        ["dos", "Diff of Squares"],
+        ["tri1", "ax²+bx+c, a=1"],
+        ["trip", "ax²+bx+c, a=prime"],
+        ["tric", "ax²+bx+c, a=composite"],
+      ];
+
+      function showTopicScreen() {
+        $("mode-screen").style.display = "none";
+        const list = $("topic-list");
+        list.innerHTML = "";
+        TOPICS.forEach(([key, label]) => {
+          // Hide GCF in challenge mode
+          if (S.mode === "challenge" && key === "gcf") return;
+          const btn = document.createElement("button");
+          btn.className = "topic-btn" + (S[key] ? " on" : "");
+          btn.textContent = (S[key] ? "✓  " : "    ") + label;
+          btn.addEventListener("click", () => {
+            S[key] = !S[key];
+            btn.classList.toggle("on", S[key]);
+            btn.textContent = (S[key] ? "✓  " : "    ") + label;
+          });
+          list.appendChild(btn);
+        });
+        $("topic-screen").style.display = "";
+      }
     </script>
   </body>
 </html>
