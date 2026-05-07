@@ -18,19 +18,6 @@
     <meta property="og:image" content="https://deltaseven.io/D7-bg-white.png" />
     <meta property="og:url" content="https://deltaseven.io" />
     <meta property="og:type" content="website" />
-    <!-- Google Analytics -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "G-XXXXXXXXXX");
-    </script>
     <title>Math Tutor | Phillip Krzankowski | Schaumburg</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <link
@@ -804,7 +791,7 @@
         <p>
           I have 14 years of teaching experience in one of Illinois'
           top-performing high school districts, District 211, and I offer more
-          than a standard tutoring experience.
+          than just a standard tutoring experience.
         </p>
         <p>
           For students, I help build confidence, reduce test anxiety, and
@@ -903,10 +890,11 @@
       <h2 class="collapsible">RATES</h2>
       <div class="collapsible-content">
         <ul>
-          <li>$80 for 60-90 minutes in-person or remote.</li>
-          <li>$40 for 2nd in-person session of the week.</li>
-          <li>$40 for 30 minute session, remote only!</li>
-          <br />* My week starts Monday, ends on Sunday.
+          <li>$80 for 60+ minute tutoring session.</li>
+          <li>$40 for 2nd session of the week.</li>
+          <li>$40 for 30 minutes REMOTE ONLY.</li>
+          <br />All rates are for in-person or remote.
+          <br />My week starts Monday, ends on Sunday.
         </ul>
       </div>
     </section>
@@ -916,24 +904,66 @@
       <h2 class="collapsible">GAMES</h2>
       <div class="collapsible-content">
         <div class="games-grid">
-          <a href="factor-blaster.html" class="game-card">
-            <div class="game-icon fb">🧮</div>
-            <div class="game-info">
-              <div class="game-title">FACTOR BLASTER</div>
-              <div class="game-desc">
-                Factor polynomials against the clock. EZ &amp; Challenge modes.
-                Build combos.
+          <div
+            class="game-card"
+            style="
+              flex-direction: column;
+              align-items: flex-start;
+              gap: 10px;
+              cursor: default;
+            "
+          >
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                width: 100%;
+                cursor: pointer;
+              "
+              onclick="window.location = 'factor-blaster.html'"
+            >
+              <div class="game-info" style="flex: 1">
+                <div class="game-title">FACTOR BLASTER</div>
+                <div class="game-desc">The best app to practice factoring!</div>
               </div>
+              <div class="game-arrow">▶</div>
             </div>
-            <div class="game-arrow">▶</div>
-          </a>
+            <div
+              style="
+                display: flex;
+                gap: 4px;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+              "
+            >
+              <a
+                href="https://apps.apple.com/us/app/factor-blaster/id6766982384"
+                target="_blank"
+              >
+                <img
+                  src="https://developer.apple.com/app-store/marketing/guidelines/images/badge-download-on-the-app-store.svg"
+                  alt="Download on the App Store"
+                  style="height: 36px; vertical-align: middle"
+                />
+              </a>
+              <a href="#" target="_blank">
+                <img
+                  src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+                  alt="Get it on Google Play"
+                  style="height: 52px; vertical-align: middle"
+                />
+              </a>
+            </div>
+          </div>
           <a href="connect4.html" class="game-card">
-            <div class="game-icon c4">🔴</div>
+            <!-- <div class="game-icon c4">🔴</div> -->
             <div class="game-info">
               <div class="game-title">CONNECT FOUR</div>
               <div class="game-desc">
-                Classic two-player strategy game. Drop your disc, block your
-                opponent.
+                Classic two-player strategy game.<br />
+                Create a game, get a code, play with friends!
               </div>
             </div>
             <div class="game-arrow">▶</div>
