@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
+    <title>Grade Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --bg: #0f0f11;
+        --surface: #1a1a1f;
+        --surface2: #22222a;
+        --border: rgba(255, 255, 255, 0.08);
+        --border2: rgba(255, 255, 255, 0.18);
+        --text: #f0ede8;
+        --muted: #888690;
+        --hint: #4e4c58;
+        --accent: #c8f060;
+        --accent-dim: rgba(200, 240, 96, 0.12);
+        --mono: "DM Mono", monospace;
+        --sans: "DM Sans", sans-serif;
+      }
+      html,
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--sans);
+        font-size: 15px;
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        padding: 14px 14px env(safe-area-inset-bottom, 14px);
+        padding-top: max(14px, env(safe-area-inset-top));
+      }
+      h1 {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-family: var(--mono);
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .reset-btn {
+        background: none;
+        border: 0.5px solid var(--border2);
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 10px;
+        padding: 4px 10px;
+        border-radius: 99px;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .grade-card {
+        background: var(--surface);
+        border: 0.5px solid var(--border);
+        border-radius: 16px;
+        padding: 13px 14px 11px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .grade-left {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 68px;
+      }
+      .grade-letter {
+        font-size: 50px;
+        font-weight: 600;
+        font-family: var(--mono);
+        line-height: 1;
+        color: var(--muted);
+        letter-spacing: -3px;
+        transition: color 0.35s;
+      }
+      .grade-pct {
+        font-size: 13px;
+        font-family: var(--mono);
+        color: var(--muted);
+        margin-top: 2px;
+        transition: color 0.35s;
+      }
+      .grade-right {
+        flex: 1;
+        min-width: 0;
+      }
+      .progress-track {
+        height: 4px;
+        background: var(--surface2);
+        border-radius: 99px;
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+      .progress-fill {
+        height: 100%;
+        border-radius: 99px;
+        width: 0%;
+        background: var(--muted);
+        transition:
+          width 0.4s cubic-bezier(0.34, 1.4, 0.64, 1),
+          background 0.35s;
+      }
+      .pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+      .pill {
+        font-size: 10px;
+        font-family: var(--mono);
+        padding: 2px 6px;
+        border-radius: 99px;
+        border: 0.5px solid var(--border);
+        color: var(--hint);
+        white-space: nowrap;
+      }
+      .pill.on {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: var(--accent-dim);
+      }
+
+      .cat-table {
+        background: var(--surface);
+        border: 0.5px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .cat-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-bottom: 0.5px solid var(--border);
+      }
+      .cat-row:last-child {
+        border-bottom: none;
+      }
+      .cat-label {
+        flex: 1;
+        min-width: 0;
+      }
+      .cat-name {
+        font-size: 13px;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .cat-wt {
+        font-size: 10px;
+        font-family: var(--mono);
+        color: var(--hint);
+        margin-top: 1px;
+      }
+      .cat-pts {
+        font-size: 11px;
+        font-family: var(--mono);
+        color: var(--hint);
+        min-width: 42px;
+        text-align: right;
+        white-space: nowrap;
+      }
+      .cat-pts.on {
+        color: var(--accent);
+      }
+      .input-wrap {
+        display: flex;
+        align-items: center;
+        background: var(--surface2);
+        border: 0.5px solid var(--border);
+        border-radius: 8px;
+        padding: 0 6px 0 2px;
+        gap: 1px;
+      }
+      .score-input {
+        background: none;
+        border: none;
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 14px;
+        font-weight: 500;
+        width: 52px;
+        padding: 5px 3px;
+        text-align: center;
+        outline: none;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      .score-input::placeholder {
+        color: var(--hint);
+        font-size: 12px;
+      }
+      .score-input::-webkit-inner-spin-button,
+      .score-input::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+      }
+      .pct-sign {
+        font-size: 12px;
+        color: var(--muted);
+        font-family: var(--mono);
+      }
+      .avg-badge {
+        font-size: 10px;
+        font-family: var(--mono);
+        color: var(--muted);
+        background: var(--surface2);
+        border-radius: 99px;
+        padding: 2px 6px;
+        margin-left: 5px;
+        vertical-align: middle;
+        white-space: nowrap;
+      }
+
+      .test-sub {
+        background: rgba(0, 0, 0, 0.18);
+        border-top: 0.5px solid var(--border);
+        padding: 8px 12px 9px;
+      }
+      .test-sub-lbl {
+        font-size: 10px;
+        font-family: var(--mono);
+        color: var(--hint);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .test-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 5px;
+      }
+      .test-slot {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+      }
+      .test-slot-lbl {
+        font-size: 10px;
+        font-family: var(--mono);
+        color: var(--hint);
+      }
+      .test-slot .score-input {
+        width: 100%;
+        background: var(--surface);
+        border: 0.5px solid var(--border);
+        border-radius: 7px;
+        padding: 5px 2px;
+        font-size: 13px;
+      }
+      .test-avg {
+        margin-top: 5px;
+        font-size: 11px;
+        font-family: var(--mono);
+        color: var(--muted);
+      }
+      .test-avg span {
+        color: var(--accent);
+      }
+
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #f2f1ed;
+          --surface: #fff;
+          --surface2: #eceae5;
+          --border: rgba(0, 0, 0, 0.08);
+          --border2: rgba(0, 0, 0, 0.16);
+          --text: #18181c;
+          --muted: #777;
+          --hint: #bbb;
+          --accent: #3a7d00;
+          --accent-dim: rgba(58, 125, 0, 0.1);
+        }
+        .test-sub {
+          background: rgba(0, 0, 0, 0.03);
+        }
+        .test-slot .score-input {
+          background: #fff;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>
+      Grade Calculator
+      <button class="reset-btn" onclick="resetAll()">&#8635; Reset</button>
+    </h1>
+
+    <div class="grade-card">
+      <div class="grade-left">
+        <div class="grade-letter" id="gl">&#8212;</div>
+        <div class="grade-pct" id="gp">&#8211;%</div>
+      </div>
+      <div class="grade-right">
+        <div class="progress-track">
+          <div class="progress-fill" id="pf"></div>
+        </div>
+        <div class="pills" id="pills"></div>
+      </div>
+    </div>
+
+    <div class="cat-table">
+      <div class="cat-row">
+        <div class="cat-label">
+          <div class="cat-name">Homework</div>
+          <div class="cat-wt">5% weight</div>
+        </div>
+        <div class="cat-pts" id="cp-hw">&#8211;</div>
+        <div class="input-wrap">
+          <input
+            class="score-input"
+            type="number"
+            min="0"
+            max="100"
+            step="0.01"
+            placeholder="&#8211;"
+            id="input-hw"
+            inputmode="decimal"
+            aria-label="Homework"
+          /><span class="pct-sign">%</span>
+        </div>
+      </div>
+      <div class="cat-row">
+        <div class="cat-label">
+          <div class="cat-name">Quiz</div>
+          <div class="cat-wt">30% weight</div>
+        </div>
+        <div class="cat-pts" id="cp-quiz">&#8211;</div>
+        <div class="input-wrap">
+          <input
+            class="score-input"
+            type="number"
+            min="0"
+            max="100"
+            step="0.01"
+            placeholder="&#8211;"
+            id="input-quiz"
+            inputmode="decimal"
+            aria-label="Quiz"
+          /><span class="pct-sign">%</span>
+        </div>
+      </div>
+      <div class="cat-row">
+        <div class="cat-label">
+          <div class="cat-name">
+            Test <span class="avg-badge" id="test-badge">avg: &#8211;</span>
+          </div>
+          <div class="cat-wt">40% weight &middot; 4 scores</div>
+        </div>
+        <div class="cat-pts" id="cp-test">&#8211;</div>
+        <div
+          style="
+            font-size: 11px;
+            font-family: var(--mono);
+            color: var(--hint);
+            padding: 5px 4px;
+          "
+        >
+          auto
+        </div>
+      </div>
+      <div class="test-sub">
+        <div class="test-sub-lbl">Individual scores</div>
+        <div class="test-grid">
+          <div class="test-slot">
+            <div class="test-slot-lbl">Test 1</div>
+            <input
+              class="score-input"
+              type="number"
+              min="0"
+              max="100"
+              step="0.01"
+              placeholder="&#8211;"
+              id="test1"
+              inputmode="decimal"
+              aria-label="Test 1"
+            />
+          </div>
+          <div class="test-slot">
+            <div class="test-slot-lbl">Test 2</div>
+            <input
+              class="score-input"
+              type="number"
+              min="0"
+              max="100"
+              step="0.01"
+              placeholder="&#8211;"
+              id="test2"
+              inputmode="decimal"
+              aria-label="Test 2"
+            />
+          </div>
+          <div class="test-slot">
+            <div class="test-slot-lbl">Test 3</div>
+            <input
+              class="score-input"
+              type="number"
+              min="0"
+              max="100"
+              step="0.01"
+              placeholder="&#8211;"
+              id="test3"
+              inputmode="decimal"
+              aria-label="Test 3"
+            />
+          </div>
+          <div class="test-slot">
+            <div class="test-slot-lbl">Test 4</div>
+            <input
+              class="score-input"
+              type="number"
+              min="0"
+              max="100"
+              step="0.01"
+              placeholder="&#8211;"
+              id="test4"
+              inputmode="decimal"
+              aria-label="Test 4"
+            />
+          </div>
+        </div>
+        <div class="test-avg" id="test-avg">Average: <span>&#8211;</span></div>
+      </div>
+      <div class="cat-row">
+        <div class="cat-label">
+          <div class="cat-name">Learning targets</div>
+          <div class="cat-wt">5% weight</div>
+        </div>
+        <div class="cat-pts" id="cp-ltc">&#8211;</div>
+        <div class="input-wrap">
+          <input
+            class="score-input"
+            type="number"
+            min="0"
+            max="100"
+            step="0.01"
+            placeholder="&#8211;"
+            id="input-ltc"
+            inputmode="decimal"
+            aria-label="Learning target checks"
+          /><span class="pct-sign">%</span>
+        </div>
+      </div>
+      <div class="cat-row">
+        <div class="cat-label">
+          <div class="cat-name">ALEKS</div>
+          <div class="cat-wt">5% weight</div>
+        </div>
+        <div class="cat-pts" id="cp-aleks">&#8211;</div>
+        <div class="input-wrap">
+          <input
+            class="score-input"
+            type="number"
+            min="0"
+            max="100"
+            step="0.01"
+            placeholder="&#8211;"
+            id="input-aleks"
+            inputmode="decimal"
+            aria-label="ALEKS"
+          /><span class="pct-sign">%</span>
+        </div>
+      </div>
+      <div class="cat-row">
+        <div class="cat-label">
+          <div class="cat-name">Semester exam</div>
+          <div class="cat-wt">15% weight</div>
+        </div>
+        <div class="cat-pts" id="cp-exam">&#8211;</div>
+        <div class="input-wrap">
+          <input
+            class="score-input"
+            type="number"
+            min="0"
+            max="100"
+            step="0.01"
+            placeholder="&#8211;"
+            id="input-exam"
+            inputmode="decimal"
+            aria-label="Semester exam"
+          /><span class="pct-sign">%</span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const SIMPLE = [
+        { id: "hw", weight: 5 },
+        { id: "quiz", weight: 30 },
+        { id: "ltc", weight: 5 },
+        { id: "aleks", weight: 5 },
+        { id: "exam", weight: 15 },
+      ];
+      const TEST_W = 40;
+      const PILLS = [
+        { id: "hw", label: "HW 5%" },
+        { id: "quiz", label: "Quiz 30%" },
+        { id: "test", label: "Test 40%", isTest: true },
+        { id: "ltc", label: "LTC 5%" },
+        { id: "aleks", label: "ALEKS 5%" },
+        { id: "exam", label: "Exam 15%" },
+      ];
+      function cap(v) {
+        return Math.min(100, Math.max(0, v));
+      }
+      function isDark() {
+        return window.matchMedia("(prefers-color-scheme:dark)").matches;
+      }
+      function gradeColor(p) {
+        const d = isDark();
+        if (p >= 90) return d ? "#4caf7d" : "#2a7a2a";
+        if (p >= 80) return d ? "#5b9cf0" : "#1a5db0";
+        if (p >= 70) return d ? "#f0b340" : "#9a6400";
+        if (p >= 60) return d ? "#f08040" : "#b04000";
+        return d ? "#f05050" : "#c02020";
+      }
+      function letter(p) {
+        if (p >= 93) return "A";
+        if (p >= 90) return "A\u2212";
+        if (p >= 87) return "B+";
+        if (p >= 83) return "B";
+        if (p >= 80) return "B\u2212";
+        if (p >= 77) return "C+";
+        if (p >= 73) return "C";
+        if (p >= 70) return "C\u2212";
+        if (p >= 67) return "D+";
+        if (p >= 63) return "D";
+        if (p >= 60) return "D\u2212";
+        return "F";
+      }
+      function testAvg() {
+        const vals = ["test1", "test2", "test3", "test4"]
+          .map((id) => {
+            const v = parseFloat(document.getElementById(id).value);
+            return isNaN(v) ? null : cap(v);
+          })
+          .filter((v) => v !== null);
+        return vals.length
+          ? vals.reduce((a, b) => a + b, 0) / vals.length
+          : null;
+      }
+      function recalc() {
+        let wSum = 0,
+          wFill = 0;
+        SIMPLE.forEach((c) => {
+          const inp = document.getElementById("input-" + c.id);
+          const raw = parseFloat(inp.value);
+          const el = document.getElementById("cp-" + c.id);
+          if (!isNaN(raw) && inp.value !== "") {
+            const v = cap(raw);
+            const pts = (v / 100) * c.weight;
+            wSum += pts;
+            wFill += c.weight;
+            el.textContent = pts.toFixed(1) + " pts";
+            el.classList.add("on");
+          } else {
+            el.textContent = "\u2013";
+            el.classList.remove("on");
+          }
+        });
+        const avg = testAvg();
+        const badge = document.getElementById("test-badge");
+        const cpTest = document.getElementById("cp-test");
+        const avgEl = document.getElementById("test-avg");
+        if (avg !== null) {
+          const pts = (avg / 100) * TEST_W;
+          wSum += pts;
+          wFill += TEST_W;
+          badge.textContent = avg.toFixed(1) + "%";
+          cpTest.textContent = pts.toFixed(1) + " pts";
+          cpTest.classList.add("on");
+          avgEl.innerHTML = "Average: <span>" + avg.toFixed(2) + "%</span>";
+        } else {
+          badge.textContent = "avg: \u2013";
+          cpTest.textContent = "\u2013";
+          cpTest.classList.remove("on");
+          avgEl.innerHTML = "Average: <span>\u2013</span>";
+        }
+        const pillsEl = document.getElementById("pills");
+        pillsEl.innerHTML = "";
+        PILLS.forEach((p) => {
+          const on = p.isTest
+            ? avg !== null
+            : document.getElementById("input-" + p.id).value !== "";
+          pillsEl.insertAdjacentHTML(
+            "beforeend",
+            '<span class="pill ' +
+              (on ? "on" : "") +
+              '">' +
+              p.label +
+              "</span>",
+          );
+        });
+        const gl = document.getElementById("gl");
+        const gp = document.getElementById("gp");
+        const pf = document.getElementById("pf");
+        if (wFill === 0) {
+          gl.textContent = "\u2014";
+          gl.style.color = "";
+          gp.textContent = "\u2013%";
+          gp.style.color = "";
+          pf.style.width = "0%";
+          pf.style.background = "";
+        } else {
+          const pct = (wSum / wFill) * 100;
+          const col = gradeColor(pct);
+          gl.textContent = letter(pct);
+          gl.style.color = col;
+          gp.textContent = pct.toFixed(1) + "%";
+          gp.style.color = col;
+          pf.style.width = Math.min(pct, 100).toFixed(1) + "%";
+          pf.style.background = col;
+        }
+      }
+      function resetAll() {
+        SIMPLE.forEach((c) => {
+          document.getElementById("input-" + c.id).value = "";
+        });
+        ["test1", "test2", "test3", "test4"].forEach((id) => {
+          document.getElementById(id).value = "";
+        });
+        recalc();
+      }
+      SIMPLE.forEach((c) =>
+        document
+          .getElementById("input-" + c.id)
+          .addEventListener("input", recalc),
+      );
+      ["test1", "test2", "test3", "test4"].forEach((id) =>
+        document.getElementById(id).addEventListener("input", recalc),
+      );
+      recalc();
+    </script>
+  </body>
+</html>
