@@ -67,7 +67,7 @@
           <span>❄️ slump</span>
           <span>☄️ HR blast</span>
         </div>
-        <button class="refresh-btn" onclick="location.href=location.pathname+'?_='+Date.now()">
+        <button class="refresh-btn" onclick="(async()=>{await Promise.all(['dashboard_data.js','dashboard.js','dashboard.css'].map(f=>fetch('https://purge.jsdelivr.net/gh/deltaseven-io/d7-website@main/almanac/'+f).catch(()=>{})));location.href=location.pathname+'?_='+Date.now()})()">
           ⟳ Refresh
         </button>
       </header>
