@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
     <title>HRR Dashboard 2026</title>
-    <link id="css-link" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/deltaseven-io/d7-website@main/almanac/dashboard.css">
-    <script>document.getElementById("css-link").href+="?_="+Date.now();</script>
+    <script>
+    var link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href="https://cdn.jsdelivr.net/gh/deltaseven-io/d7-website@main/almanac/dashboard.css?_="+Date.now();
+    document.head.appendChild(link);
+    </script>
   </head>
   <body>
     <!-- Password Gate -->
