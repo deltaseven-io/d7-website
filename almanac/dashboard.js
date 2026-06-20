@@ -1342,7 +1342,7 @@
             document.getElementById(id).textContent =
               s.hits + "W-" + (s.total - s.hits) + "L";
             document.getElementById(subn).textContent =
-              s.accuracy + "% · " + s.total + " days";
+              s.accuracy + "% · " + s.total + " picks";
           }
         }
         t10tile("t10-hrr", "t10-hrrn", "hrr");
