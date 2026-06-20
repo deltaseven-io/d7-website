@@ -261,8 +261,18 @@
       </table>
       <div class="empty" id="em" style="display: none">No players match.</div>
     </div>
-    <script src="https://cdn.jsdelivr.net/gh/deltaseven-io/d7-website@main/almanac/dashboard_data.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/deltaseven-io/d7-website@main/almanac/dashboard.js"></script>
+    
+    <script>
+    // Load data then JS sequentially, cache-busted
+    var ds = document.createElement("script");
+    ds.src = "https://cdn.jsdelivr.net/gh/deltaseven-io/d7-website@main/almanac/dashboard_data.js?_=" + Date.now();
+    ds.onload = function() {
+      var js = document.createElement("script");
+      js.src = "https://cdn.jsdelivr.net/gh/deltaseven-io/d7-website@main/almanac/dashboard.js?_=" + Date.now();
+      document.body.appendChild(js);
+    };
+    document.body.appendChild(ds);
+    </script>
     <div id="parlay-tray">
       <div id="parlay-tray-header" onclick="toggleParlayTray()">
         <span>🎯 PARLAY BUILDER</span>
