@@ -22,7 +22,7 @@
     <script>
     // Change this hash to set your password. Generate with:
     //   python3 -c "import hashlib; print(hashlib.sha256(b'YOUR_PASSWORD').hexdigest())"
-    const PW_HASH = "b8d8ffae057c2ff9286aedb82111653bb53201518b8bd75012b55a2ec60306b5"; // default: "password"
+    const PW_HASH = "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"; // default: "password"
     async function checkPw() {
       const input = document.getElementById("pw-input").value;
       const hash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input)))).map(b=>b.toString(16).padStart(2,"0")).join("");
@@ -39,7 +39,6 @@
     }
     </script>
 
-    <div id="main-content">
     <div class="sticky-top">
       <header>
         <div class="logo">HRR <span>//</span> 2026</div>
@@ -495,6 +494,5 @@
         </div>
       </div>
     </div>
-    </div><!-- end main-content -->
   </body>
 </html>
