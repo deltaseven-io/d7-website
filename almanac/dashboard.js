@@ -1,6 +1,6 @@
-      let col = "last7",
+      let col = "e_hrr",
         dir = 1,
-        minG = 20,
+        minG = 0,
         q = "",
         slateOnly = true,
         selectedGame = null;
@@ -76,6 +76,26 @@
       function tc(v) {
         return v > 0.3 ? "trend-up" : v < -0.3 ? "trend-dn" : "trend-fl";
       }
+      // Matchup-adjusted metric via odds ratio: (batter × pitcher) / league avg
+      // If pitcher data missing, use league avg (adjusted = raw batter stat)
+      const LG_AVG = {barrel:7.0, hh:38.0, xslg:0.390, xwoba:0.310, xwobacon:0.350, whiff:25.0, ev:88.5, sweet:33.0, fb:35.0};
+      function adjMetric(batter, pitcher, lg) {
+        if (batter == null || !lg) return null;
+        const p = pitcher != null ? pitcher : lg;
+        return Math.round(((batter * p) / lg) * 100) / 100;
+      }
+      function adjCell(val, lg, isDecimal, inverse) {
+        if (val == null) return '<span style="color:rgba(255,255,255,0.1)">—</span>';
+        const txt = isDecimal ? val.toFixed(3) : val.toFixed(1);
+        const ratio = inverse ? lg / val : val / lg;
+        let bg, fg;
+        if (ratio >= 1.3) { bg = "#145a32"; fg = "#fff"; }
+        else if (ratio >= 1.15) { bg = "#00c853"; fg = "#fff"; }
+        else if (ratio >= 1.05) { bg = "#c9a800"; fg = "#000"; }
+        else if (ratio >= 0.95) { bg = "#cb4335"; fg = "#000"; }
+        else { bg = "#a93226"; fg = "#000"; }
+        return `<span class="hcell" style="background:${bg};color:${fg}">${txt}</span>`;
+      }
       function ts(v) {
         return v > 0.3
           ? `↑ +${v.toFixed(2)}`
@@ -110,21 +130,28 @@
         else if (v >= 55) { bg = "#c9a800"; fg = "#fff"; }
         else if (v >= 40) { bg = "#cb4335"; }
         else { bg = "#a93226"; }
-        let tip = `MU ${Math.round(v)}`;
+        let tip = "";
         if (p.bvp_pa >= 1 && p.bvp_ab > 0) {
           const avg = (p.bvp_h / p.bvp_ab).toFixed(3).replace(/^0/,"");
-          tip += `\nCareer vs SP: ${p.bvp_ab} AB, ${p.bvp_h} H, ${p.bvp_hr} HR, ${avg} AVG, ${p.bvp_ops.toFixed(3)} OPS`;
+          tip += `Career vs SP: ${p.bvp_ab} AB, ${p.bvp_h} H, ${p.bvp_hr} HR, ${avg} AVG, ${p.bvp_ops.toFixed(3)} OPS`;
         }
-        // Savant power metrics
+        // Matchup-adjusted metrics
         const parts = [];
-        if (p.hard_hit_pct != null) parts.push(`HH ${Math.round(p.hard_hit_pct)}%`);
-        if (p.blast_rate != null) parts.push(`Barrel ${p.blast_rate.toFixed(1)}%`);
-        if (p.pull_pct != null) parts.push(`Pull ${Math.round(p.pull_pct)}%`);
-        if (p.xslg != null) parts.push(`xSLG ${p.xslg < 1 ? p.xslg.toFixed(3) : (p.xslg/1000).toFixed(3)}`);
+        const mHH = adjMetric(p.hard_hit_pct, p.p_hard_hit_pct, LG_AVG.hh);
+        const mBrl = adjMetric(p.blast_rate, p.p_barrel_rate, LG_AVG.barrel);
+        const mFB = adjMetric(p.flyball_pct, p.p_flyball_pct, LG_AVG.fb);
+        const mXslg = adjMetric(p.xslg, p.p_xslg, LG_AVG.xslg);
+        const mWhiff = adjMetric(p.whiff_pct, p.p_whiff, LG_AVG.whiff);
+        if (mHH != null) parts.push(`HH ${mHH.toFixed(1)}%`);
+        if (mBrl != null) parts.push(`Brl ${mBrl.toFixed(1)}%`);
+        if (mFB != null) parts.push(`FB ${mFB.toFixed(1)}%`);
+        if (mXslg != null) parts.push(`xSLG ${mXslg.toFixed(3)}`);
+        if (mWhiff != null) parts.push(`Whiff ${mWhiff.toFixed(1)}%`);
         if (p.xhr_gap != null) parts.push(`xHR gap: ${p.xhr_gap > 0 ? "+" : ""}${p.xhr_gap}`);
         if (p.is_danger) parts.push("☄️ HR BLAST");
-        if (parts.length) tip += `\n${parts.join(" · ")}`;
+        if (parts.length) tip += (tip ? "\n" : "") + parts.join(" · ");
         if (p.p_vuln_score != null) tip += `\nPitcher Vuln: ${(p.p_vuln_score*100).toFixed(0)}% (${p.p_weak_spot})`;
+        if (!tip) tip = "No matchup data";
         return `<span style="background:${bg};color:${fg};padding:1px 5px;border-radius:3px;font-size:11px;font-weight:700" title="${tip}">${Math.round(v)}</span>`;
       }
       function pickCell(p) {
@@ -143,11 +170,11 @@
         const vulnTip = vuln != null ? ` · Vuln: ${(vuln*100).toFixed(0)}%` : "";
         const vulnBadge = vuln != null ? `<span style="font-size:8px;color:${vuln >= 0.55 ? '#f85149' : vuln <= 0.35 ? '#58a6ff' : '#555'};display:block" title="Pitcher vulnerability ${(vuln*100).toFixed(0)}%">${(vuln*100).toFixed(0)}%</span>` : "";
         if (bt === "gascan")
-          return `<span title="SP🩸⛽: both BLEEDING + wind out${vulnTip}">🩸⛽</span>${vulnBadge}`;
+          return `<span title="Both 🩸🩸+ Wind OUT${vulnTip}">🩸⛽</span>${vulnBadge}`;
         if (bt === "dbl")
-          return `<span title="SP🩸🩸+BP🩸🩸: both BLEEDING${vulnTip}">🩸🩸</span>${vulnBadge}`;
+          return `<span title="Both 🩸🩸${vulnTip}">🩸🩸</span>${vulnBadge}`;
         if (bt === "both_vuln")
-          return `<span title="SP🩸+BP🩸: both VULNERABLE${vulnTip}">🩸</span>${vulnBadge}`;
+          return `<span title="Both 🩸${vulnTip}">🩸</span>${vulnBadge}`;
         const t = p.sp_tier || "";
         if (t === "ELITE") return `<span title="Elite${vulnTip}">⭐⭐</span>${vulnBadge}`;
         if (t === "ACE") return `<span title="Ace${vulnTip}">⭐</span>${vulnBadge}`;
@@ -198,11 +225,37 @@
       }
       let upcomingOnly = false;
       let hideLive = false;
+      let primeOnly = false;
 
       function toggleUpcoming() {
         upcomingOnly = !upcomingOnly;
         const btn = document.getElementById("btn-upcoming");
         btn.className = "btn " + (upcomingOnly ? "slate-on" : "");
+        render();
+      }
+
+      function togglePrime() {
+        primeOnly = !primeOnly;
+        if (primeOnly) primePlusOnly = false;
+        const btn = document.getElementById("btn-prime");
+        btn.className = "btn " + (primeOnly ? "slate-on" : "");
+        if (primeOnly) btn.style.color = "#0d1117";
+        else btn.style.color = "#ffd700";
+        const btn2 = document.getElementById("btn-prime-plus");
+        if (btn2) { btn2.className = "btn"; btn2.style.color = "#ff6b35"; }
+        render();
+      }
+
+      let primePlusOnly = false;
+      function togglePrimePlus() {
+        primePlusOnly = !primePlusOnly;
+        if (primePlusOnly) primeOnly = false;
+        const btn = document.getElementById("btn-prime-plus");
+        btn.className = "btn " + (primePlusOnly ? "slate-on" : "");
+        if (primePlusOnly) btn.style.color = "#0d1117";
+        else btn.style.color = "#ff6b35";
+        const btn1 = document.getElementById("btn-prime");
+        if (btn1) { btn1.className = "btn"; btn1.style.color = "#ffd700"; }
         render();
       }
 
@@ -465,6 +518,32 @@
             ? `<div style="font-size:18px;font-weight:700;font-family:'Barlow Condensed',sans-serif;color:${barColor(pct2)}">${w}W-${l}L</div><div style="font-size:10px;color:#555">${pct2}%</div>`
             : '<div style="color:#555;font-size:10px">—</div>';
         });
+        // PRIME: E-HRR >= 2.0 AND MU >= 60 hit rate
+        const primeEl = document.getElementById("acc-games-prime");
+        if (primeEl) {
+          const primeGraded = graded.filter(p => (p.e_hrr||0) >= 2.0 && (p.matchup_score||0) >= 60 && p.hit !== null && p.hit !== undefined);
+          if (primeGraded.length) {
+            const primeW = primeGraded.filter(p => p.hit).length;
+            const primeL = primeGraded.length - primeW;
+            const primePct = Math.round(100*primeW/primeGraded.length);
+            primeEl.innerHTML = `<div style="font-size:22px;font-weight:700;font-family:'Barlow Condensed',sans-serif;color:${barColor(primePct)}">${primeW}-${primeL}</div><div style="font-size:10px;color:#555">${primePct}% · ${primeGraded.length} picks</div>`;
+          } else {
+            primeEl.innerHTML = '<div style="color:#555;font-size:10px">starts today</div>';
+          }
+        }
+        // PRIME+ accuracy: PRIME + BLEEDING SP
+        const primePlusEl = document.getElementById("acc-games-primeplus");
+        if (primePlusEl) {
+          const ppGraded = graded.filter(p => (p.e_hrr||0) >= 2.3 && (p.matchup_score||0) >= 65 && p.hit !== null && p.hit !== undefined);
+          if (ppGraded.length) {
+            const ppW = ppGraded.filter(p => p.hit).length;
+            const ppL = ppGraded.length - ppW;
+            const ppPct = Math.round(100*ppW/ppGraded.length);
+            primePlusEl.innerHTML = `<div style="font-size:22px;font-weight:700;font-family:'Barlow Condensed',sans-serif;color:${barColor(ppPct)}">${ppW}-${ppL}</div><div style="font-size:10px;color:#555">${ppPct}% · ${ppGraded.length} picks</div>`;
+          } else {
+            primePlusEl.innerHTML = '<div style="color:#555;font-size:10px">starts today</div>';
+          }
+        }
         // Overs: actual >= est_runs = W, actual < est_runs = L
         const oversEl = document.getElementById("acc-games-overs");
         const undersEl = document.getElementById("acc-games-unders");
@@ -1238,6 +1317,12 @@
           );
           rows = rows.filter((p) => !liveTeams.has(p.team_id));
         }
+        if (primeOnly) {
+          rows = rows.filter((p) => (p.e_hrr || 0) >= 2.0 && (p.matchup_score || 0) >= 60);
+        }
+        if (primePlusOnly) {
+          rows = rows.filter((p) => (p.e_hrr || 0) >= 2.3 && (p.matchup_score || 0) >= 65);
+        }
         const sv = (r) => {
           if (col === "best")
             return bestStreak(r.log_full || r.log || [], streakMin);
@@ -1274,7 +1359,7 @@
               i,
             ) => `<tr style="${p._dim ? "opacity:0.2" : ""}" class="${highlighted.has(p.pid) ? "row-highlight" : ""}" onclick="toggleHighlight(event,'${p.pid}')">
     <td class="pad" style="color:var(--muted);font-size:10px">${i + 1}</td>
-    <td class="name-td"><div class="player-cell">${logoImg(p)}${p.form_tag === "Hot" ? '<span style="font-size:9px;margin-right:2px" title="Hot form">🔥</span>' : p.form_tag === "Slump" ? '<span style="font-size:9px;margin-right:2px" title="Slump">❄️</span>' : ""}${p.pull_risk >= 25 ? `<span style="font-size:9px;margin-right:2px" title="SHORT GAME: ${p.pull_risk}% of games get ≤2 AB">🩳</span>` : ""}<span class="pname">${p.name}</span>${p.is_danger ? '<span style="color:#e3b341;font-size:8px;margin-left:2px" title="HR BLAST: high barrel% vs HR-prone pitcher">☄️</span>' : ""}${windBadge(p)}${accBadge(p)}</div></td>
+    <td class="name-td"><div class="player-cell">${logoImg(p)}${p.form_tag === "Hot" ? '<span style="font-size:9px;margin-right:2px" title="Hot form">🔥</span>' : p.form_tag === "Slump" ? '<span style="font-size:9px;margin-right:2px" title="Slump">❄️</span>' : ""}${p.pull_risk >= 25 ? `<span style="font-size:9px;margin-right:2px" title="SHORT GAME: ${p.pull_risk}% of games get ≤2 AB">🩳</span>` : ""}<span class="pname">${p.name}</span>${p.is_danger ? '<span style="color:#e3b341;font-size:8px;margin-left:2px" title="HR BLAST BvP">☄️</span>' : ""}${windBadge(p)}${accBadge(p)}</div></td>
     <td style="text-align:center">${p.sp_confirmed ? '<span style="color:#58a6ff;font-weight:700;font-size:13px">✓</span>' : '<span style="color:rgba(255,255,255,0.12)">—</span>'}</td>
     <td style="text-align:center">${p.lineup_confirmed ? '<span style="color:#39d353;font-weight:700;font-size:13px">✓</span>' : '<span style="color:rgba(255,255,255,0.12)">—</span>'}</td>
     <td class="pad" style="color:var(--muted);font-size:11px">${p.games}</td>
@@ -1288,10 +1373,15 @@
     <td>${predCell(p.e_hrr)}</td>
     <td>${predCell(p.e_bases)}</td>
     <td>${predCell(p.e_hr, 1, p.xhr_gap)}</td>
-    <td>${hcell(p.last7)}</td>
-    <td>${hcell(p.last15)}</td>
-    <td>${hcell(p.avg_hrr)}</td>
-    <td>${pcell(p.hrr2_pct)}</td>
+    <td>${(() => { const log = p.log || []; const l3 = log.slice(-3); const avg = l3.length ? (l3.reduce((a,b)=>a+b,0)/l3.length) : null; return avg != null ? hcell(avg) : '<span style="color:rgba(255,255,255,0.1)">—</span>'; })()}</td>
+    <td>${adjCell(adjMetric(p.whiff_pct,p.p_whiff,LG_AVG.whiff),LG_AVG.whiff,false,true)}</td>
+    <td>${adjCell(adjMetric(p.blast_rate,p.p_barrel_rate,LG_AVG.barrel),LG_AVG.barrel,false)}</td>
+    <td>${adjCell(adjMetric(p.sweet_spot_pct,p.p_sweet_spot_pct,LG_AVG.sweet),LG_AVG.sweet,false)}</td>
+    <td>${adjCell(adjMetric(p.flyball_pct,p.p_flyball_pct,LG_AVG.fb),LG_AVG.fb,false)}</td>
+    <td>${adjCell(adjMetric(p.hard_hit_pct,p.p_hard_hit_pct,LG_AVG.hh),LG_AVG.hh,false)}</td>
+    <td>${adjCell(adjMetric(p.xslg,p.p_xslg,LG_AVG.xslg),LG_AVG.xslg,true)}</td>
+    <td>${adjCell(adjMetric(p.xwoba,p.p_xwoba,LG_AVG.xwoba),LG_AVG.xwoba,true)}</td>
+    <td>${adjCell(adjMetric(p.xwobacon,p.p_xwobacon,LG_AVG.xwobacon),LG_AVG.xwobacon,true)}</td>
     <td>${hcell(p.hr, 0)}</td>
   </tr>`,
           )
@@ -1364,6 +1454,24 @@
         t10tile("t10-hrr", "t10-hrrn", "hrr");
         t10tile("t10-bases", "t10-basesn", "bases");
         t10tile("t10-hr", "t10-hrn", "hr");
+        // PRIME tile
+        const primeGraded = (PRED_ACCURACY.graded || []).filter(p => (p.e_hrr||0) >= 2.0 && (p.matchup_score||0) >= 60 && p.hit !== null && p.hit !== undefined);
+        if (primeGraded.length) {
+          const pw = primeGraded.filter(p => p.hit).length;
+          const pl2 = primeGraded.length - pw;
+          const ppct = Math.round(100*pw/primeGraded.length);
+          document.getElementById("t-prime").textContent = pw + "-" + pl2;
+          document.getElementById("t-primen").textContent = ppct + "% · " + primeGraded.length + " picks";
+        }
+        // PRIME+ tile
+        const ppGraded2 = (PRED_ACCURACY.graded || []).filter(p => (p.e_hrr||0) >= 2.3 && (p.matchup_score||0) >= 65 && p.hit !== null && p.hit !== undefined);
+        if (ppGraded2.length) {
+          const ppw = ppGraded2.filter(p => p.hit).length;
+          const ppl = ppGraded2.length - ppw;
+          const pppct = Math.round(100*ppw/ppGraded2.length);
+          document.getElementById("t-primeplus").textContent = ppw + "-" + ppl;
+          document.getElementById("t-primeplusn").textContent = pppct + "% · " + ppGraded2.length + " picks";
+        }
       }
       function buildStrip() {
         const strip = document.getElementById("games-strip");
@@ -1491,10 +1599,12 @@
       });
       document.getElementById("sq").addEventListener("input", (e) => {
         q = e.target.value;
+        const clearBtn = document.getElementById("sq-clear");
+        if (clearBtn) clearBtn.style.display = q ? "block" : "none";
         render();
       });
-      document.getElementById("h-last7").textContent = "Last 7 ▾";
-      document.getElementById("h-last7").classList.add("sorted");
+      document.getElementById("h-e_hrr").textContent = "E-HRR ▾";
+      document.getElementById("h-e_hrr").classList.add("sorted");
       buildStrip();
       render();
       rebuildAccPanel();
