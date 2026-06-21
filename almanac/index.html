@@ -66,6 +66,7 @@
           <span>🔥 hot</span>
           <span>❄️ slump</span>
           <span>☄️ HR blast</span>
+          <span>🩳 >25% short games</span>
         </div>
         <button class="refresh-btn" onclick="(async()=>{await Promise.all(['dashboard_data.js','dashboard.js','dashboard.css'].map(f=>fetch('https://purge.jsdelivr.net/gh/deltaseven-io/d7-website@main/almanac/'+f).catch(()=>{})));location.href=location.pathname+'?_='+Date.now()})()">
           ⟳ Refresh
@@ -162,24 +163,28 @@
                 <div id="acc-games-record"></div>
               </div>
               <div>
-                <div class="acc-breakdown-title">V.Strong (25%+)</div>
+                <div class="acc-breakdown-title">V.Strong (40%+)</div>
                 <div id="acc-games-vstrong"></div>
               </div>
               <div>
-                <div class="acc-breakdown-title">Strong (10-25%)</div>
-                <div id="acc-games-strong"></div>
+                <div class="acc-breakdown-title">Strong (25-40%)</div>
+                <div id="acc-games-strong2"></div>
               </div>
               <div>
-                <div class="acc-breakdown-title">Moderate (5-10%)</div>
+                <div class="acc-breakdown-title">Solid (15-25%)</div>
+                <div id="acc-games-solid"></div>
+              </div>
+              <div>
+                <div class="acc-breakdown-title">Moderate (10-15%)</div>
                 <div id="acc-games-moderate"></div>
+              </div>
+              <div>
+                <div class="acc-breakdown-title">Lean (5-10%)</div>
+                <div id="acc-games-lean"></div>
               </div>
               <div>
                 <div class="acc-breakdown-title">Toss-up (&lt;5%)</div>
                 <div id="acc-games-tossup"></div>
-              </div>
-              <div>
-                <div class="acc-breakdown-title">Avg Runs Diff</div>
-                <div id="acc-games-runs-diff" style="font-size:22px;font-weight:700;color:#c9a800"></div>
               </div>
               <div>
                 <div class="acc-breakdown-title">Overs</div>

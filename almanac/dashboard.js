@@ -157,7 +157,8 @@
       }
       function logoImg(p) {
         if (!p.team_id) return '<span class="logo-err"></span>';
-        return `<img class="logo-img" src="https://www.mlbstatic.com/team-logos/${p.team_id}.svg" onerror="this.outerHTML='<span class=\'logo-err\'></span>'">`;
+        const luBadge = p.lineup_confirmed && p.lineup_order ? `<span style="position:absolute;top:-4px;right:-6px;width:14px;height:14px;border-radius:50%;background:#161b22;border:1px solid #39d353;color:#39d353;font-size:9px;font-weight:600;display:flex;align-items:center;justify-content:center;line-height:1">${p.lineup_order}</span>` : "";
+        return `<span style="position:relative;display:inline-block;width:20px;height:20px"><img class="logo-img" src="https://www.mlbstatic.com/team-logos/${p.team_id}.svg" onerror="this.outerHTML='<span class=\\'logo-err\\'></span>'">${luBadge}</span>`;
       }
       function drawSpark(canvas, log) {
         const ctx = canvas.getContext("2d");
@@ -219,8 +220,12 @@
       }
 
       function barColor(pct) {
-        if (pct >= 70) return "#00c853";
-        if (pct >= 55) return "#e3b341";
+        if (pct >= 75) return "#00c853";
+        if (pct >= 65) return "#39d353";
+        if (pct >= 58) return "#58d68d";
+        if (pct >= 52) return "#e3b341";
+        if (pct >= 45) return "#d68f00";
+        if (pct >= 35) return "#e67e22";
         return "#f85149";
       }
 
@@ -366,7 +371,7 @@
           const allTime = _w(null);
           const yest = _w(d(1));
           const last5 = _w(d(5));
-          const pctColor = (p) => p >= 65 ? "#00c853" : p >= 50 ? "#c9a800" : p >= 1 ? "#f85149" : "#555";
+          const pctColor = (p) => p >= 1 ? barColor(p) : "#555";
           el.innerHTML = `<div style="font-size:13px;color:#8b949e;margin-bottom:6px;font-weight:600;letter-spacing:.04em">${label}</div>
             <div style="font-size:28px;font-weight:700;font-family:'Barlow Condensed',sans-serif;margin-bottom:2px;color:${pctColor(allTime.accuracy)}">${allTime.total ? allTime.accuracy + "%" : "—"}</div>
             <div style="font-size:12px;color:#555;margin-bottom:8px">${allTime.total ? allTime.hits + "/" + allTime.total : "no data"}</div>
@@ -387,7 +392,7 @@
         const muLabels = [{l:"80+",lo:80,hi:999},{l:"70-79",lo:70,hi:80},{l:"55-69",lo:55,hi:70},{l:"40-54",lo:40,hi:55},{l:"<40",lo:0,hi:40}];
         const ehrEl = document.getElementById("acc-ehrr-by-mu");
         if (ehrEl) {
-          const pctColor2 = (p) => p >= 65 ? "#00c853" : p >= 50 ? "#c9a800" : "#f85149";
+          const pctColor2 = barColor;
           ehrEl.innerHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap">${muLabels.map(b => {
             const rows = allTopHrr.filter(p => { const mu = approxMU(p); return mu >= b.lo && mu < b.hi; });
             if (!rows.length) return `<div style="background:#0d1117;border:1px solid #1e1e1e;border-radius:6px;padding:8px 14px;text-align:center;flex:1;min-width:90px">
@@ -439,18 +444,27 @@
         }
         // Confidence breakdown
         const bc = gp.by_confidence || {};
-        [["vstrong","acc-games-vstrong"],["strong","acc-games-strong"],["moderate","acc-games-moderate"],["tossup","acc-games-tossup"]].forEach(([tier,elId]) => {
+        [["vstrong","acc-games-vstrong"],["strong2","acc-games-strong2"],["solid","acc-games-solid"],["moderate","acc-games-moderate"],["lean","acc-games-lean"],["tossup","acc-games-tossup"]].forEach(([tier,elId]) => {
           const el = document.getElementById(elId);
           if (!el) return;
-          const b = bc[tier] || {w:0,l:0};
-          const tot = b.w + b.l;
-          const pct2 = tot ? Math.round(100*b.w/tot) : null;
+          // Compute from recent data since grade.py uses different bucket names
+          const recent = gp.recent || [];
+          let lo, hi;
+          if (tier === "vstrong") { lo = 40; hi = 999; }
+          else if (tier === "strong2") { lo = 25; hi = 40; }
+          else if (tier === "solid") { lo = 15; hi = 25; }
+          else if (tier === "moderate") { lo = 10; hi = 15; }
+          else if (tier === "lean") { lo = 5; hi = 10; }
+          else { lo = 0; hi = 5; }
+          const filtered = recent.filter(g => (g.edge_pct||0) >= lo && (g.edge_pct||0) < hi && g.lean_correct !== null);
+          const w = filtered.filter(g => g.lean_correct).length;
+          const l = filtered.length - w;
+          const tot = w + l;
+          const pct2 = tot ? Math.round(100*w/tot) : null;
           el.innerHTML = tot
-            ? `<div style="font-size:18px;font-weight:700;font-family:'Barlow Condensed',sans-serif;color:${barColor(pct2)}">${b.w}W-${b.l}L</div><div style="font-size:10px;color:#555">${pct2}%</div>`
+            ? `<div style="font-size:18px;font-weight:700;font-family:'Barlow Condensed',sans-serif;color:${barColor(pct2)}">${w}W-${l}L</div><div style="font-size:10px;color:#555">${pct2}%</div>`
             : '<div style="color:#555;font-size:10px">—</div>';
         });
-        const rdEl = document.getElementById("acc-games-runs-diff");
-        if (rdEl) rdEl.textContent = gp.runs_avg_diff != null ? `±${gp.runs_avg_diff}` : "—";
         // Overs: actual >= est_runs = W, actual < est_runs = L
         const oversEl = document.getElementById("acc-games-overs");
         const undersEl = document.getElementById("acc-games-unders");
@@ -463,8 +477,8 @@
             const underL = ouGames.length - underW;
             const overPct = Math.round(100*overW/ouGames.length);
             const underPct = Math.round(100*underW/ouGames.length);
-            const overColor = overPct >= 55 ? "#00c853" : overPct >= 45 ? "#c9a800" : "#f85149";
-            const underColor = underPct >= 55 ? "#00c853" : underPct >= 45 ? "#c9a800" : "#f85149";
+            const overColor = barColor(overPct);
+            const underColor = barColor(underPct);
             oversEl.innerHTML = `<div style="font-size:22px;font-weight:700;font-family:'Barlow Condensed',sans-serif;color:${overColor}">${overW}-${overL}</div><div style="font-size:10px;color:#555">${overPct}%</div>`;
             undersEl.innerHTML = `<div style="font-size:22px;font-weight:700;font-family:'Barlow Condensed',sans-serif;color:${underColor}">${underW}-${underL}</div><div style="font-size:10px;color:#555">${underPct}%</div>`;
           } else {
@@ -484,8 +498,8 @@
           }
           const dates = Object.keys(byDate).sort().reverse();
           if (dates.length) {
-            recentEl.innerHTML = `<div style="display:grid;grid-template-columns:80px 1fr 1fr 1fr 1fr 60px;gap:4px;font-size:10px;margin-bottom:4px">
-              <span style="color:#555">Date</span><span style="color:#555">V.Strong (25%+)</span><span style="color:#555">Strong (10-25%)</span><span style="color:#555">Moderate (5-10%)</span><span style="color:#555">Toss-up (&lt;5%)</span><span style="color:#555">Total</span>
+            recentEl.innerHTML = `<div style="display:grid;grid-template-columns:80px 1fr 1fr 1fr 1fr 1fr 1fr 60px;gap:4px;font-size:10px;margin-bottom:4px">
+              <span style="color:#555">Date</span><span style="color:#555">V.Strong (40%+)</span><span style="color:#555">Strong (25-40%)</span><span style="color:#555">Solid (15-25%)</span><span style="color:#555">Moderate (10-15%)</span><span style="color:#555">Lean (5-10%)</span><span style="color:#555">Toss-up (&lt;5%)</span><span style="color:#555">Total</span>
             </div>` + dates.map(d => {
               const games = byDate[d];
               function bucket(lo, hi) {
@@ -494,14 +508,16 @@
                 const l = b.length - w;
                 if (!b.length) return '<span style="color:#333">—</span>';
                 const pct = Math.round(100*w/b.length);
-                return `<span style="color:${pct >= 60 ? '#00c853' : pct >= 45 ? '#c9a800' : '#f85149'}">${w}W-${l}L</span>`;
+                return `<span style="color:${barColor(pct)}">${w}W-${l}L</span>`;
               }
               const totalW = games.filter(g => g.lean_correct === true).length;
               const totalL = games.filter(g => g.lean_correct === false).length;
-              return `<div style="display:grid;grid-template-columns:80px 1fr 1fr 1fr 1fr 60px;gap:4px;padding:3px 0;border-bottom:1px solid #1a1a1a;font-size:10px">
+              return `<div style="display:grid;grid-template-columns:80px 1fr 1fr 1fr 1fr 1fr 1fr 60px;gap:4px;padding:3px 0;border-bottom:1px solid #1a1a1a;font-size:10px">
                 <span style="color:#8b949e">${d}</span>
-                ${bucket(25, 999)}
-                ${bucket(10, 25)}
+                ${bucket(40, 999)}
+                ${bucket(25, 40)}
+                ${bucket(15, 25)}
+                ${bucket(10, 15)}
                 ${bucket(5, 10)}
                 ${bucket(0, 5)}
                 <span style="color:#8b949e">${totalW}W-${totalL}L</span>
@@ -1258,7 +1274,7 @@
               i,
             ) => `<tr style="${p._dim ? "opacity:0.2" : ""}" class="${highlighted.has(p.pid) ? "row-highlight" : ""}" onclick="toggleHighlight(event,'${p.pid}')">
     <td class="pad" style="color:var(--muted);font-size:10px">${i + 1}</td>
-    <td class="name-td"><div class="player-cell">${logoImg(p)}${p.form_tag === "Hot" ? '<span style="font-size:9px;margin-right:2px" title="Hot form">🔥</span>' : p.form_tag === "Slump" ? '<span style="font-size:9px;margin-right:2px" title="Slump">❄️</span>' : ""}<span class="pname">${p.name}</span>${p.is_danger ? '<span style="color:#e3b341;font-size:8px;margin-left:2px" title="HR BLAST: high barrel% vs HR-prone pitcher">☄️</span>' : ""}${windBadge(p)}${accBadge(p)}</div></td>
+    <td class="name-td"><div class="player-cell">${logoImg(p)}${p.form_tag === "Hot" ? '<span style="font-size:9px;margin-right:2px" title="Hot form">🔥</span>' : p.form_tag === "Slump" ? '<span style="font-size:9px;margin-right:2px" title="Slump">❄️</span>' : ""}${p.pull_risk >= 25 ? `<span style="font-size:9px;margin-right:2px" title="SHORT GAME: ${p.pull_risk}% of games get ≤2 AB">🩳</span>` : ""}<span class="pname">${p.name}</span>${p.is_danger ? '<span style="color:#e3b341;font-size:8px;margin-left:2px" title="HR BLAST: high barrel% vs HR-prone pitcher">☄️</span>' : ""}${windBadge(p)}${accBadge(p)}</div></td>
     <td style="text-align:center">${p.sp_confirmed ? '<span style="color:#58a6ff;font-weight:700;font-size:13px">✓</span>' : '<span style="color:rgba(255,255,255,0.12)">—</span>'}</td>
     <td style="text-align:center">${p.lineup_confirmed ? '<span style="color:#39d353;font-weight:700;font-size:13px">✓</span>' : '<span style="color:rgba(255,255,255,0.12)">—</span>'}</td>
     <td class="pad" style="color:var(--muted);font-size:11px">${p.games}</td>
