@@ -1,0 +1,2929 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Factor Blaster | DeltaSeven</title>
+    <!-- Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-BK4VM8YZ41"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-BK4VM8YZ41");
+    </script>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body {
+        background: #000;
+        color: #fff;
+        font-family: "Share Tech Mono", monospace;
+        min-height: 100vh;
+        overflow: hidden;
+        user-select: none;
+      }
+      #game {
+        width: 100%;
+        max-width: 420px;
+        margin: 0 auto;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+      }
+      #stars {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+      }
+      #star-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* HUD */
+      #hud {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 10px 12px;
+        border-bottom: 1px solid #222;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 2;
+        gap: 4px;
+      }
+
+      .hud-block {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+      }
+      .hud-lbl {
+        font-family: "Press Start 2P", monospace;
+        font-size: 7px;
+        color: #555;
+        letter-spacing: 0.08em;
+      }
+      .hud-val {
+        font-family: "Press Start 2P", monospace;
+        font-size: 14px;
+        color: #fff;
+        letter-spacing: 0.04em;
+      }
+      #score.bump {
+        transform: scale(1.25);
+        transition: transform 0.1s;
+      }
+      #streak-display {
+        font-family: "Press Start 2P", monospace;
+        font-size: 14px;
+        color: #fff;
+        letter-spacing: 0.04em;
+      }
+      #streak-display.hot {
+        color: #ff0;
+      }
+      .heart {
+        font-size: 15px;
+        line-height: 1;
+        color: #ff0000;
+      }
+      .heart.empty {
+        color: #333;
+      }
+
+      /* combo bar */
+      #combo-bar-wrap {
+        height: 5px;
+        background: #111;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 2;
+      }
+      #combo-bar {
+        height: 5px;
+        background: #00ff00;
+        width: 0%;
+        transition: width 0.4s ease-out;
+        box-shadow: 0 0 6px #00ff00;
+      }
+      /* level indicator row */
+      #level-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 4px 14px 0;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 2;
+      }
+      #level-label {
+        font-family: "Press Start 2P", monospace;
+        font-size: 8px;
+        color: #00ff00;
+        letter-spacing: 0.08em;
+        text-shadow: 0 0 6px #00ff00;
+      }
+      #level-progress-text {
+        font-family: "Press Start 2P", monospace;
+        font-size: 7px;
+        color: #00ff00;
+        letter-spacing: 0.06em;
+      }
+
+      /* QUESTION AREA */
+      #question-area {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 60px 14px 4px;
+        position: relative;
+        z-index: 2;
+      }
+      #expression {
+        font-family: "Press Start 2P", monospace;
+        font-size: clamp(16px, 7vw, 30px);
+        text-align: center;
+        letter-spacing: 0.06em;
+        line-height: 1.6;
+        margin-bottom: 3px;
+        min-height: 34px;
+        width: 90%;
+        white-space: nowrap;
+      }
+      #topic-tag {
+        font-size: 7px;
+        color: #0000ff;
+        letter-spacing: 0.08em;
+        text-align: center;
+        height: 13px;
+        margin-bottom: 2px;
+        font-family: "Press Start 2P", monospace;
+      }
+      #hint-text {
+        font-size: 10px;
+        text-align: center;
+        height: 15px;
+        letter-spacing: 0.05em;
+      }
+      #feedback-banner {
+        font-family: "Press Start 2P", monospace;
+        font-size: 10px;
+        text-align: center;
+        height: 18px;
+        letter-spacing: 0.06em;
+      }
+      #combo-popup {
+        font-family: "Press Start 2P", monospace;
+        font-size: 8px;
+        color: #ff0;
+        text-align: center;
+        height: 13px;
+        letter-spacing: 0.05em;
+      }
+
+      /* EZ choices */
+      #choices {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 5px 12px 8px;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 2;
+      }
+      .choice-btn {
+        font-family: "Share Tech Mono", monospace;
+        font-size: clamp(16px, 4.5vw, 22px);
+        padding: 18px 16px;
+        min-height: 72px;
+        background: #080808;
+        border: 2px solid #2a2a2a;
+        color: #ccc;
+        border-radius: 12px;
+        cursor: pointer;
+        letter-spacing: 0.03em;
+        line-height: 1.3;
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 32px 1fr 32px;
+        align-items: center;
+        gap: 0;
+        touch-action: manipulation;
+        transition:
+          background 0.1s,
+          border-color 0.1s,
+          transform 0.08s;
+      }
+      .choice-btn:active {
+        transform: scale(0.96);
+      }
+      .choice-btn.correct {
+        background: #080808;
+        color: #ccc;
+        border-color: transparent;
+      }
+      /* spark canvas injected by JS sits on top */
+      .spark-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
+        pointer-events: none;
+        z-index: 10;
+      }
+      .choice-btn.wrong {
+        border-color: #f55;
+        border-width: 2.5px;
+        background: #080808;
+        color: #ccc;
+      }
+      .choice-btn.reveal {
+        border-color: #0f0;
+        border-width: 2.5px;
+        background: #080808;
+        color: #ccc;
+      }
+      .choice-btn .btn-emoji {
+        font-size: 22px;
+        line-height: 1;
+        text-align: center;
+        grid-column: 1;
+      }
+      .choice-btn .btn-text {
+        grid-column: 2;
+        text-align: center;
+      }
+      #continue-btn {
+        width: 100%;
+        padding: 18px 16px;
+        min-height: 72px;
+        font-family: "Share Tech Mono", monospace;
+        font-size: clamp(16px, 4.5vw, 22px);
+        letter-spacing: 0.03em;
+        background: #0000ff;
+        color: #fff;
+        border: 2px solid #3377ff;
+        border-radius: 12px;
+        cursor: pointer;
+        transition:
+          transform 0.08s,
+          background 0.1s;
+      }
+      #continue-btn:active {
+        transform: scale(0.97);
+        background: #0000cc;
+      }
+
+      /* Challenge drums */
+      #factored-area {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px 2px 3px;
+        position: relative;
+        z-index: 2;
+        gap: 0px;
+      }
+      .factor-group {
+        display: flex;
+        align-items: center;
+      }
+      .f-paren {
+        font-family: "Press Start 2P", monospace;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        height: 120px;
+        color: #fff;
+        padding: 0 1px;
+        line-height: 1;
+      }
+      .f-x {
+        font-family: "Press Start 2P", monospace;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        height: 120px;
+        padding: 0 2px 0 3px;
+        line-height: 1;
+      }
+      .drum-wrap {
+        display: flex;
+        align-items: center;
+        height: 120px;
+      }
+      /* label above coeff drum */
+      .drum-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+      }
+      .drum-col-label {
+        font-family: "Press Start 2P", monospace;
+        font-size: 7px;
+        color: #555;
+        letter-spacing: 0.08em;
+        height: 12px;
+      }
+      /* auto-updating coeff badge replaces static f-x for composites */
+      .f-coeff-badge {
+        font-family: "Press Start 2P", monospace;
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        height: 120px;
+        padding: 0 1px 0 2px;
+        line-height: 1;
+        color: #fff;
+        min-width: 22px;
+        text-align: center;
+      }
+      .drum {
+        width: 90px;
+        height: 120px;
+        overflow: hidden;
+        position: relative;
+        border: 1.5px solid #333;
+        border-radius: 10px;
+        background: #060606;
+        cursor: grab;
+        touch-action: none;
+      }
+      .drum:active {
+        cursor: grabbing;
+      }
+      .drum-inner {
+        position: absolute;
+        width: 100%;
+        will-change: transform;
+      }
+      .drum-item {
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+      }
+      .drum-item .sign {
+        font-family: "Press Start 2P", monospace;
+        font-size: 10px;
+        color: #1e1e1e;
+        width: 16px;
+        text-align: right;
+        line-height: 1;
+      }
+      .drum-item .num {
+        font-family: "Press Start 2P", monospace;
+        font-size: 12px;
+        color: #1e1e1e;
+        width: 26px;
+        text-align: left;
+        margin-left: 14px;
+        line-height: 1;
+      }
+      .drum-item.near .sign {
+        color: #444;
+        font-size: 11px;
+      }
+      .drum-item.near .num {
+        color: #444;
+        font-size: 15px;
+        margin-left: 14px;
+      }
+      .drum-item.center .sign {
+        color: #bbb;
+        font-size: 14px;
+        width: 18px;
+      }
+      .drum-item.center .num {
+        color: #fff;
+        font-size: 20px;
+        width: 30px;
+        margin-left: 14px;
+      }
+      .drum-shade-top {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 36px;
+        background: linear-gradient(to bottom, #060606 15%, transparent);
+        pointer-events: none;
+        z-index: 2;
+        border-radius: 10px 10px 0 0;
+      }
+      .drum-shade-bot {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 36px;
+        background: linear-gradient(to top, #060606 15%, transparent);
+        pointer-events: none;
+        z-index: 2;
+        border-radius: 0 0 10px 10px;
+      }
+      /* Coefficient-mode drum items: plain centered "Nx" */
+      .drum-item.coeff-mode {
+        justify-content: center;
+      }
+      .drum-item.coeff-mode .coeff-num {
+        font-family: "Press Start 2P", monospace;
+        font-size: 10px;
+        color: #1e1e1e;
+        line-height: 1;
+        text-align: center;
+      }
+      .drum-item.coeff-mode.near .coeff-num {
+        color: #444;
+        font-size: 13px;
+      }
+      .drum-item.coeff-mode.center .coeff-num {
+        color: #fff;
+        font-size: 18px;
+      }
+      .drum-highlight {
+        position: absolute;
+        top: 36px;
+        left: 0;
+        right: 0;
+        height: 36px;
+        border-top: 1.5px solid #ff0;
+        border-bottom: 1.5px solid #ff0;
+        pointer-events: none;
+        z-index: 3;
+      }
+
+      /* reset / quit */
+      #reset-quit-row {
+        display: flex;
+      }
+      #reset-btn,
+      #quit-btn {
+        font-family: "Press Start 2P", monospace;
+        font-size: 8px;
+        padding: 7px 16px;
+        border-radius: 7px;
+        cursor: pointer;
+        letter-spacing: 0.06em;
+      }
+      #reset-btn {
+        background: #000;
+        border: 1px solid #333;
+        color: #555;
+      }
+      #reset-btn:hover {
+        border-color: #555;
+        color: #888;
+      }
+      #quit-btn {
+        background: #000;
+        border: 1px solid #ff0000;
+        color: #ff0000;
+      }
+      #quit-btn:hover {
+        background: #0a0000;
+      }
+
+      /* submit */
+      #submit-wrap {
+        flex: 0 0 auto;
+        padding: 24px 14px 8px;
+        position: relative;
+        z-index: 2;
+      }
+      #submit-btn {
+        width: 100%;
+        padding: 14px;
+        font-family: "Press Start 2P", monospace;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        background: #0000ff;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition:
+          transform 0.08s,
+          background 0.1s;
+      }
+      #submit-btn:active {
+        transform: scale(0.97);
+        background: #0000cc;
+      }
+      #submit-btn:disabled {
+        background: #222;
+        color: #555;
+        cursor: default;
+      }
+      #submit-btn.wrong-shake {
+        animation: shake 0.3s;
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20% {
+          transform: translateX(-7px);
+        }
+        40% {
+          transform: translateX(7px);
+        }
+        60% {
+          transform: translateX(-4px);
+        }
+        80% {
+          transform: translateX(4px);
+        }
+      }
+
+      /* OPTIONS PANEL */
+      #options-panel {
+        position: absolute;
+        inset: 0;
+        background: #000;
+        z-index: 30;
+        display: none;
+        flex-direction: column;
+        overflow-y: auto;
+        padding: 18px 18px 30px;
+      }
+      #options-panel.show {
+        display: flex;
+      }
+      #opt-title {
+        font-family: "Press Start 2P", monospace;
+        font-size: 12px;
+        text-align: center;
+        margin-bottom: 16px;
+        color: #ff0;
+        letter-spacing: 0.08em;
+      }
+      .opt-section {
+        font-family: "Press Start 2P", monospace;
+        font-size: 6px;
+        color: #444;
+        letter-spacing: 0.12em;
+        margin: 14px 0 7px;
+        border-bottom: 1px solid #1a1a1a;
+        padding-bottom: 4px;
+      }
+      .opt-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+        gap: 12px;
+      }
+      .opt-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 13px;
+        color: #ccc;
+        flex: 1;
+        line-height: 1.3;
+      }
+      .opt-sub {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 10px;
+        color: #444;
+        display: block;
+        margin-top: 3px;
+        line-height: 1.4;
+      }
+      .s-pill {
+        width: 42px;
+        height: 23px;
+        background: #111;
+        border: 1.5px solid #333;
+        border-radius: 12px;
+        position: relative;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition:
+          background 0.2s,
+          border-color 0.2s;
+        margin-top: 2px;
+      }
+      .s-pill.on {
+        background: #1c1c00;
+        border-color: #ff0;
+      }
+      .s-knob {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 15px;
+        height: 15px;
+        background: #333;
+        border-radius: 50%;
+        transition:
+          transform 0.2s,
+          background 0.2s;
+      }
+      .s-pill.on .s-knob {
+        transform: translateX(19px);
+        background: #ff0;
+      }
+      #timer-val {
+        font-family: "Press Start 2P", monospace;
+        font-size: 8px;
+        color: #ff0;
+        min-width: 36px;
+        text-align: right;
+      }
+      #opt-close {
+        margin-top: 18px;
+        font-family: "Press Start 2P", monospace;
+        font-size: 9px;
+        padding: 13px;
+        background: #ff0;
+        color: #000;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 100%;
+        letter-spacing: 0.08em;
+      }
+      #opt-close:active {
+        transform: scale(0.97);
+      }
+      #back-link {
+        display: block;
+        text-align: center;
+        margin-top: 14px;
+        font-family: "Press Start 2P", monospace;
+        font-size: 7px;
+        color: #444;
+        text-decoration: none;
+        letter-spacing: 0.08em;
+      }
+      #back-link:hover {
+        color: #fff;
+      }
+
+      /* OVERLAY */
+      .screen-title {
+        font-family: "Press Start 2P", monospace;
+        font-size: 18px;
+        color: #fff;
+        text-align: center;
+        letter-spacing: 0.08em;
+        margin-bottom: 16px;
+        line-height: 1.5;
+      }
+      .mode-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        background: #111;
+        border: 2px solid #333;
+        border-radius: 10px;
+        padding: 14px 20px;
+        font-family: "Press Start 2P", monospace;
+        font-size: 13px;
+        color: #fff;
+        cursor: pointer;
+        letter-spacing: 0.08em;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+      .mode-btn:hover {
+        border-color: #666;
+      }
+      .mode-sub {
+        font-size: 9px;
+        color: #555;
+        font-family: "Share Tech Mono", monospace;
+        letter-spacing: 0.04em;
+      }
+      .back-btn {
+        background: none;
+        border: none;
+        font-family: "Press Start 2P", monospace;
+        font-size: 9px;
+        color: #555;
+        cursor: pointer;
+        margin-top: 8px;
+        letter-spacing: 0.06em;
+      }
+      .back-btn:hover {
+        color: #888;
+      }
+      #topic-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        margin-bottom: 14px;
+      }
+      .topic-btn {
+        width: 100%;
+        background: #0a0a0a;
+        border: 1.5px solid #222;
+        border-radius: 8px;
+        padding: 11px 16px;
+        font-family: "Press Start 2P", monospace;
+        font-size: 9px;
+        color: #444;
+        cursor: pointer;
+        text-align: left;
+        letter-spacing: 0.06em;
+        transition:
+          border-color 0.05s,
+          color 0.05s;
+      }
+      .topic-btn.on {
+        border-color: #ff0;
+        color: #ff0;
+      }
+      #topic-start {
+        width: 100%;
+        padding: 13px;
+        font-family: "Press Start 2P", monospace;
+        font-size: 11px;
+        background: #fff;
+        color: #000;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        letter-spacing: 0.1em;
+        margin-bottom: 4px;
+      }
+      #start-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        width: 100%;
+      }
+      #screen-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.95);
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 13px;
+        z-index: 20;
+        padding: 28px;
+      }
+      #screen-overlay.show {
+        display: flex;
+      }
+      #overlay-title {
+        font-family: "Press Start 2P", monospace;
+        font-size: 22px;
+        text-align: center;
+        line-height: 1.6;
+        letter-spacing: 0.04em;
+      }
+      #overlay-sub {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        color: #666;
+        text-align: center;
+        line-height: 1.9;
+      }
+      #overlay-score {
+        font-family: "Press Start 2P", monospace;
+        font-size: 11px;
+        color: #ff0;
+        text-align: center;
+        line-height: 1.8;
+      }
+      #overlay-btn {
+        font-family: "Press Start 2P", monospace;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        background: #fff;
+        color: #000;
+        border: none;
+        border-radius: 8px;
+        padding: 14px 36px;
+        cursor: pointer;
+        margin-top: 8px;
+      }
+      #overlay-btn:active {
+        transform: scale(0.97);
+      }
+      #overlay-home {
+        font-family: "Press Start 2P", monospace;
+        font-size: 7px;
+        color: #444;
+        text-decoration: none;
+        letter-spacing: 0.06em;
+        margin-top: 4px;
+      }
+      #overlay-home:hover {
+        color: #fff;
+      }
+      /* ── LEVEL INTERMISSION ── */
+      #intermission {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 52%;
+        z-index: 25;
+        pointer-events: none;
+        overflow: hidden;
+        display: none;
+        background: linear-gradient(to top, #000 60%, transparent);
+        border-top: 2px solid #222;
+      }
+      #intermission.show {
+        display: block;
+      }
+      #intermission-stage {
+        position: absolute;
+        inset: 0;
+        font-size: 28px;
+        line-height: 1;
+      }
+      #intermission-title {
+        position: absolute;
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: "Press Start 2P", monospace;
+        font-size: 11px;
+        color: #ff0;
+        letter-spacing: 0.1em;
+        white-space: nowrap;
+        z-index: 2;
+        text-shadow: 0 0 10px #ff0;
+        background: rgba(0, 0, 0, 0.75);
+        padding: 5px 12px;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 0, 0.25);
+      }
+      #streak-flash {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0;
+        z-index: 50;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(255, 255, 0, 0.15) 0%,
+          transparent 70%
+        );
+        transition: opacity 0.15s;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game">
+      <div id="stars"><canvas id="star-canvas"></canvas></div>
+      <div id="hud">
+        <div class="hud-block">
+          <div class="hud-lbl">SCORE</div>
+          <div class="hud-val" id="score">0</div>
+        </div>
+        <div class="hud-block">
+          <div class="hud-lbl">BEST</div>
+          <div class="hud-val" id="best-score">0</div>
+        </div>
+        <div class="hud-block">
+          <div class="hud-lbl">STREAK</div>
+          <div class="hud-val" id="streak-display">–</div>
+          <div style="display: none" id="best-streak">0</div>
+        </div>
+        <div class="hud-block">
+          <div class="hud-lbl">LIVES</div>
+          <div
+            id="lives-area"
+            style="
+              display: flex;
+              gap: 3px;
+              align-items: center;
+              justify-content: center;
+              margin-top: 2px;
+            "
+          ></div>
+        </div>
+      </div>
+      <div id="combo-bar-wrap"><div id="combo-bar"></div></div>
+      <div id="level-row">
+        <div id="level-label">LEVEL 1</div>
+        <div id="level-progress-text">0 / 5</div>
+      </div>
+
+      <div id="question-area">
+        <div id="topic-tag"></div>
+        <div id="expression"></div>
+        <div id="hint-text"></div>
+        <div id="feedback-banner"></div>
+        <div id="combo-popup"></div>
+      </div>
+
+      <div id="choices" style="display: none">
+        <button class="choice-btn"></button>
+        <button class="choice-btn"></button>
+        <button class="choice-btn"></button>
+        <button class="choice-btn"></button>
+      </div>
+
+      <div
+        id="continue-wrap"
+        style="
+          display: none;
+          padding: 0 12px 8px;
+          position: relative;
+          z-index: 2;
+          flex-shrink: 0;
+        "
+      >
+        <button id="continue-btn">CONTINUE →</button>
+      </div>
+
+      <div id="factored-area" style="display: none"></div>
+      <div id="submit-wrap" style="display: none">
+        <button id="submit-btn" disabled>FACTOR IT</button>
+        <div
+          id="reset-quit-row"
+          style="
+            display: none;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 8px;
+          "
+        >
+          <button id="reset-btn">↺ RESET</button>
+          <button id="quit-btn">QUIT</button>
+        </div>
+      </div>
+
+      <!-- OPTIONS -->
+      <div id="options-panel">
+        <div id="opt-title">⚙ OPTIONS</div>
+
+        <div class="opt-section">GAME MODE</div>
+        <div class="opt-row">
+          <span class="opt-label" id="mode-label-text"
+            >EZ Mode<span class="opt-sub" id="mode-sub"
+              >Now on EZ Mode — multiple choice answers</span
+            ></span
+          >
+          <div class="s-pill on" id="opt-mode"><div class="s-knob"></div></div>
+        </div>
+
+        <div class="opt-section">QUESTION TYPES</div>
+        <div class="opt-row">
+          <span class="opt-label"
+            >GCF Factoring<span class="opt-sub">e.g. 6x² + 9x</span></span
+          >
+          <div class="s-pill on" id="opt-gcf"><div class="s-knob"></div></div>
+        </div>
+        <div class="opt-row">
+          <span class="opt-label"
+            >Difference of Squares<span class="opt-sub"
+              >e.g. x² – 25</span
+            ></span
+          >
+          <div class="s-pill on" id="opt-dos"><div class="s-knob"></div></div>
+        </div>
+        <div class="opt-row">
+          <span class="opt-label"
+            >Trinomials (a = 1)<span class="opt-sub"
+              >e.g. x² + 5x + 6</span
+            ></span
+          >
+          <div class="s-pill on" id="opt-tri1"><div class="s-knob"></div></div>
+        </div>
+        <div class="opt-row">
+          <span class="opt-label"
+            >ax²+bx+c, a=prime<span class="opt-sub"
+              >e.g. 2x² + 7x + 3</span
+            ></span
+          >
+          <div class="s-pill" id="opt-trip"><div class="s-knob"></div></div>
+        </div>
+        <div class="opt-row">
+          <span class="opt-label"
+            >Trinomials (composite a)<span class="opt-sub"
+              >e.g. 4x² + 8x + 3</span
+            ></span
+          >
+          <div class="s-pill" id="opt-tric"><div class="s-knob"></div></div>
+        </div>
+        <div class="opt-row">
+          <span class="opt-label"
+            >Factor By Grouping<span class="opt-sub"
+              >e.g. x³ + 2x² + 3x + 6</span
+            ></span
+          >
+          <div class="s-pill" id="opt-grp"><div class="s-knob"></div></div>
+        </div>
+
+        <button id="opt-close">SAVE & PLAY</button>
+        <a href="index.html" id="back-link">← BACK TO DELTASEVEN.IO</a>
+      </div>
+
+      <!-- START OVERLAY -->
+      <div id="screen-overlay" class="show">
+        <div id="start-screen">
+          <div class="screen-title" style="font-size: 22px">
+            FACTOR<br />BLASTER
+          </div>
+          <div id="overlay-sub">
+            Tap the right answer.<br />Build combos.<br />Don't lose your
+            streak.
+          </div>
+          <button id="overlay-btn">PLAY</button>
+        </div>
+        <div id="mode-screen" style="display: none">
+          <div class="screen-title">SELECT MODE</div>
+          <button class="mode-btn" id="mode-ez">
+            EZ MODE<span class="mode-sub">Multiple choice answers</span>
+          </button>
+          <button class="mode-btn" id="mode-challenge">
+            CHALLENGE<span class="mode-sub">Spin the number drums</span>
+          </button>
+          <button class="back-btn" id="mode-back">← BACK</button>
+        </div>
+        <div id="topic-screen" style="display: none">
+          <div class="screen-title">WHAT TO STUDY?</div>
+          <div id="topic-list"></div>
+          <button id="topic-start">START!</button>
+          <button class="back-btn" id="topic-back">← BACK</button>
+        </div>
+      </div>
+    </div>
+    <div id="intermission">
+      <div id="intermission-title"></div>
+      <div id="intermission-stage"></div>
+    </div>
+    <div id="streak-flash"></div>
+
+    <script>
+      // ── STAR FIELD (canvas-based, supports hyperspace) ──
+      (function () {
+        const canvas = document.getElementById("star-canvas");
+        const gameEl = document.getElementById("game");
+        let W,
+          H,
+          ctx,
+          stars,
+          hyperspaceActive = false,
+          hyperspaceT = 0;
+        const STAR_COUNT = 280;
+        const HYPER_DURATION = 3200; // ms
+
+        function resize() {
+          W = gameEl.offsetWidth || 420;
+          H = gameEl.offsetHeight || window.innerHeight;
+          canvas.width = W;
+          canvas.height = H;
+        }
+
+        function makeStar() {
+          // polar coords from center
+          const angle = Math.random() * Math.PI * 2;
+          const dist = Math.random() * Math.max(W, H) * 0.72;
+          return {
+            angle,
+            dist,
+            baseDist: dist,
+            x: W / 2 + Math.cos(angle) * dist,
+            y: H / 2 + Math.sin(angle) * dist,
+            size: Math.random() * 2.0 + 0.6,
+            opacity: Math.random() * 0.8 + 0.25,
+            twinkleOffset: Math.random() * Math.PI * 2,
+            twinkleSpeed: 0.5 + Math.random() * 1.5,
+          };
+        }
+
+        function initStars() {
+          stars = Array.from({ length: STAR_COUNT }, makeStar);
+        }
+
+        let lastT = 0;
+        let hyperStart = 0;
+
+        function draw(ts) {
+          if (!ctx) return;
+          resize();
+          ctx.clearRect(0, 0, W, H);
+
+          const t = ts / 1000;
+          const dt = t - lastT;
+          lastT = t;
+
+          if (hyperspaceActive) {
+            const elapsed = ts - hyperStart;
+            const progress = Math.min(elapsed / HYPER_DURATION, 1);
+            // ease-in curve — slow start, explosive end
+            const eased =
+              progress < 0.5
+                ? 2 * progress * progress
+                : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+            stars.forEach((star) => {
+              // stretch distance from center
+              const stretchFactor = 1 + eased * eased * 55;
+              const d = star.baseDist * stretchFactor;
+              const sx = W / 2 + Math.cos(star.angle) * d;
+              const sy = H / 2 + Math.sin(star.angle) * d;
+
+              // tail length grows with speed
+              const tailLen = eased * eased * 380 + 2;
+              const tx = W / 2 + Math.cos(star.angle) * (d - tailLen);
+              const ty = H / 2 + Math.sin(star.angle) * (d - tailLen);
+
+              // alpha: full bright during jump, fade at very end
+              const alpha =
+                progress > 0.92 ? (1 - progress) / 0.08 : 0.85 + eased * 0.15;
+
+              const gradient = ctx.createLinearGradient(tx, ty, sx, sy);
+              gradient.addColorStop(0, `rgba(255,255,255,0)`);
+              gradient.addColorStop(0.25, `rgba(180,210,255,${alpha * 0.4})`);
+              gradient.addColorStop(0.7, `rgba(220,235,255,${alpha * 0.85})`);
+              gradient.addColorStop(1, `rgba(255,255,255,${alpha})`);
+
+              ctx.beginPath();
+              ctx.moveTo(tx, ty);
+              ctx.lineTo(sx, sy);
+              ctx.lineWidth = star.size * (1.5 + eased * 3);
+              ctx.strokeStyle = gradient;
+              ctx.stroke();
+
+              // extra bright core dot at head
+              ctx.beginPath();
+              ctx.arc(sx, sy, star.size * (0.8 + eased * 1.5), 0, Math.PI * 2);
+              ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+              ctx.fill();
+            });
+
+            if (progress >= 1) {
+              hyperspaceActive = false;
+              // re-scatter stars after jump
+              initStars();
+            }
+          } else {
+            // Normal twinkle
+            stars.forEach((star) => {
+              const twinkle =
+                0.3 +
+                0.7 *
+                  (0.5 +
+                    0.5 * Math.sin(t * star.twinkleSpeed + star.twinkleOffset));
+              ctx.beginPath();
+              ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+              ctx.fillStyle = `rgba(255,255,255,${star.opacity * twinkle})`;
+              ctx.fill();
+            });
+          }
+
+          requestAnimationFrame(draw);
+        }
+
+        // expose hyperspace trigger globally
+        window._hyperspaceJump = function () {
+          if (hyperspaceActive) return;
+          hyperspaceActive = true;
+          hyperStart = performance.now();
+          lastT = hyperStart / 1000;
+        };
+
+        resize();
+        ctx = canvas.getContext("2d");
+        initStars();
+        requestAnimationFrame(draw);
+      })();
+
+      function shuffle(a) {
+        const b = [...a];
+        for (let i = b.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [b[i], b[j]] = [b[j], b[i]];
+        }
+        return b;
+      }
+      function rnd(a, b) {
+        return Math.floor(Math.random() * (b - a + 1)) + a;
+      }
+      function pick(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+
+      function factorStr(a, b) {
+        const aStr = a === 1 ? "" : a + "";
+        return `(${aStr}x ${b > 0 ? "+ " : "– "}${Math.abs(b)})`;
+      }
+
+      function gcd(a, b) {
+        a = Math.abs(a);
+        b = Math.abs(b);
+        while (b) {
+          const t = b;
+          b = a % b;
+          a = t;
+        }
+        return a;
+      }
+
+      function genGCF() {
+        // gcf·x(x ± b) — always integers, always fully factored
+        const gcf = pick([2, 3, 4, 5, 6, 7, 8, 9, 10, 12]);
+        let b;
+        do {
+          b = pick([
+            -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+          ]);
+        } while (gcd(gcf, Math.abs(b)) > 1);
+        const B = gcf * b;
+        const bStr = B > 0 ? ` + ${B}x` : ` – ${Math.abs(B)}x`;
+        const expr = `${gcf}x²${bStr}`;
+        const factored = `${gcf}x(x ${b > 0 ? "+ " : "– "}${Math.abs(b)})`;
+        const bAbs = Math.abs(b);
+        const bFlip = b > 0 ? "– " : "+ ";
+        const bKeep = b > 0 ? "+ " : "– ";
+        const wrongs = shuffle(
+          [
+            `${gcf}(x² ${bKeep}${bAbs}x)`, // forgot the x outside
+            `${gcf}x(x ${bFlip}${bAbs})`, // wrong sign on b
+            `${gcf}x(x ${bKeep}${bAbs + 1})`, // b off by 1
+            `x(${gcf}x ${bKeep}${gcf * bAbs})`, // didn't pull gcf out fully
+          ].filter((w) => w !== factored),
+        ).slice(0, 3);
+        return {
+          expr,
+          correct: factored,
+          wrongs,
+          topic: "gcf",
+          r1: null,
+          r2: null,
+        };
+      }
+
+      function genDOS() {
+        if (Math.random() < 0.28) {
+          const n = pick([1, 2, 3, 4, 5, 6, 7, 9]);
+          const expr = `x² + ${n * n}`;
+          return {
+            expr,
+            correct: "PRIME — cannot be factored",
+            wrongs: shuffle([
+              `(x + ${n})(x + ${n})`,
+              `(x – ${n})(x – ${n})`,
+              `(x – ${n})²`,
+            ]),
+            topic: "dos",
+            r1: null,
+            r2: null,
+          };
+        }
+        const n = rnd(1, 12);
+        const expr = `x² – ${n * n}`;
+        const correct = `(x – ${n})(x + ${n})`;
+        const wrongs = shuffle(
+          [
+            `(x – ${n})²`,
+            `(x + ${n})²`,
+            `(x – ${n * n})(x + 1)`,
+            `(x – ${n + 1})(x + ${n - 1})`,
+            `(x + ${n - 1})(x – ${n + 1})`,
+          ].filter((w) => w !== correct && w !== `(x + ${n})(x – ${n})`),
+        ).slice(0, 3);
+        return { expr, correct, wrongs, topic: "dos", r1: -n, r2: n };
+      }
+
+      function genTri1() {
+        let r1,
+          r2,
+          tries = 0;
+        do {
+          r1 = rnd(-10, 10);
+          r2 = rnd(-10, 10);
+          tries++;
+        } while ((r1 === 0 || r2 === 0) && tries < 20);
+        const b = r1 + r2,
+          c = r1 * r2;
+        const bStr = b === 0 ? "" : b > 0 ? ` + ${b}x` : ` – ${Math.abs(b)}x`;
+        const cStr = c === 0 ? "" : c > 0 ? ` + ${c}` : ` – ${Math.abs(c)}`;
+        const expr = `x²${bStr}${cStr}`;
+        const correct = `(x ${r1 > 0 ? "+ " : "– "}${Math.abs(r1)})(x ${r2 > 0 ? "+ " : "– "}${Math.abs(r2)})`;
+        const altR1 = r1 + (r1 > 0 ? 1 : -1);
+        const altR2 = r2 + (r2 > 0 ? 1 : -1);
+        const wrongs = shuffle(
+          [
+            `(x ${r1 > 0 ? "– " : "+ "}${Math.abs(r1)})(x ${r2 > 0 ? "– " : "+ "}${Math.abs(r2)})`,
+            `(x ${r1 > 0 ? "+ " : "– "}${Math.abs(r1) + 1})(x ${r2 > 0 ? "+ " : "– "}${Math.abs(r2) + 1})`,
+            `(x ${altR1 > 0 ? "+ " : "– "}${Math.abs(altR1)})(x ${altR2 > 0 ? "+ " : "– "}${Math.abs(altR2)})`,
+          ].filter(
+            (w) =>
+              w !== correct &&
+              w !==
+                `(x ${r2 > 0 ? "+ " : "– "}${Math.abs(r2)})(x ${r1 > 0 ? "+ " : "– "}${Math.abs(r1)})`,
+          ),
+        ).slice(0, 3);
+        return { expr, correct, wrongs, topic: "tri1", r1, r2 };
+      }
+
+      function genTriPrime() {
+        const a = pick([2, 3, 5, 7]);
+        let p,
+          q,
+          tries = 0;
+        do {
+          p = rnd(-8, 8);
+          q = rnd(-8, 8);
+          tries++;
+        } while ((p === 0 || q === 0) && tries < 20);
+        const B = a * q + p,
+          C = p * q;
+        const Bstr = B === 0 ? "" : B > 0 ? ` + ${B}x` : ` – ${Math.abs(B)}x`;
+        const Cstr = C === 0 ? "" : C > 0 ? ` + ${C}` : ` – ${Math.abs(C)}`;
+        const expr = `${a}x²${Bstr}${Cstr}`;
+        const correct = `${factorStr(a, p)}(x ${q > 0 ? "+ " : "– "}${Math.abs(q)})`;
+        const wrongs = shuffle(
+          [
+            `${factorStr(a, -p)}(x ${q > 0 ? "– " : "+ "}${Math.abs(q)})`,
+            `${factorStr(a, q)}(x ${p > 0 ? "+ " : "– "}${Math.abs(p)})`,
+            `(x ${p > 0 ? "+ " : "– "}${Math.abs(p)})(x ${q > 0 ? "+ " : "– "}${Math.abs(q)})`,
+          ].filter((w) => w !== correct),
+        ).slice(0, 3);
+        return {
+          expr,
+          correct,
+          wrongs,
+          topic: "trip",
+          f1: a,
+          f2: 1,
+          r1: p,
+          r2: q,
+        };
+      }
+
+      function genTriComp() {
+        const composites = [4, 6, 8, 9, 10, 12];
+        const a = pick(composites);
+        const pairs = [];
+        for (let f = 1; f <= a; f++)
+          if (a % f === 0 && f <= a / f) pairs.push([f, a / f]);
+        const [f1, f2] = pick(pairs);
+        let p,
+          q,
+          tries = 0;
+        do {
+          p = rnd(-7, 7);
+          q = rnd(-7, 7);
+          tries++;
+        } while ((p === 0 || q === 0) && tries < 20);
+        const B = f1 * q + f2 * p,
+          C = p * q;
+        const Bstr = B === 0 ? "" : B > 0 ? ` + ${B}x` : ` – ${Math.abs(B)}x`;
+        const Cstr = C === 0 ? "" : C > 0 ? ` + ${C}` : ` – ${Math.abs(C)}`;
+        const expr = `${a}x²${Bstr}${Cstr}`;
+        const correct = `${factorStr(f1, p)}${factorStr(f2, q)}`;
+        const wrongs = shuffle(
+          [
+            `${factorStr(f1, -p)}${factorStr(f2, -q)}`,
+            `${factorStr(f2, q)}${factorStr(f1, p)}`,
+            `${factorStr(a, p)}(x ${q > 0 ? "+ " : "– "}${Math.abs(q)})`,
+          ].filter((w) => w !== correct),
+        ).slice(0, 3);
+        return { expr, correct, wrongs, topic: "tric", f1, f2, r1: p, r2: q };
+      }
+
+      function genGrouping() {
+        const a = rnd(1, 4),
+          b = rnd(1, 5),
+          c = rnd(1, 4),
+          d = rnd(1, 5);
+        const expr = `${a * c}x³ + ${a * d}x² + ${b * c}x + ${b * d}`;
+        const correct = `${factorStr(a, b)}(${c === 1 ? "" : c}x² + ${d})`;
+        const wrongs = shuffle([
+          `${factorStr(a, d)}(${c === 1 ? "" : c}x² + ${b})`,
+          `${factorStr(a + 1, b)}(${c === 1 ? "" : c}x² + ${d})`,
+          `${factorStr(a, -b)}(${c === 1 ? "" : c}x² + ${d})`,
+        ]).slice(0, 3);
+        return { expr, correct, wrongs, topic: "grp", r1: null, r2: null };
+      }
+
+      const TOPIC_LABELS = {
+        gcf: "GCF",
+        dos: "DIFFERENCE OF SQUARES",
+        tri1: "TRINOMIAL  ax²+bx+c, a=1",
+        trip: "TRINOMIAL  ax²+bx+c, a=prime",
+        tric: "TRINOMIAL  ax²+bx+c, a=composite",
+        grp: "FACTOR BY GROUPING",
+      };
+
+      // Normalize a factored string so (A)(B) and (B)(A) compare equal
+      function normFactored(s) {
+        const m = s.match(/\([^)]+\)/g);
+        if (!m || m.length !== 2) return s;
+        return [m[0], m[1]].sort().join("");
+      }
+
+      function generateProblem(S) {
+        const pool = [];
+        if (S.gcf) pool.push(genGCF);
+        if (S.dos) pool.push(genDOS);
+        if (S.tri1) pool.push(genTri1, genTri1, genTri1);
+        if (S.trip) pool.push(genTriPrime);
+        if (S.tric) pool.push(genTriComp);
+        if (S.grp) pool.push(genGrouping);
+        if (!pool.length) pool.push(genTri1);
+        const p = pick(pool)();
+
+        // Remove any wrong that is mathematically the same as the correct answer
+        const normCorrect = normFactored(p.correct);
+        let cleaned = p.wrongs.filter(
+          (w) => w && w.trim() !== "" && normFactored(w) !== normCorrect,
+        );
+
+        // Deduplicate wrong answers (both exact and order-invariant)
+        const seen = new Set();
+        cleaned = cleaned.filter((w) => {
+          const k = normFactored(w);
+          if (seen.has(k)) return false;
+          seen.add(k);
+          return true;
+        });
+
+        // Pad with safe generic fallbacks if we still don't have 3 wrongs
+        const fallbacks = [
+          "(x + 1)(x + 1)",
+          "(x – 1)(x + 1)",
+          "(x + 2)(x – 2)",
+          "(x + 3)(x + 3)",
+          "(x – 5)(x + 2)",
+          "(x + 4)(x – 3)",
+          "(x – 6)(x + 1)",
+          "(x + 7)(x – 2)",
+          "(x – 8)(x + 3)",
+        ];
+        for (const fb of fallbacks) {
+          if (cleaned.length >= 3) break;
+          const k = normFactored(fb);
+          if (k !== normCorrect && !seen.has(k)) {
+            seen.add(k);
+            cleaned.push(fb);
+          }
+        }
+
+        p.wrongs = cleaned.slice(0, 3);
+        return p;
+      }
+
+      function generateChallengeProblem(S) {
+        // Challenge mode only uses problem types that work with the drums:
+        // DOS (r1/r2 exist) and Trinomials (a=1, prime, composite)
+        const pool = [];
+        if (S.dos) pool.push(genDOS);
+        if (S.tri1) pool.push(genTri1, genTri1, genTri1);
+        if (S.trip) pool.push(genTriPrime);
+        if (S.tric) pool.push(genTriComp);
+        // If none are enabled, fall back to trinomials a=1
+        if (!pool.length) pool.push(genTri1);
+        let p,
+          attempts = 0;
+        do {
+          p = pick(pool)();
+          attempts++;
+        } while (p.r1 === null && attempts < 10);
+        // Final safety — if we still got a non-drum problem, force tri1
+        if (p.r1 === null) p = genTri1();
+        // Apply same dedup/cleanup as generateProblem
+        const normCorrect = normFactored(p.correct);
+        let cleaned = p.wrongs.filter(
+          (w) => w && w.trim() !== "" && normFactored(w) !== normCorrect,
+        );
+        const seen = new Set();
+        cleaned = cleaned.filter((w) => {
+          const k = normFactored(w);
+          if (seen.has(k)) return false;
+          seen.add(k);
+          return true;
+        });
+        const fallbacks = [
+          "(x + 1)(x + 1)",
+          "(x – 1)(x + 1)",
+          "(x + 2)(x – 2)",
+          "(x + 3)(x + 3)",
+          "(x – 5)(x + 2)",
+          "(x + 4)(x – 3)",
+        ];
+        for (const fb of fallbacks) {
+          if (cleaned.length >= 3) break;
+          const k = normFactored(fb);
+          if (k !== normCorrect && !seen.has(k)) {
+            seen.add(k);
+            cleaned.push(fb);
+          }
+        }
+        p.wrongs = cleaned.slice(0, 3);
+        return p;
+      }
+
+      const S = {
+        mode: "ez",
+        gcf: true,
+        dos: true,
+        tri1: true,
+        trip: false,
+        tric: false,
+        grp: false,
+      };
+
+      const RANGE = [];
+      for (let i = -50; i <= 50; i++) if (i !== 0) RANGE.push(i);
+      const ITEM_H = 36,
+        DRUM_H = 120;
+
+      function makeWheel(customValues, coeffMode) {
+        const values = customValues || RANGE;
+        const wrap = document.createElement("div");
+        wrap.className = "drum-wrap";
+        const drum = document.createElement("div");
+        drum.className = "drum";
+        const inner = document.createElement("div");
+        inner.className = "drum-inner";
+        values.forEach((v) => {
+          const row = document.createElement("div");
+          row.className = "drum-item" + (coeffMode ? " coeff-mode" : "");
+          if (coeffMode) {
+            // Show "Nx" (or "x" if N=1) — no sign span
+            const num = document.createElement("span");
+            num.className = "coeff-num";
+            num.textContent = (v === 1 ? "" : v) + "x";
+            row.appendChild(num);
+          } else {
+            const sign = document.createElement("span");
+            sign.className = "sign";
+            sign.textContent = v > 0 ? "+" : "–";
+            const num = document.createElement("span");
+            num.className = "num";
+            num.textContent = Math.abs(v);
+            row.appendChild(sign);
+            row.appendChild(num);
+          }
+          inner.appendChild(row);
+        });
+        drum.appendChild(inner);
+        ["drum-shade-top", "drum-shade-bot", "drum-highlight"].forEach((c) => {
+          const d = document.createElement("div");
+          d.className = c;
+          drum.appendChild(d);
+        });
+        wrap.appendChild(drum);
+        const cy = DRUM_H / 2;
+        function off(i) {
+          return cy - i * ITEM_H - ITEM_H / 2;
+        }
+        function idx(o) {
+          return Math.round((cy - ITEM_H / 2 - o) / ITEM_H);
+        }
+        function clamp(i) {
+          return Math.max(0, Math.min(values.length - 1, i));
+        }
+        let ci = values.indexOf(1) >= 0 ? values.indexOf(1) : 0;
+        let dragging = false,
+          sY = 0,
+          sOff = 0,
+          vel = 0,
+          lY = 0,
+          lT = 0,
+          raf = null;
+        function paint(o, anim) {
+          inner.style.transition = anim
+            ? "transform .2s cubic-bezier(.25,.8,.25,1)"
+            : "none";
+          inner.style.transform = "translateY(" + o + "px)";
+          const ci2 = clamp(idx(o));
+          inner.querySelectorAll(".drum-item").forEach((el, i) => {
+            el.classList.toggle("center", i === ci2);
+            el.classList.toggle("near", Math.abs(i - ci2) === 1);
+          });
+        }
+        function snapTo(i) {
+          ci = clamp(i);
+          paint(off(ci), true);
+        }
+        function getOff() {
+          return new DOMMatrix(getComputedStyle(inner).transform).m42;
+        }
+        function onStart(y) {
+          if (raf) cancelAnimationFrame(raf);
+          dragging = true;
+          vel = 0;
+          sY = y;
+          lY = y;
+          lT = Date.now();
+          sOff = getOff();
+          inner.style.transition = "none";
+        }
+        function onMove(y) {
+          if (!dragging) return;
+          const now = Date.now();
+          vel = ((y - lY) / Math.max(now - lT, 1)) * 16;
+          lY = y;
+          lT = now;
+          paint(
+            Math.max(
+              off(RANGE.length - 1) - 24,
+              Math.min(off(0) + 24, sOff + (y - sY)),
+            ),
+            false,
+          );
+        }
+        function onEnd() {
+          if (!dragging) return;
+          dragging = false;
+          let o = getOff();
+          function dc() {
+            vel *= 0.85;
+            o += vel;
+            o = Math.max(off(RANGE.length - 1) - 6, Math.min(off(0) + 6, o));
+            paint(o, false);
+            if (Math.abs(vel) > 0.5) raf = requestAnimationFrame(dc);
+            else snapTo(clamp(idx(o)));
+          }
+          raf = requestAnimationFrame(dc);
+        }
+        drum.addEventListener("mousedown", (e) => {
+          onStart(e.clientY);
+          e.preventDefault();
+        });
+        window.addEventListener("mousemove", (e) => {
+          if (dragging) onMove(e.clientY);
+        });
+        window.addEventListener("mouseup", onEnd);
+        drum.addEventListener(
+          "touchstart",
+          (e) => onStart(e.touches[0].clientY),
+          { passive: true },
+        );
+        drum.addEventListener(
+          "touchmove",
+          (e) => {
+            onMove(e.touches[0].clientY);
+            e.preventDefault();
+          },
+          { passive: false },
+        );
+        drum.addEventListener("touchend", onEnd);
+        snapTo(ci);
+        return {
+          wrap,
+          getValue: () => values[ci],
+          setValue: (v) => {
+            const i = values.indexOf(v);
+            if (i >= 0) snapTo(i);
+          },
+        };
+      }
+
+      const $ = (id) => document.getElementById(id);
+      const scoreEl = $("score"),
+        livesEl = $("lives-area"),
+        expressionEl = $("expression");
+      const topicTagEl = $("topic-tag"),
+        hintEl = $("hint-text"),
+        feedbackEl = $("feedback-banner"),
+        comboPopEl = $("combo-popup");
+      const comboBarEl = $("combo-bar");
+      const factoredArea = $("factored-area"),
+        choicesEl = $("choices"),
+        submitWrap = $("submit-wrap"),
+        submitBtn = $("submit-btn");
+      const overlay = $("screen-overlay");
+      const overlayBtn = $("overlay-btn");
+      const overlayTitle = { innerHTML: "" }; // legacy compat
+      const overlaySub = { textContent: "" }; // legacy compat
+      const overlayScore = { textContent: "" }; // legacy compat
+      const streakFlash = $("streak-flash");
+      const choiceBtns = document.querySelectorAll(".choice-btn");
+      const streakDisplay = $("streak-display"),
+        bestScoreEl = $("best-score"),
+        bestStreakEl = $("best-streak");
+
+      let bestScore = 0,
+        bestStreak = 0;
+
+      function updateModeToggleText() {
+        const isEz = S.mode === "ez";
+        if ($("mode-label-text"))
+          $("mode-label-text").innerHTML =
+            `${isEz ? "EZ Mode" : "Challenge Mode"}`;
+      }
+
+      const modePill = $("opt-mode") || {
+        classList: { toggle: () => {}, add: () => {}, remove: () => {} },
+        className: "",
+      };
+      modePill.addEventListener("click", () => {
+        S.mode = S.mode === "ez" ? "challenge" : "ez";
+        modePill.classList.toggle("on", S.mode === "ez");
+        updateModeToggleText();
+      });
+      updateModeToggleText();
+
+      function makePill(id, key) {
+        const pill = $(id);
+        pill.classList.toggle("on", S[key]);
+        pill.addEventListener("click", () => {
+          S[key] = !S[key];
+          pill.classList.toggle("on", S[key]);
+        });
+      }
+      makePill("opt-gcf", "gcf");
+      makePill("opt-dos", "dos");
+      makePill("opt-tri1", "tri1");
+      makePill("opt-trip", "trip");
+      makePill("opt-tric", "tric");
+      makePill("opt-grp", "grp");
+      if ($("opt-close"))
+        $("opt-close").addEventListener("click", () => {
+          if (typeof score !== "undefined") nextQuestion();
+        });
+
+      let score,
+        lives,
+        combo,
+        comboMax,
+        level,
+        streak,
+        problems,
+        locked,
+        currentP,
+        wheels,
+        wrongStreak;
+
+      function buildChoices(p) {
+        const opts = shuffle([p.correct, ...p.wrongs.slice(0, 3)]);
+        choiceBtns.forEach((b, i) => {
+          b.innerHTML =
+            '<span class="btn-emoji" style="visibility:hidden">✅</span><span class="btn-text">' +
+            (opts[i] || "") +
+            '</span><span class="btn-spacer"></span>';
+          b._answer = opts[i] || "";
+          b.className = "choice-btn";
+          b.disabled = false;
+          b.onclick = () => answerEZ(b, p);
+        });
+      }
+
+      function buildDrums(p) {
+        factoredArea.innerHTML = "";
+        wheels = [];
+        const isComposite = p.topic === "tric";
+
+        if (isComposite) {
+          // Find all valid factor pairs of a = p.f1 * p.f2
+          const a = p.f1 * p.f2;
+          const pairs = [];
+          for (let f = 1; f <= a; f++) if (a % f === 0) pairs.push(f);
+          // coeffWheel spins through valid factors; second coeff updates live
+          const coeffWheel = makeWheel(pairs, true);
+          wheels.push(coeffWheel); // wheels[0] = coeff1
+          // Start wheel at f1 so it hints at the answer structure
+          coeffWheel.setValue(p.f1);
+
+          // badge showing the auto-computed second coeff
+          const badge2 = document.createElement("div");
+          badge2.className = "f-coeff-badge";
+          const initC2 = a / coeffWheel.getValue();
+          badge2.textContent = (initC2 === 1 ? "" : initC2) + "x";
+
+          // update badge whenever coeff wheel changes
+          const origSnap = coeffWheel._snapCallback;
+          function updateBadge() {
+            const c1 = coeffWheel.getValue();
+            const c2 = a / c1;
+            badge2.textContent = (c2 === 1 ? "" : c2) + "x";
+          }
+          // Poll for changes (simple approach)
+          coeffWheel._badgeInterval = setInterval(updateBadge, 80);
+
+          // Constant wheels
+          const constWheel1 = makeWheel();
+          const constWheel2 = makeWheel();
+          wheels.push(constWheel1); // wheels[1] = r1
+          wheels.push(constWheel2); // wheels[2] = r2
+
+          // Layout: (coeffWheel·x  constWheel1)(badge2  constWheel2)
+          function mkParen(ch) {
+            const d = document.createElement("div");
+            d.className = "f-paren";
+            d.textContent = ch;
+            return d;
+          }
+          function mkX() {
+            const d = document.createElement("div");
+            d.className = "f-x";
+            d.textContent = "x";
+            return d;
+          }
+
+          // Group 1: (  [coeffWheel shows "Nx"]  [constWheel1]  )
+          const g1 = document.createElement("div");
+          g1.className = "factor-group";
+          g1.appendChild(mkParen("("));
+          g1.appendChild(coeffWheel.wrap);
+          g1.appendChild(constWheel1.wrap);
+          g1.appendChild(mkParen(")"));
+
+          // Group 2: (  [badge2 auto]  [constWheel2]  )
+          const g2 = document.createElement("div");
+          g2.className = "factor-group";
+          g2.appendChild(mkParen("("));
+          g2.appendChild(badge2);
+          g2.appendChild(constWheel2.wrap);
+          g2.appendChild(mkParen(")"));
+
+          factoredArea.appendChild(g1);
+          factoredArea.appendChild(g2);
+        } else {
+          // Non-composite: plain (x + W)(x + W) or (fx + W)(x + W) for prime
+          const isPrime = p.f1 && p.f1 !== 1 && p.topic === "trip";
+          function makeGroup(coeff) {
+            const g = document.createElement("div");
+            g.className = "factor-group";
+            const w = makeWheel();
+            wheels.push(w);
+            const pL = document.createElement("div");
+            pL.className = "f-paren";
+            pL.textContent = "(";
+            const xEl = document.createElement("div");
+            xEl.className = "f-x";
+            xEl.textContent = (coeff && coeff !== 1 ? coeff : "") + "x";
+            const pR = document.createElement("div");
+            pR.className = "f-paren";
+            pR.textContent = ")";
+            g.appendChild(pL);
+            g.appendChild(xEl);
+            g.appendChild(w.wrap);
+            g.appendChild(pR);
+            return g;
+          }
+          factoredArea.appendChild(makeGroup(isPrime ? p.f1 : null));
+          factoredArea.appendChild(makeGroup(null));
+        }
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = "FACTOR IT";
+        submitBtn.style.background = "#0000ff";
+        document.getElementById("reset-quit-row").style.display = "flex";
+        submitBtn.style.color = "#fff";
+        submitBtn.style.fontSize = "";
+        submitBtn.style.fontFamily = "";
+        submitBtn.style.letterSpacing = "";
+        submitBtn.querySelectorAll("span").forEach((s) => s.remove());
+        // Clean up flip containers from previous question
+        document.querySelectorAll(".flip-container").forEach((f) => f.remove());
+
+        // Add flip buttons centered under each constant drum
+        setTimeout(() => {
+          // Remove any previous flip containers
+          factoredArea.parentNode
+            .querySelectorAll(".flip-container")
+            .forEach((f) => f.remove());
+          // Find the two constant drums (last 2 wheels)
+          const drumWraps = factoredArea.querySelectorAll(".drum-wrap");
+          if (drumWraps.length < 2) return;
+          const d1 = drumWraps[drumWraps.length - 2];
+          const d2 = drumWraps[drumWraps.length - 1];
+          // Position each button to align under its drum using offsets
+          function makeFlipBtn(drumEl, wheelIdx) {
+            const slot = document.createElement("div");
+            slot.style.cssText = "position:absolute;";
+            const btn = document.createElement("button");
+            btn.textContent = "(╯'□')╯";
+            btn.style.cssText =
+              "font-family:'Share Tech Mono',monospace;font-size:13px;color:#555;background:#000;border:1px solid #222;border-radius:6px;padding:4px 10px;cursor:pointer;transform:translateX(-50%);";
+            btn.addEventListener("click", () => {
+              const w = wheels[wheelIdx];
+              if (w) {
+                const v = w.getValue();
+                if (v !== null) w.setValue(-v);
+              }
+            });
+            // Get drum center position
+            const rect = drumEl.getBoundingClientRect();
+            const parentRect = factoredArea.parentNode.getBoundingClientRect();
+            const centerX = rect.left - parentRect.left + rect.width / 2;
+            slot.style.left = centerX + "px";
+            slot.appendChild(btn);
+            return slot;
+          }
+          const container = document.createElement("div");
+          container.className = "flip-container";
+          container.style.cssText =
+            "position:relative;width:100%;height:38px;margin-top:4px;";
+          const constIdx1 = wheels.length - 2;
+          const constIdx2 = wheels.length - 1;
+          container.appendChild(makeFlipBtn(d1, constIdx1));
+          container.appendChild(makeFlipBtn(d2, constIdx2));
+          factoredArea.parentNode.insertBefore(
+            container,
+            factoredArea.nextSibling,
+          );
+        }, 80);
+      }
+
+      function autoSizeExpression() {
+        // Reset to max then shrink until it fits within 90% of game width
+        const maxPx = 30;
+        const minPx = 12;
+        const container = expressionEl.parentElement;
+        const maxWidth =
+          (document.getElementById("game").offsetWidth || 420) * 0.9;
+        expressionEl.style.fontSize = maxPx + "px";
+        let fs = maxPx;
+        while (expressionEl.scrollWidth > maxWidth && fs > minPx) {
+          fs -= 0.5;
+          expressionEl.style.fontSize = fs + "px";
+        }
+      }
+
+      function nextQuestion() {
+        locked = false;
+        stopSpark();
+        document.getElementById("continue-wrap").style.display = "none";
+        hintEl.textContent = "";
+        hintEl.style.color = "#888";
+        feedbackEl.textContent = "";
+        comboPopEl.textContent = "";
+        wrongStreak = 0;
+        updateLevelBar();
+        currentP =
+          S.mode === "challenge"
+            ? generateChallengeProblem(S)
+            : generateProblem(S);
+        expressionEl.textContent = currentP.expr;
+        autoSizeExpression();
+        topicTagEl.textContent = TOPIC_LABELS[currentP.topic] || "";
+        const useDrums = S.mode === "challenge" && currentP.r1 !== null;
+        choicesEl.style.display = useDrums ? "none" : "flex";
+        factoredArea.style.display = useDrums ? "flex" : "none";
+        submitWrap.style.display = useDrums ? "block" : "none";
+        if (useDrums) buildDrums(currentP);
+        else buildChoices(currentP);
+      }
+
+      function onCorrect(pts) {
+        locked = true;
+        combo++;
+        streak++;
+        if (combo > comboMax) comboMax = combo;
+        if (streak > bestStreak) {
+          bestStreak = streak;
+          bestStreakEl.textContent = bestStreak;
+        }
+        const total = pts + (combo > 1 ? combo * 25 : 0);
+        score += total;
+        if (score > bestScore) {
+          bestScore = score;
+          bestScoreEl.textContent = bestScore;
+        }
+        updateScore();
+        updateComboBar();
+        if (combo > 1) showCombo(combo);
+        streakDisplay.textContent =
+          streak >= 3 ? "🔥" + streak : streak > 0 ? streak + "x" : "–";
+        if (streak >= 3) {
+          streakFlash.style.opacity = "1";
+          setTimeout(() => (streakFlash.style.opacity = "0"), 200);
+        }
+        feedbackEl.textContent = "✓ +" + total;
+        feedbackEl.style.color = "#0f0";
+        const leveledUp = checkLevelUp();
+        if (!leveledUp) setTimeout(nextQuestion, 2400);
+      }
+
+      function onWrong() {
+        lives--;
+        combo = 0;
+        streak = 0;
+        streakDisplay.textContent = "–";
+        updateLives();
+        updateComboBar();
+        feedbackEl.textContent = "✗ INCORRECT";
+        feedbackEl.style.color = "#f55";
+        if (lives <= 0) {
+          setTimeout(endGame, 700);
+        }
+      }
+
+      // ── SPARK / ELECTRIC BORDER ANIMATION ──
+      let sparkRaf = null;
+      let sparkCanvas = null;
+
+      function stopSpark() {
+        if (sparkRaf) {
+          cancelAnimationFrame(sparkRaf);
+          sparkRaf = null;
+        }
+        if (sparkCanvas) {
+          sparkCanvas.remove();
+          sparkCanvas = null;
+        }
+        // clear any coeff-badge polling intervals
+        if (wheels)
+          wheels.forEach((w) => {
+            if (w._badgeInterval) {
+              clearInterval(w._badgeInterval);
+              w._badgeInterval = null;
+            }
+          });
+      }
+
+      function startSpark(btn) {
+        stopSpark();
+        const cvs = document.createElement("canvas");
+        cvs.className = "spark-canvas";
+        btn.appendChild(cvs);
+        sparkCanvas = cvs;
+
+        function resize() {
+          cvs.width = btn.offsetWidth;
+          cvs.height = btn.offsetHeight;
+        }
+        resize();
+        const ctx = cvs.getContext("2d");
+        const R = 12;
+
+        const COLORS = [
+          "#ff0000",
+          "#ffff00",
+          "#00ff00",
+          "#ff0000",
+          "#ffffff",
+          "#00ffff",
+          "#ff7700",
+          "#ffffff",
+          "#0000ff",
+          "#ff00ff",
+          "#ffffff",
+          "#00ff00",
+        ];
+        let colorIdx = 0;
+        let colorTimer = 0;
+        const COLOR_HOLD = 7;
+
+        function roundRect(ctx, x, y, w, h, r) {
+          ctx.beginPath();
+          ctx.moveTo(x + r, y);
+          ctx.lineTo(x + w - r, y);
+          ctx.arcTo(x + w, y, x + w, y + r, r);
+          ctx.lineTo(x + w, y + h - r);
+          ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+          ctx.lineTo(x + r, y + h);
+          ctx.arcTo(x, y + h, x, y + h - r, r);
+          ctx.lineTo(x, y + r);
+          ctx.arcTo(x, y, x + r, y, r);
+          ctx.closePath();
+        }
+
+        function draw() {
+          resize();
+          ctx.clearRect(0, 0, cvs.width, cvs.height);
+          const W = cvs.width,
+            H = cvs.height;
+
+          colorTimer++;
+          if (colorTimer >= COLOR_HOLD) {
+            colorTimer = 0;
+            colorIdx = (colorIdx + 1) % COLORS.length;
+          }
+          const borderCol = COLORS[colorIdx];
+
+          // wide soft glow
+          ctx.save();
+          ctx.strokeStyle = borderCol;
+          ctx.lineWidth = 8;
+          ctx.globalAlpha = 0.18;
+          roundRect(ctx, 1, 1, W - 2, H - 2, R);
+          ctx.stroke();
+          ctx.restore();
+
+          // crisp border
+          ctx.save();
+          ctx.strokeStyle = borderCol;
+          ctx.lineWidth = 3;
+          ctx.globalAlpha = 1;
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = borderCol;
+          roundRect(ctx, 1, 1, W - 2, H - 2, R);
+          ctx.stroke();
+          ctx.restore();
+
+          sparkRaf = requestAnimationFrame(draw);
+        }
+
+        draw();
+      }
+      // ── END SPARK ──
+
+      function addEmoji(btn, emoji) {
+        const span = btn.querySelector(".btn-emoji");
+        if (span) {
+          span.textContent = emoji;
+          span.style.visibility = "visible";
+        }
+      }
+
+      function answerEZ(btn, p) {
+        if (locked) return;
+        choiceBtns.forEach((b) => (b.disabled = true));
+        if (btn._answer === p.correct) {
+          btn.classList.add("correct");
+          startSpark(btn);
+          onCorrect(150);
+        } else {
+          btn.classList.add("wrong");
+          addEmoji(btn, "🥺");
+          choiceBtns.forEach((b) => {
+            if (b._answer === p.correct) {
+              b.classList.add("reveal");
+              addEmoji(b, "✅");
+            }
+          });
+          onWrong();
+          if (lives > 0) {
+            document.getElementById("continue-wrap").style.display = "block";
+          }
+        }
+      }
+
+      document.getElementById("continue-btn").addEventListener("click", () => {
+        document.getElementById("continue-wrap").style.display = "none";
+        nextQuestion();
+      });
+
+      function animateFireCorrect(btn) {
+        // Phase 1: fire emojis rain across the button for ~1.4s
+        // Phase 2: settle to 🔥CORRECT🔥
+        const DURATION = 1400;
+        const INTERVAL = 120;
+        const emojis = [];
+        const btnW = btn.offsetWidth || 300;
+        const btnH = btn.offsetHeight || 72;
+
+        function spawnFire() {
+          const el = document.createElement("span");
+          el.textContent = "🔥";
+          el.style.cssText = `
+            position: absolute;
+            font-size: ${18 + Math.random() * 16}px;
+            left: ${Math.random() * 90}%;
+            top: ${Math.random() * 60}%;
+            opacity: 1;
+            pointer-events: none;
+            z-index: 5;
+            animation: fireFloat ${0.5 + Math.random() * 0.4}s ease-out forwards;
+          `;
+          btn.appendChild(el);
+          emojis.push(el);
+          setTimeout(() => {
+            if (el.parentNode) el.remove();
+          }, 900);
+        }
+
+        // Inject keyframe if not already there
+        if (!document.getElementById("fireFloatStyle")) {
+          const style = document.createElement("style");
+          style.id = "fireFloatStyle";
+          style.textContent = `
+            @keyframes fireFloat {
+              0%   { transform: translateY(0) scale(1);   opacity: 1; }
+              60%  { transform: translateY(-18px) scale(1.2); opacity: 0.9; }
+              100% { transform: translateY(-32px) scale(0.8); opacity: 0; }
+            }
+          `;
+          document.head.appendChild(style);
+        }
+
+        const spawnTimer = setInterval(spawnFire, INTERVAL);
+
+        setTimeout(() => {
+          clearInterval(spawnTimer);
+          // Remove any lingering fire spans
+          btn.querySelectorAll("span").forEach((s) => s.remove());
+          // Final state
+          btn.style.fontFamily = "'Press Start 2P', monospace";
+          btn.style.fontSize = "11px";
+          btn.style.letterSpacing = "0.08em";
+          btn.textContent = "🔥 CORRECT 🔥";
+        }, DURATION);
+      }
+
+      // Reset drums
+      document.getElementById("reset-btn").addEventListener("click", () => {
+        if (wheels && wheels.length >= 2) {
+          wheels[wheels.length - 2].setValue(1);
+          wheels[wheels.length - 1].setValue(1);
+          if (wheels.length > 2) wheels[0].setValue(1); // coeff drum
+        }
+      });
+
+      // Quit with confirm
+      document.getElementById("quit-btn").addEventListener("click", () => {
+        if (confirm("Are you sure you want to quit?")) {
+          overlay.classList.add("show");
+          document.getElementById("start-screen").style.display = "";
+          document.getElementById("mode-screen").style.display = "none";
+          document.getElementById("topic-screen").style.display = "none";
+        }
+      });
+
+      submitBtn.addEventListener("click", () => {
+        if (locked || !wheels || !wheels.length) return;
+        let correct = false;
+        if (currentP.topic === "tric" && wheels.length === 3) {
+          // composite: wheels[0]=coeff1, wheels[1]=r1, wheels[2]=r2
+          const c1 = wheels[0].getValue();
+          const a = currentP.f1 * currentP.f2;
+          const c2 = a / c1;
+          const rv1 = wheels[1].getValue(),
+            rv2 = wheels[2].getValue();
+          const r1 = currentP.r1,
+            r2 = currentP.r2;
+          // accept either order: (c1x+r1)(c2x+r2) or (c1x+r2)(c2x+r1) etc.
+          correct =
+            (c1 === currentP.f1 &&
+              c2 === currentP.f2 &&
+              rv1 === r1 &&
+              rv2 === r2) ||
+            (c1 === currentP.f1 &&
+              c2 === currentP.f2 &&
+              rv1 === r2 &&
+              rv2 === r1) ||
+            (c1 === currentP.f2 &&
+              c2 === currentP.f1 &&
+              rv1 === r2 &&
+              rv2 === r1) ||
+            (c1 === currentP.f2 &&
+              c2 === currentP.f1 &&
+              rv1 === r1 &&
+              rv2 === r2);
+        } else {
+          const v1 = wheels[0].getValue(),
+            v2 = wheels[1].getValue();
+          const r1 = currentP.r1,
+            r2 = currentP.r2;
+          correct = (v1 === r1 && v2 === r2) || (v1 === r2 && v2 === r1);
+        }
+        if (correct) {
+          submitBtn.disabled = true;
+          submitBtn.style.position = "relative";
+          submitBtn.style.overflow = "hidden";
+          submitBtn.style.background = "#000";
+          submitBtn.style.color = "#fff";
+          submitBtn.textContent = "";
+          startSpark(submitBtn);
+          animateFireCorrect(submitBtn);
+          onCorrect(200);
+        } else {
+          submitBtn.classList.add("wrong-shake");
+          setTimeout(() => submitBtn.classList.remove("wrong-shake"), 350);
+          wrongStreak = (wrongStreak || 0) + 1;
+          if (wrongStreak >= 3) {
+            // 3 strikes — lose a heart and skip
+            feedbackEl.textContent = "3 STRIKES!";
+            feedbackEl.style.color = "#f55";
+            hintEl.style.color = "#ff0";
+            hintEl.textContent = currentP.correct;
+            submitBtn.disabled = true;
+            onWrong();
+            if (lives > 0) setTimeout(nextQuestion, 2000);
+          } else {
+            feedbackEl.textContent = "✗ INCORRECT (" + wrongStreak + "/3)";
+            feedbackEl.style.color = "#f55";
+            // no heart lost — just show attempt count
+            combo = 0;
+            streak = 0;
+            streakDisplay.textContent = "–";
+            updateComboBar();
+          }
+        }
+      });
+
+      function timeUp() {
+        if (locked) return;
+        locked = true;
+        lives--;
+        combo = 0;
+        streak = 0;
+        streakDisplay.textContent = "–";
+        updateLives();
+        updateComboBar();
+        feedbackEl.textContent = "⏱ TIME'S UP!";
+        feedbackEl.style.color = "#f55";
+        hintEl.style.color = "#ff0";
+        hintEl.textContent = currentP.correct;
+        if (S.mode === "challenge") submitBtn.disabled = true;
+        else choiceBtns.forEach((b) => (b.disabled = true));
+        if (lives <= 0) {
+          setTimeout(endGame, 1200);
+          return;
+        }
+        setTimeout(nextQuestion, 2200);
+      }
+
+      function showCombo(n) {
+        const L = [
+          "",
+          "",
+          "DOUBLE!",
+          "TRIPLE!",
+          "QUAD!",
+          "PENTA!",
+          "MEGA!",
+          "ULTRA!",
+        ];
+        comboPopEl.textContent = L[Math.min(n, 7)] || n + "x!";
+        setTimeout(() => (comboPopEl.textContent = ""), 900);
+      }
+      function updateScore() {
+        scoreEl.textContent = score;
+        scoreEl.classList.add("bump");
+        setTimeout(() => scoreEl.classList.remove("bump"), 150);
+      }
+      function updateLives() {
+        livesEl.innerHTML = "";
+        for (let i = 0; i < 3; i++) {
+          const h = document.createElement("div");
+          h.className = "heart";
+          h.textContent = i < lives ? "♥" : "♡";
+          h.style.color = i < lives ? "#f55" : "#333";
+          livesEl.appendChild(h);
+        }
+      }
+      function updateLevelBar() {
+        const threshold =
+          (typeof LEVEL_THRESHOLDS !== "undefined" &&
+            LEVEL_THRESHOLDS[level]) ||
+          7;
+        const pct = Math.min((problems / threshold) * 100, 100);
+        comboBarEl.style.width = pct + "%";
+        // colour shifts as you get close: blue → cyan → green
+        comboBarEl.style.background =
+          pct >= 80 ? "#00ff88" : pct >= 50 ? "#00ddcc" : "#00aaff";
+        comboBarEl.style.boxShadow =
+          pct >= 80
+            ? "0 0 8px #00ff88"
+            : pct >= 50
+              ? "0 0 6px #00ddcc"
+              : "0 0 6px #00aaff";
+        // level label
+        const levelLabelEl = document.getElementById("level-label");
+        const levelProgEl = document.getElementById("level-progress-text");
+        if (levelLabelEl) levelLabelEl.textContent = "LEVEL " + level;
+        if (levelProgEl) levelProgEl.textContent = problems + " / " + threshold;
+      }
+      function updateComboBar() {
+        updateLevelBar();
+      }
+      // ── INTERMISSION SCENES — one per level transition (entering level 2-6) ──
+      // SCENES[i] plays when entering level i+2 (so SCENES[0] = entering level 2)
+      const SCENES = [
+        // Level 1→2: The mission begins
+        [
+          {
+            ship: "🚀",
+            enemies: ["🌍", "🌙"],
+            dir: "ltr",
+            label: "DEPARTING EARTH...",
+          },
+          {
+            ship: "🚀",
+            enemies: ["⭐", "✨", "⭐"],
+            dir: "rtl",
+            label: "ENTERING DEEP SPACE",
+          },
+        ],
+        // Level 2→3: First contact
+        [
+          {
+            ship: "🛸",
+            enemies: ["👾", "👾", "👾"],
+            dir: "ltr",
+            label: "ALIEN SCOUTS DETECTED!",
+          },
+          {
+            ship: "🚀",
+            enemies: ["💥", "💥", "💥"],
+            dir: "rtl",
+            label: "SHIELDS HOLDING!",
+          },
+        ],
+        // Level 3→4: Into the danger zone
+        [
+          {
+            ship: "🚀",
+            enemies: ["☄️", "🌑", "☄️"],
+            dir: "ltr",
+            label: "ASTEROID FIELD AHEAD!",
+          },
+          {
+            ship: "🛸",
+            enemies: ["🤖", "🤖", "🤖"],
+            dir: "rtl",
+            label: "ROBOT FLEET INCOMING!",
+          },
+        ],
+        // Level 4→5: The heart of the empire
+        [
+          {
+            ship: "🚀",
+            enemies: ["👽", "👽", "👽"],
+            dir: "ltr",
+            label: "ENEMY HOMEWORLD!",
+          },
+          {
+            ship: "💥",
+            enemies: ["🛸", "💫", "🛸"],
+            dir: "rtl",
+            label: "DIRECT HIT! KEEP GOING!",
+          },
+        ],
+        // Level 5→6: Final push
+        [
+          {
+            ship: "🚀",
+            enemies: ["🌑", "🌑", "🌑"],
+            dir: "ltr",
+            label: "ENTERING THE DARK ZONE",
+          },
+          {
+            ship: "🛸",
+            enemies: ["⚡", "💥", "⚡"],
+            dir: "rtl",
+            label: "ALMOST THERE!",
+          },
+        ],
+      ];
+
+      let intermissionActive = false;
+
+      function playIntermission(lvl, onDone) {
+        const inter = $("intermission");
+        const stage = $("intermission-stage");
+        const title = $("intermission-title");
+        inter.classList.add("show");
+        intermissionActive = true;
+        stage.innerHTML = "";
+
+        const scene = SCENES[Math.min(lvl - 2, SCENES.length - 1)];
+        const STAGE_W = inter.offsetWidth || 380;
+        const STAGE_H = inter.offsetHeight || 240;
+        const ACT_DUR = 2400; // ms per act
+        const TOTAL = scene.length * ACT_DUR + 400;
+
+        let actIdx = 0;
+
+        function runAct() {
+          if (actIdx >= scene.length) return;
+          stage.innerHTML = "";
+          const act = scene[actIdx];
+          title.textContent = act.label;
+
+          const fromLeft = act.dir === "ltr";
+          const startX = fromLeft ? -80 : STAGE_W + 80;
+          const endX = fromLeft ? STAGE_W + 80 : -80;
+          const y = 60 + Math.random() * (STAGE_H - 120);
+
+          // Ship
+          const shipEl = document.createElement("div");
+          shipEl.style.cssText = `
+            position:absolute;
+            font-size:36px;
+            top:${y}px;
+            left:${startX}px;
+            transition: left ${ACT_DUR * 0.9}ms linear;
+            transform: scaleX(${fromLeft ? 1 : -1});
+            filter: drop-shadow(0 0 8px #0ff);
+          `;
+          shipEl.textContent = act.ship;
+          stage.appendChild(shipEl);
+          requestAnimationFrame(() =>
+            requestAnimationFrame(() => {
+              shipEl.style.left = endX + "px";
+            }),
+          );
+
+          // Enemies/effects scattered along the path
+          act.enemies.forEach((em, i) => {
+            const delay =
+              (i + 1) * ((ACT_DUR * 0.7) / (act.enemies.length + 1));
+            const ex = fromLeft
+              ? STAGE_W * 0.25 + i * (STAGE_W * 0.22)
+              : STAGE_W * 0.75 - i * (STAGE_W * 0.22);
+            const ey = y + (Math.random() * 60 - 30);
+
+            setTimeout(() => {
+              const el = document.createElement("div");
+              el.style.cssText = `
+                position:absolute;
+                font-size:${28 + Math.random() * 12}px;
+                left:${ex}px;
+                top:${ey}px;
+                opacity:0;
+                transition: opacity 0.15s, transform 0.4s;
+                transform: scale(0.3);
+              `;
+              el.textContent = em;
+              stage.appendChild(el);
+              requestAnimationFrame(() =>
+                requestAnimationFrame(() => {
+                  el.style.opacity = "1";
+                  el.style.transform = "scale(1)";
+                }),
+              );
+              // Fade out
+              setTimeout(() => {
+                el.style.opacity = "0";
+                el.style.transform = "scale(0.1)";
+              }, ACT_DUR * 0.5);
+            }, delay);
+          });
+
+          actIdx++;
+          if (actIdx < scene.length) {
+            setTimeout(runAct, ACT_DUR);
+          }
+        }
+
+        runAct();
+
+        // Wrap up
+        setTimeout(() => {
+          // Flash LEVEL UP banner
+          title.textContent = "LEVEL " + lvl + "!";
+          title.style.fontSize = "18px";
+          title.style.color = "#fff";
+          title.style.textShadow = "0 0 20px #ff0, 0 0 40px #f80";
+          // Scatter stars
+          for (let i = 0; i < 12; i++) {
+            setTimeout(() => {
+              const s = document.createElement("div");
+              s.style.cssText = `
+                position:absolute;
+                font-size:${16 + Math.random() * 20}px;
+                left:${Math.random() * 90}%;
+                top:${Math.random() * 80}%;
+                opacity:1;
+                animation: starPop 0.6s ease-out forwards;
+              `;
+              s.textContent = pick(["⭐", "🌟", "✨", "💫"]);
+              stage.appendChild(s);
+            }, i * 80);
+          }
+        }, TOTAL - 900);
+
+        setTimeout(() => {
+          inter.classList.remove("show");
+          title.style.fontSize = "";
+          title.style.color = "";
+          title.style.textShadow = "";
+          intermissionActive = false;
+          onDone();
+        }, TOTAL + 1200);
+      }
+
+      // Inject starPop keyframe
+      (function () {
+        const st = document.createElement("style");
+        st.textContent = `@keyframes starPop {
+          0%   { transform: scale(0) rotate(0deg);   opacity:1; }
+          60%  { transform: scale(1.4) rotate(20deg); opacity:1; }
+          100% { transform: scale(0.8) rotate(-10deg); opacity:0; }
+        }`;
+        document.head.appendChild(st);
+      })();
+
+      // ── VICTORY / FINAL SCENE ──
+      function playVictory(onDone) {
+        const inter = $("intermission");
+        const stage = $("intermission-stage");
+        const title = $("intermission-title");
+        inter.classList.add("show");
+        inter.style.pointerEvents = "auto"; // allow button tap
+        stage.innerHTML = "";
+        title.textContent = "";
+
+        const W = inter.offsetWidth || 380;
+        const H = inter.offsetHeight || 240;
+
+        // Act 1 — MISSION COMPLETE + ships march in
+        title.textContent = "MISSION COMPLETE!";
+        title.style.fontSize = "11px";
+        title.style.color = "#ff0";
+        title.style.textShadow = "0 0 12px #ff0";
+
+        const heroes = ["🚀", "🛸", "🚀", "🛸", "🚀"];
+        heroes.forEach((h, i) => {
+          setTimeout(() => {
+            const el = document.createElement("div");
+            const y = H * 0.28 + Math.sin(i * 0.9) * 22;
+            el.style.cssText = `position:absolute;font-size:34px;top:${y}px;left:-60px;transition:left 2.8s cubic-bezier(.2,.8,.4,1);line-height:1`;
+            el.textContent = h;
+            stage.appendChild(el);
+            requestAnimationFrame(() =>
+              requestAnimationFrame(() => {
+                el.style.left = W * 0.08 + i * (W * 0.18) + "px";
+              }),
+            );
+          }, i * 300);
+        });
+
+        // Act 2 — medals drop (2s after ships land)
+        setTimeout(() => {
+          ["🥇", "🏆", "🎖️"].forEach((medal, i) => {
+            const el = document.createElement("div");
+            el.style.cssText = `position:absolute;font-size:${30 + i * 5}px;left:${W * 0.22 + i * (W * 0.25)}px;top:-70px;transition:top 1s cubic-bezier(.15,1.5,.4,1);line-height:1`;
+            el.textContent = medal;
+            stage.appendChild(el);
+            setTimeout(
+              () => {
+                el.style.top = H * 0.58 + "px";
+              },
+              i * 220 + 60,
+            );
+          });
+        }, 2200);
+
+        // Act 3 — confetti burst
+        setTimeout(() => {
+          const confetti = [
+            "⭐",
+            "🌟",
+            "✨",
+            "💫",
+            "🎉",
+            "🎊",
+            "❤️",
+            "💛",
+            "💚",
+            "💙",
+          ];
+          for (let i = 0; i < 24; i++) {
+            setTimeout(() => {
+              const c = document.createElement("div");
+              c.style.cssText = `position:absolute;font-size:${12 + Math.random() * 16}px;left:${Math.random() * 92}%;top:${Math.random() * 85}%;opacity:1;animation:starPop 0.9s ease-out forwards;line-height:1`;
+              c.textContent =
+                confetti[Math.floor(Math.random() * confetti.length)];
+              stage.appendChild(c);
+            }, i * 110);
+          }
+        }, 3400);
+
+        // Act 4 — YOU WIN flash
+        setTimeout(() => {
+          title.textContent =
+            S.mode === "challenge" ? "🏆 MASTER FACTORER 🏆" : "🏆 YOU WIN! 🏆";
+          title.style.fontSize = "14px";
+          title.style.color = "#fff";
+          title.style.textShadow =
+            "0 0 20px #ff0, 0 0 40px #f80, 0 0 60px #f00";
+          title.style.background = "rgba(0,0,0,0.85)";
+          title.style.border = "1px solid #ff0";
+        }, 4800);
+
+        // Act 5 — credits scroll up (Star Wars style)
+        setTimeout(() => {
+          stage.innerHTML = "";
+          title.textContent = "";
+          const credits = [
+            { t: "🎖️  HERO OF MATH  🎖️", c: "#ff0", s: "13px" },
+            { t: "ALL 6 LEVELS CLEARED", c: "#fff", s: "9px" },
+            { t: "🏆  🥇  🏆  🥇  🏆", c: "#fa0", s: "18px" },
+            { t: "SCORE: " + score, c: "#0ff", s: "11px" },
+            { t: "STREAK: " + bestStreak + "x", c: "#0f0", s: "9px" },
+          ];
+          credits.forEach((cr, i) => {
+            const el = document.createElement("div");
+            el.style.cssText = `position:absolute;width:100%;text-align:center;font-family:'Press Start 2P',monospace;font-size:${cr.s};color:${cr.c};top:${H + 30}px;transition:top 1.6s ease-out;letter-spacing:.08em;line-height:2;text-shadow:0 0 10px ${cr.c}`;
+            el.textContent = cr.t;
+            stage.appendChild(el);
+            setTimeout(
+              () => {
+                el.style.top = H * 0.06 + i * (H * 0.19) + "px";
+              },
+              i * 320 + 80,
+            );
+          });
+        }, 6200);
+
+        // Act 6 — PLAY AGAIN button appears on top of the scene (no overlay)
+        setTimeout(() => {
+          const btn = document.createElement("button");
+          btn.textContent = "PLAY AGAIN";
+          btn.style.cssText = `
+            position:absolute;
+            bottom:18px;
+            left:50%;
+            transform:translateX(-50%);
+            font-family:'Press Start 2P',monospace;
+            font-size:10px;
+            letter-spacing:.1em;
+            padding:13px 28px;
+            background:#fff;
+            color:#000;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+            z-index:10;
+            box-shadow:0 0 20px rgba(255,255,255,0.4);
+          `;
+          btn.id = "victory-play-btn";
+          btn.addEventListener("click", () => {
+            inter.classList.remove("show");
+            inter.style.pointerEvents = "";
+            title.style.fontSize = "";
+            title.style.color = "";
+            title.style.textShadow = "";
+            title.style.background = "";
+            title.style.border = "";
+            intermissionActive = false;
+            onDone();
+          });
+          stage.appendChild(btn);
+        }, 8800);
+      }
+
+      function showVictoryScreen() {
+        // Victory is shown inline on the intermission stage — no overlay needed
+        // onDone() from playVictory calls startGame directly
+      }
+
+      // Correct answers needed to complete each level (index = level number)
+      const LEVEL_THRESHOLDS = [0, 4, 4, 4, 4, 4, 4]; // levels 1-6
+      const MAX_LEVEL = 6;
+
+      function hyperspace() {
+        if (window._hyperspaceJump) window._hyperspaceJump();
+      }
+
+      function checkLevelUp() {
+        problems++;
+        const threshold = LEVEL_THRESHOLDS[level] || 7;
+        if (problems >= threshold) {
+          problems = 0;
+          level++;
+          lives++; // bonus heart for completing a level!
+          updateLives();
+          locked = true;
+          hyperspace();
+          if (level > MAX_LEVEL) {
+            // Completed all levels — play victory scene then show end screen
+            playVictory(() => {
+              startGame();
+            });
+          } else {
+            playIntermission(level, () => {
+              locked = false;
+              nextQuestion();
+            });
+          }
+          return true;
+        }
+        return false;
+      }
+      function startGame() {
+        // Apply defaults if nothing useful selected
+        if (S.mode === "challenge") {
+          S.gcf = false;
+          if (!S.dos && !S.tri1 && !S.trip && !S.tric) {
+            S.dos = true;
+            S.tri1 = true;
+            S.trip = true;
+            S.tric = true;
+          }
+        } else {
+          if (!S.gcf && !S.dos && !S.tri1 && !S.trip && !S.tric) {
+            S.gcf = true;
+            S.dos = true;
+            S.tri1 = true;
+          }
+        }
+        score = 0;
+        lives = 3;
+        combo = 0;
+        comboMax = 0;
+        level = 1;
+        streak = 0;
+        problems = 0;
+        locked = false;
+        streakDisplay.textContent = "–";
+        wrongStreak = 0;
+        overlay.classList.remove("show");
+        updateScore();
+        updateLives();
+        updateLevelBar();
+        nextQuestion();
+      }
+      function endGame() {
+        overlay.classList.add("show");
+        if (overlayTitle && overlayTitle.innerHTML !== undefined)
+          overlayTitle.innerHTML = "GAME<br>OVER";
+        if (overlaySub && overlaySub.innerHTML !== undefined)
+          overlaySub.innerHTML =
+            "Best score: " +
+            bestScore +
+            "<br>Longest streak: " +
+            bestStreak +
+            "x";
+        if (overlayScore && overlayScore.textContent !== undefined)
+          overlayScore.textContent = "THIS GAME: " + score;
+        overlayBtn.textContent = "RETRY";
+      }
+      overlayBtn.addEventListener("click", () => {
+        $("start-screen").style.display = "none";
+        $("mode-screen").style.display = "";
+      });
+
+      $("mode-ez").addEventListener("click", () => {
+        S.mode = "ez";
+        showTopicScreen();
+      });
+
+      $("mode-challenge").addEventListener("click", () => {
+        S.mode = "challenge";
+        showTopicScreen();
+      });
+
+      $("mode-back").addEventListener("click", () => {
+        $("mode-screen").style.display = "none";
+        $("start-screen").style.display = "";
+      });
+
+      $("topic-back").addEventListener("click", () => {
+        $("topic-screen").style.display = "none";
+        $("mode-screen").style.display = "";
+      });
+
+      $("topic-start").addEventListener("click", () => {
+        overlay.classList.remove("show");
+        startGame();
+      });
+
+      const TOPICS = [
+        ["gcf", "GCF Factoring"],
+        ["dos", "Diff of Squares"],
+        ["tri1", "ax²+bx+c, a=1"],
+        ["trip", "ax²+bx+c, a=prime"],
+        ["tric", "ax²+bx+c, a=composite"],
+      ];
+
+      function showTopicScreen() {
+        $("mode-screen").style.display = "none";
+        const list = $("topic-list");
+        list.innerHTML = "";
+        TOPICS.forEach(([key, label]) => {
+          // Hide GCF in challenge mode
+          if (S.mode === "challenge" && key === "gcf") return;
+          const btn = document.createElement("button");
+          btn.className = "topic-btn" + (S[key] ? " on" : "");
+          btn.textContent = (S[key] ? "✓  " : "    ") + label;
+          btn.addEventListener("click", () => {
+            S[key] = !S[key];
+            btn.classList.toggle("on", S[key]);
+            btn.textContent = (S[key] ? "✓  " : "    ") + label;
+          });
+          list.appendChild(btn);
+        });
+        $("topic-screen").style.display = "";
+      }
+    </script>
+  </body>
+</html>
