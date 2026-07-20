@@ -12,6 +12,7 @@
   <title>Math Tutor in West Dundee, IL | Phillip Krzankowski | DeltaSeven</title>
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,600;1,400&family=Karla:wght@400;500&display=swap" rel="stylesheet" />
   <script type="application/ld+json">
   {
@@ -206,6 +207,163 @@
       width: 100%; height: 100%;
       border: 0;
     }
+
+    /* TESTIMONIALS */
+    .testimonials-wrapper {
+      padding: 1.25rem 0.6rem;
+      border-bottom: 1.5px solid #e0e0e0;
+    }
+    .testimonials-label {
+      font-family: "Pixelmania", sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-align: center;
+      margin-bottom: 0.6rem;
+      color: #000;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid #000;
+    }
+    .testimonials-swiper {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .testimonials-swiper .swiper-wrapper {
+      height: 160px;
+    }
+    .testimonial-slide {
+      background: #f5f5f5;
+      border: 1.5px solid #ccc;
+      border-radius: 12px;
+      padding: 0.4rem 1.2rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      color: #000;
+    }
+    .testimonial-slide.overflowing { cursor: pointer; }
+    .testimonial-slide.overflowing::after {
+      content: "";
+      position: absolute;
+      bottom: 2rem;
+      left: 0; right: 0;
+      height: 2rem;
+      background: linear-gradient(transparent, #f5f5f5);
+      pointer-events: none;
+    }
+    .testimonial-text {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      flex-grow: 1;
+      font-style: italic;
+      font-family: "Spectral", serif;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+    }
+    .testimonial-author {
+      position: absolute;
+      bottom: 0; right: 0; left: 0;
+      padding: 0.4rem 1.2rem 0.5rem;
+      font-family: "Karla", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-align: right;
+      background: #f5f5f5;
+    }
+    .tap-hint {
+      position: absolute;
+      bottom: 0.75rem;
+      left: 1.2rem;
+      font-family: "Karla", sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.05em;
+      opacity: 0.45;
+      font-style: normal;
+      display: none;
+    }
+    .testimonial-slide.overflowing .tap-hint { display: block; }
+    .testimonials-nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 0.6rem;
+    }
+    .testimonials-prev,
+    .testimonials-next {
+      background: none;
+      border: none;
+      color: inherit;
+      font-size: 1.4rem;
+      cursor: pointer;
+      opacity: 0.5;
+      padding: 0 0.3rem;
+      line-height: 1;
+    }
+    .testimonials-prev:hover,
+    .testimonials-next:hover { opacity: 1; }
+    .testimonials-count {
+      font-family: "Share Tech Mono", monospace;
+      font-size: 0.7rem;
+      opacity: 0.5;
+      letter-spacing: 0.1em;
+    }
+    .testimonial-popup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 1.5rem;
+    }
+    .testimonial-popup.open { display: flex; }
+    .testimonial-popup-card {
+      background: #fff;
+      border: 1.5px solid #ccc;
+      border-radius: 14px;
+      padding: 1.5rem 1.5rem 1.2rem;
+      max-width: 380px;
+      width: 100%;
+      position: relative;
+      color: #000;
+    }
+    .testimonial-popup-text {
+      font-size: 0.95rem;
+      line-height: 1.65;
+      font-style: italic;
+      font-family: "Spectral", serif;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      margin-bottom: 1rem;
+    }
+    .testimonial-popup-author {
+      font-family: "Karla", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      opacity: 0.7;
+      text-align: right;
+    }
+    .testimonial-popup-close {
+      position: absolute;
+      top: 0.6rem;
+      right: 0.9rem;
+      font-size: 1.2rem;
+      cursor: pointer;
+      opacity: 0.5;
+      background: none;
+      border: none;
+      color: inherit;
+      line-height: 1;
+    }
+    .testimonial-popup-close:hover { opacity: 1; }
   </style>
 </head>
 <body>
@@ -250,6 +408,91 @@
     </ul>
   </div>
 
+  <div class="testimonials-wrapper">
+    <div class="testimonials-label">WHAT PEOPLE ARE SAYING</div>
+    <div class="testimonials-swiper swiper-container">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide">
+        <div class="testimonial-slide" data-text="We are very happy to have found Phil. My 15yo son will be starting public high school after 10 years of homeschooling, and we wanted to make sure he could seamlessly transition into the school's math classes. Phil's tutoring has been invaluable: he evaluates strengths and weaknesses. He communicates thoroughly with parents. He comes to sessions prepared with an arsenal of exercises, sample problems, and ideas to get my son thinking. No doubt his background as a teacher has given him many of these skills, but it has also made him a wealth of insightful advice to us as parents. Beyond this, he takes the time to get to know my son as a person with interests and aspirations, not just a client.<br><br>Phil responds quickly to texts and emails, and is flexible with scheduling dates, times, and locations. I would wholeheartedly recommend his services to anyone who needs them, whether they are struggling to pass a class, need help with test prep, or just want an evaluation and advice. Thanks Phil!" data-author="— Mary, Sleepy Hollow">
+        <div class="testimonial-text">We are very happy to have found Phil. My 15yo son will be starting public high school after 10 years of homeschooling, and we wanted to make sure he could seamlessly transition into the school&#39;s math classes. Phil&#39;s tutoring has been invaluable: he evaluates strengths and weaknesses. He communicates thoroughly with parents. He comes to sessions prepared with an arsenal of exercises, sample problems, and ideas to get my son thinking. No doubt his background as a teacher has given him many of these skills, but it has also made him a wealth of insightful advice to us as parents. Beyond this, he takes the time to get to know my son as a person with interests and aspirations, not just a client.<br><br>Phil responds quickly to texts and emails, and is flexible with scheduling dates, times, and locations. I would wholeheartedly recommend his services to anyone who needs them, whether they are struggling to pass a class, need help with test prep, or just want an evaluation and advice. Thanks Phil!</div>
+        <div class="testimonial-author">— Mary, Sleepy Hollow</div>
+        <div class="tap-hint">tap to read more</div>
+        </div>
+        </div>
+        <div class="swiper-slide">
+        <div class="testimonial-slide" data-text="Phil is an amazing teacher. He made sure to make a connection with my daughter and got her to &quot;buy in&quot; to what he was teaching. He went out of his way to connect with her teacher so he could get a clear idea of the expectations of the class. I wouldn't hesitate to recommend him to anyone that was looking for a math tutor. He's flexible, reliable and patient!" data-author="— Megan, South Elgin">
+        <div class="testimonial-text">Phil is an amazing teacher. He made sure to make a connection with my daughter and got her to "buy in" to what he was teaching. He went out of his way to connect with her teacher so he could get a clear idea of the expectations of the class. I wouldn't hesitate to recommend him to anyone that was looking for a math tutor. He's flexible, reliable and patient!</div>
+        <div class="testimonial-author">— Megan, South Elgin</div>
+        <div class="tap-hint">tap to read more</div>
+        </div>
+        </div>
+        <div class="swiper-slide">
+        <div class="testimonial-slide" data-text="It has been such a great experience working with Phil! My daughter has shown significant improvement since starting Algebra tutoring and we're so grateful for Phil's patience, attentiveness and communication throughout the process." data-author="— Melinda, Hoffman Estates">
+        <div class="testimonial-text">It has been such a great experience working with Phil! My daughter has shown significant improvement since starting Algebra tutoring and we're so grateful for Phil's patience, attentiveness and communication throughout the process.</div>
+        <div class="testimonial-author">— Melinda, Hoffman Estates</div>
+        <div class="tap-hint">tap to read more</div>
+        </div>
+        </div>
+        <div class="swiper-slide">
+        <div class="testimonial-slide" data-text="We love Phil. He is the BEST. He is patient, supportive, and explains concepts in a way that truly helps my daughter understand and feel more confident. He is also very communicative with me and always willing to take the extra step to help, whether that means checking in, offering feedback, contacting the teacher or providing additional support when needed. I would highly recommend him to any parent looking for a dedicated and effective math tutor." data-author="— LL, Bartlett">
+        <div class="testimonial-text">We love Phil. He is the BEST. He is patient, supportive, and explains concepts in a way that truly helps my daughter understand and feel more confident. He is also very communicative with me and always willing to take the extra step to help, whether that means checking in, offering feedback, contacting the teacher or providing additional support when needed. I would highly recommend him to any parent looking for a dedicated and effective math tutor.</div>
+        <div class="testimonial-author">— LL, Bartlett</div>
+        <div class="tap-hint">tap to read more</div>
+        </div>
+        </div>
+        <div class="swiper-slide">
+        <div class="testimonial-slide" data-text="Was getting ripped off at Mathnasium. Phil tutors my kid longer and for less money. Plus he has a Master's degree! Simply the best!" data-author="— Yazan A, Barrington">
+        <div class="testimonial-text">Was getting ripped off at Mathnasium. Phil tutors my kid longer and for less money. Plus he has a Master's degree! Simply the best!</div>
+        <div class="testimonial-author">— Yazan A, Barrington</div>
+        <div class="tap-hint">tap to read more</div>
+        </div>
+        </div>
+        <div class="swiper-slide">
+        <div class="testimonial-slide" data-text="Vacation went long and my kid fell behind. Phil showed up and tutored Brandon 3 nights in a row so he could pass the class. Dude is solid. Thanks again!" data-author="— Kevin H, Lombard">
+        <div class="testimonial-text">Vacation went long and my kid fell behind. Phil showed up and tutored Brandon 3 nights in a row so he could pass the class. Dude is solid. Thanks again!</div>
+        <div class="testimonial-author">— Kevin H, Lombard</div>
+        <div class="tap-hint">tap to read more</div>
+        </div>
+        </div>
+        <div class="swiper-slide">
+        <div class="testimonial-slide" data-text="Phil is a pro! My son's scores are up and doesn't complain about math anymore. Phil's session notes are very helpful insight into what my son is learning. Highly recommend." data-author="— Bill C, Barrington">
+        <div class="testimonial-text">Phil is a pro! My son's scores are up and doesn't complain about math anymore. Phil's session notes are very helpful insight into what my son is learning. Highly recommend.</div>
+        <div class="testimonial-author">— Bill C, Barrington</div>
+        <div class="tap-hint">tap to read more</div>
+        </div>
+        </div>
+        <div class="swiper-slide">
+        <div class="testimonial-slide" data-text="Phil is awesome!! Sarah's Geometry grade went from a C- to a B+ after a month of tutoring! My daughter really likes the study sheets Phil makes at the end of every session. Thank you!" data-author="— Anne B, Elgin">
+        <div class="testimonial-text">Phil is awesome!! Sarah's Geometry grade went from a C- to a B+ after a month of tutoring! My daughter really likes the study sheets Phil makes at the end of every session. Thank you!</div>
+        <div class="testimonial-author">— Anne B, Elgin</div>
+        <div class="tap-hint">tap to read more</div>
+        </div>
+        </div>
+        <div class="swiper-slide">
+        <div class="testimonial-slide" data-text="Daughter needed a good grade on the final to pass the class. Phil came and helped her study for an hour and a half the night before, and she did great on the test and passed the class! Very personable and funny as well, which definitely helps with a 14 yr old." data-author="— Joe S, Schaumburg">
+        <div class="testimonial-text">Daughter needed a good grade on the final to pass the class. Phil came and helped her study for an hour and a half the night before, and she did great on the test and passed the class! Very personable and funny as well, which definitely helps with a 14 yr old.</div>
+        <div class="testimonial-author">— Joe S, Schaumburg</div>
+        <div class="tap-hint">tap to read more</div>
+        </div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonials-nav">
+      <button class="testimonials-prev">&#8592;</button>
+      <span class="testimonials-count" id="testimonialCount">1 / 9</span>
+      <button class="testimonials-next">&#8594;</button>
+    </div>
+  </div>
+
+  <div class="testimonial-popup" id="testimonialPopup">
+    <div class="testimonial-popup-card">
+      <button class="testimonial-popup-close" id="popupClose">&#10005;</button>
+      <div class="testimonial-popup-text" id="popupText"></div>
+      <div class="testimonial-popup-author" id="popupAuthor"></div>
+    </div>
+  </div>
+
+
   <div class="section">
     <h2>SCHOOLS &amp; DISTRICTS SERVED</h2>
         <div class="district-block">
@@ -291,6 +534,7 @@
     </p>
   </div>
 
+
   <div class="contact-block">
     <h2>CONTACT</h2>
     <ul>
@@ -304,5 +548,41 @@
   <footer>
     &copy; 2022&ndash;2026 DELTASEVEN.IO, LLC — Phillip Krzankowski. All rights reserved.
   </footer>
+
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+  <script>
+    const totalSlides = 9;
+    const countEl = document.getElementById("testimonialCount");
+    const testimonialSwiper = new Swiper(".testimonials-swiper", {
+      loop: true,
+      navigation: { nextEl: ".testimonials-next", prevEl: ".testimonials-prev" },
+      grabCursor: true,
+      on: {
+        slideChange: function () {
+          countEl.textContent = (this.realIndex % totalSlides) + 1 + " / " + totalSlides;
+        }
+      }
+    });
+    setTimeout(() => {
+      document.querySelectorAll(".testimonial-slide").forEach(slide => {
+        const text = slide.querySelector(".testimonial-text");
+        if (text.scrollHeight > slide.clientHeight - 40) slide.classList.add("overflowing");
+      });
+    }, 400);
+    const popup = document.getElementById("testimonialPopup");
+    const popupText = document.getElementById("popupText");
+    const popupAuthor = document.getElementById("popupAuthor");
+    const popupClose = document.getElementById("popupClose");
+    document.querySelectorAll(".testimonial-slide").forEach(slide => {
+      slide.addEventListener("click", () => {
+        if (!slide.classList.contains("overflowing")) return;
+        popupText.innerHTML = slide.dataset.text;
+        popupAuthor.textContent = slide.dataset.author;
+        popup.classList.add("open");
+      });
+    });
+    popupClose.addEventListener("click", () => popup.classList.remove("open"));
+    popup.addEventListener("click", e => { if (e.target === popup) popup.classList.remove("open"); });
+  </script>
 </body>
 </html>
