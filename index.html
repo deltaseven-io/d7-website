@@ -652,6 +652,27 @@
       />
     </header>
 
+    <!-- SLIDESHOW -->
+    <div class="swiper-container">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide video-slide">
+          <iframe
+            src="https://www.youtube.com/embed/ApjEGjw48bI?rel=0&modestbranding=1"
+            title="Intro Video — Phillip Krzankowski Math Tutoring"
+            frameborder="0"
+            allow="
+              accelerometer;
+              autoplay;
+              encrypted-media;
+              gyroscope;
+              picture-in-picture;
+            "
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+    </div>
+
     <!-- TESTIMONIALS -->
     <div class="testimonials-wrapper">
     <div class="testimonials-label">WHAT PEOPLE ARE SAYING</div>
@@ -1015,6 +1036,17 @@
         document.body.classList.toggle("inverted");
         const isInverted = document.body.classList.contains("inverted");
         logo.src = isInverted ? "D7-bg-white.png" : "D7-bg-black.png";
+      });
+
+      const swiper = new Swiper(".swiper-container:not(.testimonials-swiper)", {
+        loop: true,
+        on: {
+          slideChange: function () {
+            document
+              .querySelectorAll(".video-slide video")
+              .forEach((v) => v.pause());
+          },
+        },
       });
 
       const totalSlides = 9;
